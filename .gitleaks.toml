@@ -1,0 +1,10 @@
+title = "personal-dashboard"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "dashboard-api-token"
+description = "Personal dashboard admin/device API token"
+regex = '''dsh_(?:admin|device)_[A-Za-z0-9_-]{43}'''
+keywords = ["dsh_"]
