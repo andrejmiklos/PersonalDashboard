@@ -1,0 +1,122 @@
+html,
+body {
+  margin: 0;
+  background: #111;
+  color: #ddd;
+  font-family: sans-serif;
+  font-size: 14px;
+}
+
+body {
+  padding: 12px 16px;
+}
+
+h1 {
+  font-size: 20px;
+  margin: 0 0 4px;
+}
+
+h2 {
+  font-size: 16px;
+  margin: 16px 0 6px;
+  color: #9ab;
+}
+
+#summary {
+  margin: 0;
+  font-weight: bold;
+}
+
+.visual {
+  overflow: hidden;
+}
+
+.sample {
+  float: left;
+  width: 23%;
+  margin-right: 2%;
+}
+
+.caption {
+  margin: 0 0 4px;
+  color: #888;
+  font-size: 12px;
+}
+
+.box {
+  display: block;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  margin: 2px;
+  text-align: center;
+  background: #345;
+}
+
+.flex-row {
+  display: -webkit-flex;
+  display: flex;
+}
+
+.grid-demo {
+  display: grid;
+  grid-template-columns: 32px 32px;
+}
+
+.grid-demo .box:nth-child(2),
+.grid-demo .box:nth-child(3) {
+  background: #567;
+}
+
+.diacritics {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.var-demo {
+  --probe-color: #2a7;
+  width: 60px;
+  height: 20px;
+  background: #a33;
+  background: var(--probe-color);
+}
+
+.track {
+  position: relative;
+  height: 24px;
+  background: #222;
+}
+
+#mover {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 24px;
+  height: 24px;
+  background: #4a8;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td {
+  border-bottom: 1px solid #333;
+  padding: 3px 6px;
+  vertical-align: top;
+  word-break: break-all;
+}
+
+td.name {
+  width: 30%;
+  color: #aaa;
+}
+
+.yes {
+  color: #5c5;
+}
+
+.no {
+  color: #e55;
+}

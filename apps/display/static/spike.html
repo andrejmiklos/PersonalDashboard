@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Compatibility spike</title>
+    <link rel="stylesheet" href="spike.css" />
+    <!-- Each probe sets a global flag; a syntax error only breaks its own file. -->
+    <script src="spike-es2015.js"></script>
+    <script src="spike-es2017.js"></script>
+    <script type="module" src="spike-module.js"></script>
+    <script nomodule src="spike-nomodule.js"></script>
+  </head>
+  <body>
+    <h1>Display compatibility spike</h1>
+    <p id="summary">Running…</p>
+
+    <h2>Visual checks</h2>
+    <div class="visual">
+      <div class="sample">
+        <p class="caption">Flexbox: three boxes in a row</p>
+        <div class="flex-row">
+          <span class="box">1</span><span class="box">2</span><span class="box">3</span>
+        </div>
+      </div>
+      <div class="sample">
+        <p class="caption">CSS Grid: 2×2 checkerboard (else a column)</p>
+        <div class="grid-demo">
+          <span class="box">A</span><span class="box">B</span><span class="box">C</span
+          ><span class="box">D</span>
+        </div>
+      </div>
+      <div class="sample">
+        <p class="caption">Inline SVG: sun icon</p>
+        <svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="14" fill="#f5b700" />
+          <g stroke="#f5b700" stroke-width="4" stroke-linecap="round">
+            <line x1="32" y1="4" x2="32" y2="12" />
+            <line x1="32" y1="52" x2="32" y2="60" />
+            <line x1="4" y1="32" x2="12" y2="32" />
+            <line x1="52" y1="32" x2="60" y2="32" />
+          </g>
+        </svg>
+      </div>
+      <div class="sample">
+        <p class="caption">Diacritics</p>
+        <p class="diacritics">Žltý kôň úpäl ďábelské ódy — ĽŠČŤŽÝÁÍÉ</p>
+        <p class="caption">CSS variable: green box = supported</p>
+        <div class="var-demo"></div>
+      </div>
+    </div>
+
+    <h2>FPS probe (60 s)</h2>
+    <div class="track"><div id="mover"></div></div>
+    <p id="fps">Waiting…</p>
+
+    <h2>Results</h2>
+    <table>
+      <tbody id="results"></tbody>
+    </table>
+
+    <script src="spike.js"></script>
+  </body>
+</html>
