@@ -8,16 +8,16 @@
   "assets": {
     "directory": "dist/public",
     "binding": "ASSETS",
-    "run_worker_first": ["/healthz"]
+    "run_worker_first": ["/healthz"],
   },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "personal-dashboard",
       "database_id": "00000000-0000-0000-0000-000000000000",
-      "migrations_dir": "migrations"
-    }
-  ]
+      "migrations_dir": "migrations",
+    },
+  ],
   // Optional custom domain instead of *.workers.dev:
   // "routes": [{ "pattern": "dashboard.example.com", "custom_domain": true }]
 }

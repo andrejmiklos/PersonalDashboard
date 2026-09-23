@@ -1,0 +1,5 @@
+dist/
+coverage/
+.wrangler/
+package-lock.json
+*.md
