@@ -1,0 +1,8 @@
+{
+  "name": "@dashboard/display",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node -e \"require('fs').cpSync('static', '../../dist/public/display', { recursive: true })\""
+  }
+}

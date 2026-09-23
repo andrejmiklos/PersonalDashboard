@@ -1,0 +1,13 @@
+{
+  "name": "@dashboard/worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node -e \"require('fs').cpSync('public', '../../dist/public', { recursive: true })\"",
+    "typecheck": "tsc -p ."
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260923.1"
+  }
+}
