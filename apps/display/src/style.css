@@ -686,3 +686,16 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* Shown while the state poll keeps failing (offline.ts); outside the stage, in the screen corner. */
+.offline-badge {
+  position: fixed;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  z-index: 10;
+  padding: 0.25rem 0.6rem;
+  border-radius: 1rem;
+  background: rgba(40, 0, 0, 0.85);
+  color: #f28b82;
+  font-size: 0.75rem;
+}

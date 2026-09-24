@@ -1,8 +1,11 @@
 import './style.css';
 import { DEFAULT_LOCALE, t, type DisplayState, type MessageKey } from '@dashboard/shared';
 import { fetchState } from './api';
+import { clearCache, readCache, writeCache } from './cache';
 import { createDataClient } from './data';
 import { clearLayout, renderLayout } from './layout/engine';
+import { scheduleNightlyReload } from './nightly';
+import { createOfflineBadge } from './offline';
 import { shouldReload } from './reload';
 import { applyStage, fitStage } from './stage';
 import { createPairingForm } from './pairing';
@@ -24,7 +27,8 @@ const storage = safeLocalStorage();
 // First thing on boot: take the token out of the URL.
 const pairing = pairFromLocation(window.location, window.history, storage);
 
-const dataClient = createDataClient(() => currentToken(storage));
+const dataClient = createDataClient(() => currentToken(storage), storage);
+const STATE_CACHE_KEY = 'state';
 
 const stage = document.getElementById('stage') as HTMLElement;
 const status = document.getElementById('status') as HTMLElement;
@@ -33,6 +37,12 @@ let state: DisplayState | null = null;
 let etag: string | null = null;
 let failures = 0;
 let pollTimer: number | undefined;
+let nightlyPlanned = false;
+
+const offlineBadge = createOfflineBadge(document.body, () => ({
+  locale: state?.locale ?? DEFAULT_LOCALE,
+  timezone: state?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
+}));
 
 /** Single polling loop: scheduling always replaces the pending poll. */
 function schedulePoll(ms: number): void {
@@ -70,6 +80,10 @@ function render(current: DisplayState): void {
   status.hidden = true;
   pairingForm.hide();
   renderLayout(stage, layout, current.locale, current.timezone, dataClient);
+  if (!nightlyPlanned) {
+    nightlyPlanned = true;
+    scheduleNightlyReload(() => state?.timezone ?? current.timezone);
+  }
 }
 
 function resize(): void {
@@ -88,8 +102,10 @@ async function poll(): Promise<void> {
   switch (result.kind) {
     case 'changed':
       failures = 0;
+      offlineBadge.ok();
       state = result.state;
       etag = result.etag;
+      writeCache(storage, STATE_CACHE_KEY, state);
       if (shouldReload(state.appVersion, __APP_VERSION__, Date.now(), storage)) {
         window.location.reload();
         return;
@@ -98,15 +114,20 @@ async function poll(): Promise<void> {
       break;
     case 'unchanged':
       failures = 0;
+      offlineBadge.ok();
       break;
     case 'unauthorized':
       etag = null;
+      // A revoked display must not keep showing the owner's data after a restart.
+      clearCache(storage);
+      offlineBadge.ok();
       askForPairing('display.tokenRejected');
       nextMs = UNAUTHORIZED_POLL_MS;
       break;
     case 'failed':
       failures += 1;
       nextMs = Math.min(POLL_MS * 2 ** failures, MAX_BACKOFF_MS);
+      offlineBadge.failed();
       if (state === null) showMessage('display.offline');
       break;
   }
@@ -116,6 +137,14 @@ async function poll(): Promise<void> {
 window.addEventListener('resize', resize);
 // Kiosk: no long-press menu (docs/02-tablet-and-kiosk.md §3).
 document.addEventListener('contextmenu', (event) => event.preventDefault());
+// Wi-Fi back: do not wait for the backoff.
+window.addEventListener('online', () => schedulePoll(0));
 resize();
 showMessage('state.loading');
+// Show the last known dashboard at once; the first poll replaces it (docs/01-architecture.md §5).
+const cachedState = currentToken(storage) === null ? null : readCache<DisplayState>(storage, STATE_CACHE_KEY);
+if (cachedState) {
+  state = cachedState;
+  render(cachedState);
+}
 void poll();

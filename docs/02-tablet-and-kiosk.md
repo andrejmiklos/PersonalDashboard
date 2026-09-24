@@ -86,7 +86,7 @@ Things a kiosk app would do and Chrome does not, therefore handled in `display` 
 
 | Need | Implementation |
 |---|---|
-| Reload on page error / network reconnect | Offline/stale handling + retry with backoff; nightly `location.reload()` (Phase 2.13) |
+| Reload on page error / network reconnect | Cached state and tile data, stale indicators, offline badge, retry with backoff and at once on `online`; nightly `location.reload()` at 03:30 only when the Worker answers (doc 01 §5) |
 | Reload after deploy | `appVersion` change in `/display/state` → `location.reload()` (doc 01 §3.1) |
 | No accidental zoom | `<meta name="viewport" … user-scalable=no>`, `touch-action: manipulation` |
 | No text selection / context menu on long press | `user-select: none`, `contextmenu` prevented |

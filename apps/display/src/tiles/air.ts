@@ -134,7 +134,8 @@ export function createAir(ctx: TileContext): TileInstance {
 
   showMessage(t(ctx.locale, 'state.loading'));
   const poller = startPoller({
-    load: () => ctx.data<AirData>('air'),
+    load: () => ctx.data.load<AirData>('air'),
+    peek: () => ctx.data.peek<AirData>('air'),
     onResult,
     intervalMs: POLL_MS,
     retryMs: RETRY_MS,

@@ -188,7 +188,8 @@ export function createAstro(ctx: TileContext): TileInstance {
 
   showMessage(t(ctx.locale, 'state.loading'));
   const poller = startPoller({
-    load: () => ctx.data<AstroData>('astro'),
+    load: () => ctx.data.load<AstroData>('astro'),
+    peek: () => ctx.data.peek<AstroData>('astro'),
     onResult,
     intervalMs: () => Math.min(POLL_MS, msUntilMidnight(new Date(), ctx.timezone)),
     retryMs: RETRY_MS,

@@ -114,12 +114,22 @@ ample. `last_seen` writes are throttled to once per minute.
 
 ## 5. Offline / failure behaviour
 
-- Each tile keeps its last successful payload in memory + `localStorage`.
+- The last display state and each tile's last payload are kept in `localStorage` (`dashboard.cache.*`,
+  `apps/display/src/cache.ts`). On boot the cached state and payloads render at once, before the first poll.
+- A tile request that fails for a reason unrelated to the data (network, `503 provider_unavailable`,
+  `500`) is answered from that copy, up to 24 h old; errors such as `location_not_set` are shown as they are.
+  Answers from the copy keep the poller in retry/backoff mode, and every poller (and the state poll) retries at
+  once on the browser's `online` event.
 - If `now - updatedAt > 2 × ttl` the tile shows a subtle "stale" indicator (dimmed + `hh:mm`).
-- `display/state` failing for > 5 min → small "offline" badge in a corner; layout keeps rendering.
+- `display/state` failing for ≥ 5 min → small "Offline since hh:mm" badge in the bottom-right corner; layout
+  keeps rendering.
+- `401` on `display/state` clears the cache, so a revoked display does not show the owner's data after a restart.
 - Provider auth failure (`invalid_grant`) → account status `reauth_required`; tile shows
   "reconnect in admin"; admin panel shows a banner.
-- Nightly soft reload (≈ 03:30) and reload on version change to avoid leaks in the old browser.
+- Nightly soft reload at 03:30 in the settings time zone and reload on version change to avoid leaks in the old
+  browser. The nightly reload first checks `/healthz`: there is no service worker, so reloading without a
+  network would leave Chrome's error page on the wall; without an answer it retries every 5 min.
+- Known limit: a full browser or tablet restart while offline cannot load the page at all (no service worker).
 
 ## 6. D1 schema (initial migration)
 

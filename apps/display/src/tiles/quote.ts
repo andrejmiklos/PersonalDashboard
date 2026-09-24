@@ -102,7 +102,8 @@ export function createQuote(ctx: TileContext): TileInstance {
 
   showMessage(t(ctx.locale, 'state.loading'));
   const poller = startPoller({
-    load: () => ctx.data<QuoteData>('quote', { lang }),
+    load: () => ctx.data.load<QuoteData>('quote', { lang }),
+    peek: () => ctx.data.peek<QuoteData>('quote', { lang }),
     onResult,
     intervalMs: () => msUntilMidnight(new Date(), ctx.timezone),
     retryMs: RETRY_MS,

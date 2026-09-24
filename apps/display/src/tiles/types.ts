@@ -8,7 +8,7 @@ export interface TileContext {
   config: Record<string, unknown>;
   locale: Locale;
   timezone: string;
-  /** Tile data from the Worker, authorised with the device token. */
+  /** Tile data from the Worker (device token) with the offline copy. */
   data: DataClient;
 }
 

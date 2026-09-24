@@ -224,7 +224,8 @@ export function createWeather(ctx: TileContext): TileInstance {
 
   showMessage(t(ctx.locale, 'state.loading'));
   const poller = startPoller({
-    load: () => ctx.data<WeatherData>('weather'),
+    load: () => ctx.data.load<WeatherData>('weather'),
+    peek: () => ctx.data.peek<WeatherData>('weather'),
     onResult,
     intervalMs: POLL_MS,
     retryMs: RETRY_MS,
