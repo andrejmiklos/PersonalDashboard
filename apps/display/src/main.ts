@@ -1,6 +1,7 @@
 import './style.css';
 import { DEFAULT_LOCALE, t, type DisplayState, type MessageKey } from '@dashboard/shared';
 import { fetchState } from './api';
+import { clearLayout, renderLayout } from './layout/engine';
 import { shouldReload } from './reload';
 import { applyStage, fitStage } from './stage';
 import { currentToken, pairFromLocation } from './token';
@@ -28,18 +29,21 @@ let state: DisplayState | null = null;
 let etag: string | null = null;
 let failures = 0;
 
+/** Full-stage message instead of a layout (not paired, no layout, offline before first state). */
 function showMessage(key: MessageKey): void {
+  clearLayout();
   status.textContent = t(state?.locale ?? DEFAULT_LOCALE, key);
+  status.hidden = false;
 }
 
-/** Placeholder until the layout engine renders tiles. */
 function render(current: DisplayState): void {
   const layout = current.layoutSpec ? current.layouts[current.layoutSpec.layoutId] : undefined;
   if (!layout) {
     showMessage('display.noLayout');
     return;
   }
-  status.textContent = `${layout.name} · v${layout.version}`;
+  status.hidden = true;
+  renderLayout(stage, layout, current.locale, current.timezone);
 }
 
 function resize(): void {
