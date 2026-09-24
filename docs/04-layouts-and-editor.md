@@ -45,7 +45,7 @@ tile box (percent of the viewport):
 inner padding = gap / 2 (px, scaled)
 ```
 
-Absolute positioning with percentages — works on the oldest browser (no CSS Grid). Root font size is
+Absolute positioning with percentages — maps 1:1 to editor grid coordinates. Root font size is
 derived from viewport width (`1rem = viewportWidth / 80`, i.e. 16 px at 1280) so all tile
 typography scales.
 

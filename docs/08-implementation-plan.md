@@ -15,9 +15,9 @@ Goal: repo hygiene in place and hard facts about the tablet.
 5. `feat(worker): hello worker with static assets` — Worker serving `/healthz` and `/display/`, `wrangler dev` works.
 6. `feat(display): compatibility spike page` — feature-detection page (doc 02 §1).
 7. **Manual:** deploy, open on the tablet, record results → `docs: record tablet compatibility results` and choose `browserslist` (item 8).
-8. `chore(display): legacy build pipeline` — Vite + legacy plugin, targets from step 7, ES5 output verified on the tablet.
+8. `chore(display): build pipeline` — Vite, `build.target: 'chrome95'` (step 7), bundle verified on the tablet.
 
-Acceptance: spike page reachable on the tablet over HTTPS; results documented; ES5 bundle "hello" renders on the tablet.
+Acceptance: spike page reachable on the tablet over HTTPS; results documented; built "hello" bundle renders on the tablet.
 
 ## Phase 1 — Backend core & auth
 
@@ -121,7 +121,7 @@ works within ≤ 15 s; rotation cycles in sync; touch swipe switches and reverts
 | Risk | Mitigation |
 |---|---|
 | Tablet browser too old for the chosen toolchain | Phase 0 spike decides before code is written |
-| TLS chain not trusted by Android 5 | Phase 0 TLS check; fallback origin/cert setup |
+| TLS chain not trusted by Android 5 | Confirmed in Phase 0: ISRG Root X1 installed as user CA (doc 02 §3); re-check if Cloudflare changes CA |
 | No kiosk app on Android 5 (no auto-restart, no real screen-off) | Chrome shortcut + screen pinning; reload/offline logic in `display`; software sleep view (doc 02 §3–4) |
 | MS refresh-token rotation race | Serialise refresh per account; strongly consistent D1 |
 | Google unverified-app warning / consent surprises | Documented one-time flow; personal use only |

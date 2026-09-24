@@ -20,7 +20,7 @@ Pick tiles, arrange them in a web editor, save layouts, and let the tablet show 
 ## Architecture in one picture
 
 ```
-Tablet (Chrome kiosk, ES5 app) ──▶ Cloudflare Worker (API + static apps + D1) ──▶ Google / Microsoft / Open-Meteo
+Tablet (Chrome 95 kiosk) ──▶ Cloudflare Worker (API + static apps + D1) ──▶ Google / Microsoft / Open-Meteo
 Phone/PC (admin editor)       ──▶ (same Worker, admin token)
 ```
 

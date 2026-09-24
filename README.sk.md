@@ -20,7 +20,7 @@ Vyberieš si dlaždice, rozložíš ich vo webovom editore, uložíš layouty a 
 ## Architektúra
 
 ```
-Tablet (Chrome kiosk, ES5 aplikácia) ──▶ Cloudflare Worker (API + statické appky + D1) ──▶ Google / Microsoft / Open-Meteo
+Tablet (Chrome 95 kiosk) ──▶ Cloudflare Worker (API + statické appky + D1) ──▶ Google / Microsoft / Open-Meteo
 Telefón/PC (admin editor)           ──▶ (ten istý Worker, admin token)
 ```
 

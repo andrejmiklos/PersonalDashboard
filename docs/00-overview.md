@@ -42,7 +42,7 @@ See [02-tablet-and-kiosk.md](02-tablet-and-kiosk.md) for the compatibility rules
 
 - **Public repository:** no secret, token, personal identifier, real layout, real event or location may ever be committed. See [06-security-and-public-repo.md](06-security-and-public-repo.md).
 - **Cost:** everything free.
-- **Old browser:** display app must run on a browser possibly as old as Chrome ~37 (ES5, no CSS Grid, no `fetch`).
+- **Old browser:** display app targets Chrome 95, the last release for Android 5 (measured in Phase 0).
 - **Performance:** weak CPU / ~1.5 GB RAM: no heavy blur/shadows, minimal DOM churn, no continuous animations.
 - **Maintainability:** small dependency-light codebase; TypeScript everywhere; one owner.
 - **Licence:** MIT.
@@ -71,7 +71,7 @@ All decisions below were made with the owner during requirements gathering (2026
 | D-16 | Languages | UI SK+EN; docs EN + Slovak README; code/comments EN | |
 | D-17 | Licence | MIT | |
 | D-18 | Storage | D1 (SQLite) rather than KV | Strong consistency for rotating refresh tokens; SQL-friendly |
-| D-19 | Layout engine | Absolute positioning in %, 12×8 grid | Chrome 37 has no CSS Grid |
+| D-19 | Layout engine | Absolute positioning in %, 12×8 grid | Chosen before Phase 0; kept because it maps 1:1 to editor coordinates |
 
 ## 6. Accounts & external prerequisites (owner action)
 

@@ -6,7 +6,7 @@
  ┌────────────────────┐        HTTPS        ┌──────────────────────────────────────┐
  │ Tablet (SM-T530)   │ ──── poll / PATCH ─▶│ Cloudflare Worker                    │
  │ Chrome (kiosk)     │◀──── JSON ───────── │  - static assets: /display, /admin   │
- │ /display (legacy)  │   device token      │  - REST API  /api/v1/*               │
+ │ /display (Chrome95)│   device token      │  - REST API  /api/v1/*               │
  └────────────────────┘                     │  - OAuth callbacks /oauth/*          │
                                             │  - provider adapters + Cache API     │
  ┌────────────────────┐        HTTPS        │                                      │
@@ -40,14 +40,13 @@ Key properties:
 - Validation of all request bodies (zod) — layouts validated with the shared schema.
 - Cron Trigger (optional, Phase 7): warm caches, prune expired OAuth states.
 
-### 2.2 `apps/display` — tablet runtime (TypeScript → ES5 bundle)
+### 2.2 `apps/display` — tablet runtime (TypeScript → Chrome 95 bundle)
 
 - No framework; small render helpers. Every tile is a module implementing
   `mount(el, ctx) / update(data) / resize(box) / destroy()`.
 - Layout engine: absolute positioning from grid coordinates (see doc 04).
-- Data layer: XHR-based client (no `fetch`), polling scheduler per tile type, stale tracking.
-- Built with Vite + `@vitejs/plugin-legacy` (or Babel + core-js) with a `browserslist` target chosen
-  from the Phase 0 measurement. Only polyfills that are actually needed are shipped.
+- Data layer: `fetch`-based client with timeouts, polling scheduler per tile type, stale tracking.
+- Built with Vite, `build.target: 'chrome95'` (Phase 0 measurement); no legacy plugin, no polyfills.
 
 ### 2.3 `apps/admin` — editor & control panel (TypeScript, modern browsers)
 
@@ -202,7 +201,7 @@ CREATE TABLE device_status (
 /
 ├─ apps/
 │  ├─ worker/          Cloudflare Worker (API, OAuth, providers)
-│  ├─ display/         Tablet runtime (ES5/legacy bundle)
+│  ├─ display/         Tablet runtime (Chrome 95 bundle)
 │  └─ admin/           Editor + control panel (modern bundle)
 ├─ packages/
 │  └─ shared/          Types, tile registry, i18n, date helpers
@@ -227,7 +226,7 @@ npm workspaces; Node ≥ 20; TypeScript strict; ESLint + Prettier; Vitest.
 | DB | D1 (SQLite) | Strong consistency, SQL, migrations |
 | Router | Hono | Tiny, typed |
 | Validation | zod (worker only) | Schema-first API |
-| Display build | Vite + legacy plugin (target from Phase 0) | Handles ES5 + polyfills |
+| Display build | Vite, target `chrome95` | Phase 0: tablet runs Chrome 95 |
 | Admin UI | Preact + Vite | Small, modern |
 | Tests | Vitest (+ `@cloudflare/vitest-pool-workers`) | Worker-accurate tests |
 | Lint | ESLint, Prettier | |
@@ -238,6 +237,7 @@ npm workspaces; Node ≥ 20; TypeScript strict; ESLint + Prettier; Vitest.
 
 - Server-side date logic (schedule, "today", daily quote) uses the configured IANA timezone
   (`Europe/Bratislava`) via `Intl.DateTimeFormat` on the Worker (modern runtime).
-- The tablet uses its own device clock/timezone (must be set to the same zone, automatic time on) and
-  **its own SK/EN formatting tables** in `shared/i18n` — old browsers have partial `Intl` support.
+- The tablet uses its device clock (automatic time on) and formats with `Intl.DateTimeFormat` in the
+  configured timezone from `/display/state` (Chrome 95 supports `sk` locale data and IANA zones), so a
+  wrong device timezone does not shift displayed times.
 - API timestamps are ISO-8601 UTC; all-day events use plain dates (`YYYY-MM-DD`).

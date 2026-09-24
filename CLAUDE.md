@@ -7,7 +7,8 @@ Rules:
 
 - The repo is **public**. Never commit secrets, tokens, real hostnames, coordinates/city-level personal data, real calendar/task
   content or exported layouts. Use fictional fixtures. See `docs/06-security-and-public-repo.md`.
-- `apps/display` must stay ES5-compatible and free of CSS Grid / `fetch` unless Phase 0 results (`docs/tablet-compat-results.md`) allow more.
+- `apps/display` targets Chrome 95 (Android 5 tablet, see `docs/tablet-compat-results.md`): no APIs newer than Chrome 95.
+  The spike page (`apps/display/static/spike*.js`) stays plain ES5.
 - Code, comments, identifiers in English. UI strings via `packages/shared` i18n (SK + EN).
 - Conventional Commits; one logical change per commit; run lint + tests + gitleaks before committing.
 - Do not add TODO comments unless asked. Keep code readable, avoid over-engineering.

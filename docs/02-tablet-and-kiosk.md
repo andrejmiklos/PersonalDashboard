@@ -14,33 +14,35 @@ The engine of the tablet decides the frontend toolchain. Measure first.
    `localStorage`, `EventSource`, WOFF2, SVG, `requestAnimationFrame`, `position: sticky`,
    plus a simple 60-second animation FPS probe. Open it in Chrome (launched from the home-screen
    shortcut, §3) and record results in `docs/tablet-compat-results.md` (no personal data).
-4. **TLS check:** open the deployed `*.workers.dev` URL in Chrome on the tablet. Android 5 trusts
-   older root CAs only; Cloudflare's chain must validate. (Let's Encrypt-only chains broke on old
-   Android after 2021/2024 root changes — if the check fails, use a different origin/cert setup.)
+4. **TLS check:** open the deployed `*.workers.dev` URL **with an explicit `https://`** in Chrome on
+   the tablet (Chrome silently falls back to `http://` for typed hosts when HTTPS fails, and
+   `workers.dev` answers on plain HTTP). Android 5 trusts older root CAs only.
+   **Result:** the `workers.dev` certificate chains to *ISRG Root X1*, which Android 5 lacks → install
+   it as a user CA (§3 step 0).
 5. **Kiosk runtime:** current Fully Kiosk Browser requires Android 6+ and is not offered for this
    tablet, so the kiosk is built from Chrome + home-screen shortcut + screen pinning (§3).
    Record whether the fullscreen shortcut and the Screen Wake Lock API work.
 6. **Timezone & clock:** Settings → Date & time → automatic + timezone `Europe/Bratislava`.
 
-Outcome of Phase 0 sets: the `browserslist` for `apps/display`, whether CSS variables/`fetch` may be
-used, and whether polyfills are needed.
+Outcome (recorded in [tablet-compat-results.md](tablet-compat-results.md)): Chrome 95, build target
+`chrome95`, no polyfills.
 
 ## 2. Compatibility rules for `apps/display`
 
-Assume worst case (Chrome ≈ 37) until Phase 0 proves otherwise. The last Chrome release for Android 5
-is expected to be much newer; the measured version replaces these rules in `docs/tablet-compat-results.md`.
+Target: **Chrome 95** (last release for Android 5, measured in Phase 0). Anything Chrome 95 supports
+natively may be used; check newer APIs against Chrome 95 before using them.
 
 | Area | Rule |
 |---|---|
-| JS syntax | Transpile to ES5. No runtime reliance on ES2015+ built-ins without polyfill |
-| HTTP | Use `XMLHttpRequest` (thin wrapper); no `fetch` (Chrome 42+) |
-| Promises | Native from Chrome 32, but the wrapper must not depend on newer APIs |
-| Layout | Flexbox + absolute positioning with `%`/`vw`/`vh`. **No CSS Grid** (Chrome 57), no `gap` for flex, no `position: sticky` |
-| CSS variables | Avoid unless the Phase 0 check passes (Chrome 49). Use build-time tokens (PostCSS) as fallback |
+| JS syntax | Build target `chrome95`; native ES modules. No polyfills |
+| HTTP | `fetch` with `AbortController` timeouts |
+| Layout | Flexbox, CSS Grid and `gap` allowed; tiles still positioned absolutely in % (D-19) |
+| CSS variables | Allowed (design tokens as custom properties) |
 | Units | Prefer `rem`/`%`/`vw`; set root font size from viewport width |
-| Fonts | Self-hosted WOFF (WOFF2 ok since Chrome 36) — a single family, 2–3 weights; no web-font CDN |
+| Fonts | Self-hosted WOFF2 — a single family, 2–3 weights; no web-font CDN |
 | Icons | Inline SVG; weather icon set with a permissive licence (e.g. MIT/OFL), bundled |
-| Dates | Own SK/EN formatting; do not rely on `Intl` locale data |
+| Dates | `Intl.DateTimeFormat` with `sk`/`en` and the configured `timeZone` (verified) via `shared` helpers |
+| Newer APIs | Not in Chrome 95, e.g. `structuredClone`, `Array.prototype.at`, `Object.hasOwn`, CSS `:has()`, container queries |
 | Storage | `localStorage` only; wrap in try/catch |
 | Time | Never trust `setInterval` drift: recompute from `Date.now()` for the clock |
 | Effects | No `filter: blur`, no big `box-shadow`, no CSS animations on large areas. Use `transform`/`opacity` only when needed |
@@ -53,6 +55,13 @@ re-render only when data actually changed (compare JSON hash).
 
 No third-party kiosk app (D-02). The kiosk is assembled from Chrome and Android 5 built-ins.
 
+0. **Trust ISRG Root X1:** download `isrgrootx1.der` from Let's Encrypt **on a PC** (the tablet cannot
+   open letsencrypt.org over HTTPS for the same reason), check its SHA-256 fingerprint
+   `96:BC:EC:06:26:49:76:F3:74:60:77:9A:CF:28:C5:A7:CF:E8:A3:C0:AA:E1:1A:8F:FC:EE:05:C0:BD:DF:08:C6`,
+   rename to `.cer`, copy over USB, then Settings → Security → *Install from storage* → use for
+   *VPN and apps*. Android requires a screen lock (PIN) for user credentials and shows a permanent
+   "network may be monitored" notice. Cloudflare may switch the `workers.dev` certificate to another CA
+   on renewal; if HTTPS breaks later, re-check the chain.
 1. **Token (one-time):** open `https://<your-worker-host>/display/#t=<device-token>` in Chrome.
    `display` stores the token in `localStorage` and strips the hash (doc 01 §3.1). The token is typed
    **only on the device**, never committed anywhere.
@@ -63,10 +72,12 @@ No third-party kiosk app (D-02). The kiosk is assembled from Chrome and Android 
    button → pin icon on the dashboard card. Unpinning needs Back + Overview held together.
    Optionally *Ask for unlock pattern before unpinning*.
 4. **Always-on:** Settings → Developer options → **Stay awake** (screen never sleeps while charging).
-   If the Screen Wake Lock API works (Phase 0), `display` also requests a wake lock as a second guard.
+   `display` also requests a Screen Wake Lock (available, verified in Phase 0) as a second guard.
 5. Settings → Display → brightness set manually; *Adaptive brightness* off.
-6. Disable lock screen (Security → none); disable Play Store auto-updates for Chrome during the
-   night (Play Store → Chrome → ⋮ → *Enable auto update* off) so an update never interrupts the kiosk.
+6. Lock screen: **PIN** (required by the user CA from step 0; it cannot be set to *None* while the
+   certificate is installed). With *Stay awake* it only appears after a reboot. Disable Play Store
+   auto-updates for Chrome (Play Store → Chrome → ⋮ → *Enable auto update* off) so an update never
+   interrupts the kiosk.
 7. Chrome → Settings → turn off translation prompts (the SK UI could otherwise trigger the translate bar).
 
 Things a kiosk app would do and Chrome does not, therefore handled in `display` itself:

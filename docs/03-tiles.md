@@ -132,5 +132,5 @@ server-side layout validation.
 
 1. Add metadata to the shared registry and i18n keys (SK+EN).
 2. Add server provider + `GET /api/v1/data/<type>` (if it needs data) with TTL.
-3. Add display module (ES5-safe) and admin config form.
+3. Add display module (Chrome 95-safe) and admin config form.
 4. Add doc section here, a sample in `examples/`, and tests (validator + provider mapper).
