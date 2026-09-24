@@ -1,5 +1,5 @@
 import type { DatabaseSync } from 'node:sqlite';
-import type { DataEnvelope, WeatherData } from '@dashboard/shared';
+import type { AstroData, DataEnvelope, WeatherData } from '@dashboard/shared';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { hashToken } from '../auth/token';
 import type { Env } from '../env';
@@ -153,5 +153,54 @@ describe('GET /api/v1/data/weather', () => {
     advanceMinutes(181);
     await getWeather();
     expect(db.prepare('SELECT COUNT(*) AS n FROM provider_cache').get()).toEqual({ n: 1 });
+  });
+});
+
+describe('GET /api/v1/data/astro', () => {
+  beforeEach(async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    // 23:30 UTC is already the next day in Europe/Bratislava.
+    vi.setSystemTime(new Date('2026-09-23T23:30:00.000Z'));
+    db = migrate();
+    env = { DB: createTestD1(db) } as unknown as Env;
+    const insert = db.prepare(
+      'INSERT INTO api_tokens (id, role, label, token_hash, created_at) VALUES (?, ?, ?, ?, ?)',
+    );
+    insert.run('tok_admin', 'admin', 'test', await hashToken(ADMIN_TOKEN), '2026-01-15T08:00:00.000Z');
+    insert.run('tok_device', 'device', 'test', await hashToken(DEVICE_TOKEN), '2026-01-15T08:00:00.000Z');
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('answers 409 until a location is set', async () => {
+    const res = await call('GET', '/data/astro');
+    expect(res.status).toBe(409);
+  });
+
+  it('computes today in the configured time zone', async () => {
+    await setLocation(LOCATION);
+    const res = await call('GET', '/data/astro');
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as DataEnvelope<AstroData>;
+    expect(body).toMatchObject({ updatedAt: '2026-09-23T23:30:00.000Z', ttl: 21600 });
+    expect(body.data.date).toBe('2026-09-24');
+    expect(body.data.nextPhase).toEqual({ name: 'full', date: '2026-09-26' });
+  });
+
+  it('accepts an explicit date', async () => {
+    await setLocation(LOCATION);
+    const body = (await (await call('GET', '/data/astro?date=2026-12-21')).json()) as DataEnvelope<AstroData>;
+    expect(body.data.date).toBe('2026-12-21');
+  });
+
+  it.each(['2026-02-30', '2026-9-24', '24.09.2026', '3026-01-01', ''])('rejects date=%s', async (date) => {
+    await setLocation(LOCATION);
+    const res = await call('GET', `/data/astro?date=${encodeURIComponent(date)}`);
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({
+      error: { code: 'validation_error', message: 'date: expected YYYY-MM-DD' },
+    });
   });
 });

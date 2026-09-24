@@ -8,9 +8,10 @@
     "typecheck": "tsc -p . && tsc -p tsconfig.test.json"
   },
   "dependencies": {
+    "@dashboard/shared": "*",
     "hono": "^4.13.9",
-    "zod": "^4.6.5",
-    "@dashboard/shared": "*"
+    "suncalc": "^2.0.2",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260923.1",

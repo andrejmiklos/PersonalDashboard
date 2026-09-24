@@ -49,7 +49,8 @@ export function isStale(envelope: DataEnvelope<unknown>, now: number): boolean {
 export interface PollerOptions<T> {
   load: () => Promise<DataResult<T>>;
   onResult: (result: DataResult<T>) => void;
-  intervalMs: number;
+  /** A function is asked again before every wait, e.g. to also refresh at midnight. */
+  intervalMs: number | (() => number);
   /** First retry after a failure; doubles up to `intervalMs`. */
   retryMs: number;
 }
@@ -65,7 +66,8 @@ export function startPoller<T>(options: PollerOptions<T>): { stop(): void } {
     if (stopped) return;
     options.onResult(result);
     failures = result.kind === 'ok' ? 0 : failures + 1;
-    timer = window.setTimeout(() => void run(), nextDelay(failures, options.retryMs, options.intervalMs));
+    const interval = typeof options.intervalMs === 'function' ? options.intervalMs() : options.intervalMs;
+    timer = window.setTimeout(() => void run(), nextDelay(failures, options.retryMs, interval));
   }
 
   void run();

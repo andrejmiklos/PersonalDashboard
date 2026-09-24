@@ -77,6 +77,9 @@ location in settings → `409` `location_not_set`.
 
 `hourly` holds the 8 hours after the current one, `daily` today + 5 days; missing model values are `null`.
 
+`data/astro` computes `AstroData` (doc 03 §6) for `date` (default: today in the configured zone); a `date` that is
+not a real `YYYY-MM-DD` between 1900 and 2199 → `400 validation_error`. `ttl` is 6 h.
+
 ### `PATCH /api/v1/tasks/:listId/:taskId` — D, A
 Body `{ "completed": true | false }`. Only this field is accepted. `200` with the updated task; invalidates the
 tasks cache.

@@ -213,7 +213,7 @@ export function createWeather(ctx: TileContext): TileInstance {
     if (result.kind === 'ok') {
       envelope = result.envelope;
     } else if (!envelope) {
-      showMessage(t(ctx.locale, result.code === 'location_not_set' ? 'weather.noLocation' : 'state.error'));
+      showMessage(t(ctx.locale, result.code === 'location_not_set' ? 'data.noLocation' : 'state.error'));
       ctx.el.classList.add('is-error');
       return;
     }

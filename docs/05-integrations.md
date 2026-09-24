@@ -99,7 +99,10 @@ by re-reading the DB). This is why D1 (strong consistency) is used instead of KV
 
 ## 4. Sun & Moon
 
-Computed in the Worker with `suncalc` from the same `settings.location`. No network, no key.
+Computed in the Worker with `suncalc` 2.x (BSD-2, no dependencies) from the same `settings.location`. No
+network, no key, no server cache: a request takes well under a millisecond. The date is the local date in
+`settings.timezone`; sun times are taken for the solar day around its local noon, the moon at that noon; the next
+principal phase is found by stepping days and bisecting to under a second.
 
 ## 5. Quotes
 

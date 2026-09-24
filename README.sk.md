@@ -11,7 +11,7 @@ Vyberieš si dlaždice, rozložíš ich vo webovom editore, uložíš layouty a 
 
 - Worker na Cloudflare Workers + D1: autentifikácia tokenmi (admin / zariadenie), nastavenia, API layoutov s validáciou
 - Displej na tablete: párovanie jednorazovým kódom, pollovanie stavu, vykresľovanie layoutu
-- Dlaždice: hodiny, počasie (Open-Meteo, cache na Workeri, záložné staršie dáta)
+- Dlaždice: hodiny, počasie (Open-Meteo, cache na Workeri, záložné staršie dáta), slnko a mesiac (suncalc)
 - CLI skripty: tokeny, párovacie kódy, import layoutu, nastavenia (poloha, jazyk, časové pásmo), smoke test
 
 ## Funkcie (plánované)

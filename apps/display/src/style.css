@@ -328,3 +328,139 @@ body {
 .wi .wi-fog {
   stroke: #90a4ae;
 }
+
+/* Sun & moon tile (tiles/astro.ts). */
+.tile-content.astro {
+  padding: 0.75em;
+}
+
+.tile-content.astro.is-stale .astro-body {
+  opacity: 0.55;
+}
+
+.astro-message {
+  color: #888;
+  font-size: 0.875em;
+  text-align: center;
+}
+
+.astro-body {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.astro-body.astro-column {
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.astro-sun {
+  flex: 3;
+  min-width: 0;
+  text-align: center;
+}
+
+.astro-column .astro-sun {
+  flex: none;
+  width: 100%;
+}
+
+.astro-arc {
+  display: block;
+  width: 100%;
+  max-height: 6em;
+}
+
+.astro-arc path {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.astro-horizon {
+  stroke: #444;
+  stroke-width: 1;
+}
+
+.astro-path {
+  stroke: #333;
+  stroke-width: 1.5;
+  stroke-dasharray: 2 3;
+}
+
+.astro-travelled {
+  stroke: #ffd54f;
+  stroke-width: 1.5;
+}
+
+.astro-dot {
+  fill: #ffd54f;
+}
+
+.astro-dot.is-down {
+  fill: #6d5f2e;
+}
+
+.astro-times {
+  display: flex;
+  justify-content: space-between;
+  color: #ddd;
+  font-size: 1.125em;
+  font-variant-numeric: tabular-nums;
+}
+
+.astro-length,
+.astro-moon-lit,
+.astro-next {
+  color: #888;
+  font-size: 0.75em;
+  margin-top: 0.3em;
+}
+
+.astro-moon {
+  flex: 2;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-left: 0.75em;
+}
+
+.astro-column .astro-moon {
+  flex: none;
+  flex-direction: row;
+  margin: 0.5em 0 0;
+  text-align: left;
+}
+
+.astro-disk {
+  width: 3.5em;
+  height: 3.5em;
+  flex-shrink: 0;
+}
+
+.astro-column .astro-disk {
+  width: 2.5em;
+  height: 2.5em;
+  margin-right: 0.5em;
+}
+
+.astro-disk-dark {
+  fill: #2a2a2a;
+}
+
+.astro-disk-lit {
+  fill: #e0e0e0;
+}
+
+.astro-moon-name {
+  color: #ccc;
+  font-size: 0.875em;
+  margin-top: 0.3em;
+}
+
+.astro-column .astro-moon-name {
+  margin-top: 0;
+}

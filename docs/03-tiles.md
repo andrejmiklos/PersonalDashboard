@@ -87,9 +87,10 @@ The tile must never offer create/edit/delete — only complete/uncomplete.
 | Min / default size | 2×2 / 3×2 |
 | Data source | Computed on the Worker with `suncalc` (BSD-2) for the configured location and date; no external API |
 | Config | `showDayLength: bool` (true), `showMoonIllumination: bool` (true), `showNextPhase: bool` (false) |
-| Display | Sunrise / sunset times, day length, sun progress arc (SVG), moon phase icon + name + illumination % |
-| Refresh | Computed per date; client polls every 6 h and at midnight |
-| Payload | `{ date, sunrise, sunset, dayLengthMin, moon: { phase: 0..1, illumination: 0..1, name } }` |
+| Display | Sun arc (SVG) with the sun at the current share of daylight (on the horizon, dimmed, at night), sunrise / sunset times, day length; moon disk drawn from `phase` (northern-hemisphere view), phase name, illumination %, optional next principal phase with date. Polar day / night: "The sun does not set / rise" |
+| Sizing | Sun and moon side by side; stacked when the tile is narrower than 1.3 × its height; text scales 0.8×–2× |
+| Refresh | Client polls every 6 h and just after local midnight; the sun moves along the arc every 5 min |
+| Payload | `AstroData` in `packages/shared/src/astro.ts`: `{ date, sunrise, sunset, dayLengthMin, moon: { phase: 0..1, illumination: 0..1, name }, nextPhase: { name, date } }`; `sunrise`/`sunset` are UTC instants or `null` (polar day: `dayLengthMin` 1440, polar night: 0); `name` is one of 8 phases, each covering an eighth of the cycle |
 
 ## 7. `air` — Air quality & pollen (Open-Meteo)
 
