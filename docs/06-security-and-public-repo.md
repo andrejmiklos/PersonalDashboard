@@ -85,7 +85,7 @@ Real `wrangler.jsonc` (account id, D1 database id, route) is **git-ignored**.
 - Real layouts exported from the editor (they reference source ids and may contain countdown labels like
   "Anna's birthday"). Only sanitised samples go to `examples/`.
 - The git identity: use the GitHub `noreply` e-mail for commits
-  (`git config user.email "<id>+xmiklosa@users.noreply.github.com"`) and enable
+  (`git config user.email "<id>+<github-username>@users.noreply.github.com"`, shown under GitHub → Settings → Emails) and enable
   "Block command line pushes that expose my email" in GitHub settings.
 - Tablet identifiers, IP addresses, Wi-Fi names.
 
