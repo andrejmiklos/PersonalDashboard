@@ -4,9 +4,9 @@ Ideas raised during requirements gathering but **not selected** by the owner; ke
 
 | Idea | Notes |
 |---|---|
-| Fully Kiosk PLUS integration | Real screen-off/on, screensaver, remote admin REST; supported by the power adapter (doc 02 §4) |
-| Light-sensor auto dimming / dark mode | Needs Fully PLUS sensor access or a native wrapper |
-| Motion-based wake (camera) | Tablet camera is weak; Fully PLUS feature |
+| Kiosk app with screen API (e.g. Fully Kiosk PLUS) | Needs Android 6+ device; real screen-off/on, remote admin; would plug into the power adapter (doc 02 §4) |
+| Light-sensor auto dimming / dark mode | Needs a kiosk app with sensor access or a native wrapper |
+| Motion-based wake (camera) | Tablet camera is weak; needs a kiosk app / native wrapper |
 | Public transport departures | Depends on a regional API |
 | Spotify "now playing" | OAuth via Spotify API, new provider |
 | Photo frame / slideshow | Also useful against image retention |

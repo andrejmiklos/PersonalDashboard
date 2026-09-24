@@ -5,7 +5,7 @@
 ```
  ┌────────────────────┐        HTTPS        ┌──────────────────────────────────────┐
  │ Tablet (SM-T530)   │ ──── poll / PATCH ─▶│ Cloudflare Worker                    │
- │ Fully Kiosk        │◀──── JSON ───────── │  - static assets: /display, /admin   │
+ │ Chrome (kiosk)     │◀──── JSON ───────── │  - static assets: /display, /admin   │
  │ /display (legacy)  │   device token      │  - REST API  /api/v1/*               │
  └────────────────────┘                     │  - OAuth callbacks /oauth/*          │
                                             │  - provider adapters + Cache API     │
@@ -67,9 +67,11 @@ tablet bundle small.)
 
 ### 3.1 Tablet boot
 
-1. Fully Kiosk opens `https://<worker>/display/#t=<device-token>`.
+1. First run: Chrome opens `https://<worker>/display/#t=<device-token>` (typed once on the device).
+   Later launches come from the home-screen shortcut (`start_url: /display/`, no token).
 2. `display` reads token from the URL hash, stores in `localStorage`, strips the hash
-   (`history.replaceState`). The hash is never sent to the server.
+   (`history.replaceState`). The hash is never sent to the server. Without a hash it uses the
+   stored token; with neither it shows a "not paired" screen.
 3. `GET /api/v1/display/state` → `{ layout, screen, rotation, serverTime, appVersion, ... }`.
 4. Render layout; each tile starts its own data polling.
 5. Poll `display/state` every 15 s. On `layout.version` change → re-render. On `appVersion` change → `location.reload()`.
@@ -111,7 +113,7 @@ ample. `last_seen` writes are throttled to once per minute.
 - `display/state` failing for > 5 min → small "offline" badge in a corner; layout keeps rendering.
 - Provider auth failure (`invalid_grant`) → account status `reauth_required`; tile shows
   "reconnect in admin"; admin panel shows a banner.
-- Nightly soft reload (≈ 03:30) and reload on version change to avoid leaks in the old WebView.
+- Nightly soft reload (≈ 03:30) and reload on version change to avoid leaks in the old browser.
 
 ## 6. D1 schema (initial migration)
 
@@ -237,5 +239,5 @@ npm workspaces; Node ≥ 20; TypeScript strict; ESLint + Prettier; Vitest.
 - Server-side date logic (schedule, "today", daily quote) uses the configured IANA timezone
   (`Europe/Bratislava`) via `Intl.DateTimeFormat` on the Worker (modern runtime).
 - The tablet uses its own device clock/timezone (must be set to the same zone, automatic time on) and
-  **its own SK/EN formatting tables** in `shared/i18n` — old WebViews have partial `Intl` support.
+  **its own SK/EN formatting tables** in `shared/i18n` — old browsers have partial `Intl` support.
 - API timestamps are ISO-8601 UTC; all-day events use plain dates (`YYYY-MM-DD`).

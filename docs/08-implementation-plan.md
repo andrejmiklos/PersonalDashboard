@@ -85,7 +85,7 @@ list persists several layouts.
 2. `feat(worker): schedule rules API + resolveState` (shared with admin) + thorough tests (midnight crossing, priority, expiry, DST days).
 3. `feat(worker): rotation and touch config in state`.
 4. `feat(display): rotation, touch switching, timeout revert`.
-5. `feat(display): power adapter (Noop sleep view / Fully JS)`.
+5. `feat(display): power adapter (software sleep view)`.
 6. `feat(admin): schedule & modes screen with 24×7 preview`.
 7. `feat(admin): control screen` (screen on/off, pin, clear override, device status).
 8. `feat(display): heartbeat + device status`.
@@ -120,9 +120,9 @@ works within ≤ 15 s; rotation cycles in sync; touch swipe switches and reverts
 
 | Risk | Mitigation |
 |---|---|
-| WebView too old for the chosen toolchain | Phase 0 spike decides before code is written |
+| Tablet browser too old for the chosen toolchain | Phase 0 spike decides before code is written |
 | TLS chain not trusted by Android 5 | Phase 0 TLS check; fallback origin/cert setup |
-| Fully Kiosk free edition lacks needed features | Power adapter abstraction; buy PLUS later without code change |
+| No kiosk app on Android 5 (no auto-restart, no real screen-off) | Chrome shortcut + screen pinning; reload/offline logic in `display`; software sleep view (doc 02 §3–4) |
 | MS refresh-token rotation race | Serialise refresh per account; strongly consistent D1 |
 | Google unverified-app warning / consent surprises | Documented one-time flow; personal use only |
 | Free-tier limits | Budget in doc 01 §4 (~8 % of Worker quota) |

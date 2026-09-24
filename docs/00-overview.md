@@ -17,7 +17,7 @@ Non-goals: multi-user / multi-tenant SaaS, native Android app, commercial use.
 | OS | Android 5.0.2 (Lollipop) |
 | Display | 10.1", 1280×800, landscape, LCD (no OLED burn-in) |
 | Mounting | Fixed, permanently powered, Wi-Fi |
-| Browser engine | Android System WebView (version to be measured in Phase 0) |
+| Browser | Google Chrome, last release available for Android 5 (version measured in Phase 0) |
 
 See [02-tablet-and-kiosk.md](02-tablet-and-kiosk.md) for the compatibility rules this imposes.
 
@@ -41,8 +41,8 @@ See [02-tablet-and-kiosk.md](02-tablet-and-kiosk.md) for the compatibility rules
 ## 4. Non-functional requirements
 
 - **Public repository:** no secret, token, personal identifier, real layout, real event or location may ever be committed. See [06-security-and-public-repo.md](06-security-and-public-repo.md).
-- **Cost:** everything free except (optionally) Fully Kiosk PLUS.
-- **Old WebView:** display app must run on a WebView possibly as old as Chrome ~37 (ES5, no CSS Grid, no `fetch`).
+- **Cost:** everything free.
+- **Old browser:** display app must run on a browser possibly as old as Chrome ~37 (ES5, no CSS Grid, no `fetch`).
 - **Performance:** weak CPU / ~1.5 GB RAM: no heavy blur/shadows, minimal DOM churn, no continuous animations.
 - **Maintainability:** small dependency-light codebase; TypeScript everywhere; one owner.
 - **Licence:** MIT.
@@ -54,7 +54,7 @@ All decisions below were made with the owner during requirements gathering (2026
 | # | Topic | Decision | Notes |
 |---|---|---|---|
 | D-01 | Backend hosting | **Cloudflare Workers + D1** (serverless, free tier) | Owner has no always-on home device |
-| D-02 | Kiosk runtime | **Fully Kiosk Browser** (free edition initially) | PLUS (~€8) not purchased → software sleep, see doc 02 |
+| D-02 | Kiosk runtime | **Chrome** home-screen shortcut (fullscreen manifest) + Android screen pinning | Fully Kiosk requires Android 6+ (not offered for the tablet); software sleep only, see doc 02 |
 | D-03 | Layout editing | Web editor in phone/PC browser | Tablet only displays (plus limited touch) |
 | D-04 | Google Calendar | **OAuth**, OAuth consent screen set to *In production* (unverified app) | Avoids 7-day refresh-token expiry of *Testing* mode |
 | D-05 | Google accounts | **Multiple** Google accounts | Token + sources per account |
@@ -79,14 +79,14 @@ All decisions below were made with the owner during requirements gathering (2026
 2. Google Cloud project with Calendar API + OAuth client (doc 05).
 3. Microsoft Entra app registration (personal accounts) (doc 05).
 4. GitHub repo settings: secret scanning + push protection (doc 06).
-5. Tablet: check WebView version, Play Store update, install Fully Kiosk (doc 02).
+5. Tablet: update Chrome via Play Store, check its version, set up the kiosk shortcut (doc 02).
 
 ## 7. Document index
 
 | File | Content |
 |---|---|
 | [01-architecture.md](01-architecture.md) | Components, data flow, D1 schema, repo layout, tech stack |
-| [02-tablet-and-kiosk.md](02-tablet-and-kiosk.md) | Android 5 constraints, Fully Kiosk setup, power/sleep |
+| [02-tablet-and-kiosk.md](02-tablet-and-kiosk.md) | Android 5 constraints, Chrome kiosk setup, power/sleep |
 | [03-tiles.md](03-tiles.md) | Tile catalogue, config schemas, refresh rules |
 | [04-layouts-and-editor.md](04-layouts-and-editor.md) | Layout model, editor, schedule, precedence |
 | [05-integrations.md](05-integrations.md) | Google, Microsoft, Open-Meteo, quotes setup |

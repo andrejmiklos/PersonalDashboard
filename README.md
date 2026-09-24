@@ -20,7 +20,7 @@ Pick tiles, arrange them in a web editor, save layouts, and let the tablet show 
 ## Architecture in one picture
 
 ```
-Tablet (Fully Kiosk, ES5 app) ──▶ Cloudflare Worker (API + static apps + D1) ──▶ Google / Microsoft / Open-Meteo
+Tablet (Chrome kiosk, ES5 app) ──▶ Cloudflare Worker (API + static apps + D1) ──▶ Google / Microsoft / Open-Meteo
 Phone/PC (admin editor)       ──▶ (same Worker, admin token)
 ```
 
@@ -32,7 +32,7 @@ Start with [docs/00-overview.md](docs/00-overview.md).
 |---|---|
 | [00 Overview](docs/00-overview.md) | Goals, requirements, decision log |
 | [01 Architecture](docs/01-architecture.md) | Components, data flow, DB schema |
-| [02 Tablet & kiosk](docs/02-tablet-and-kiosk.md) | Android 5 constraints, Fully Kiosk, power |
+| [02 Tablet & kiosk](docs/02-tablet-and-kiosk.md) | Android 5 constraints, Chrome kiosk, power |
 | [03 Tiles](docs/03-tiles.md) | Tile catalogue and configs |
 | [04 Layouts & editor](docs/04-layouts-and-editor.md) | Layout model, editor, schedule |
 | [05 Integrations](docs/05-integrations.md) | Google, Microsoft, Open-Meteo setup |
