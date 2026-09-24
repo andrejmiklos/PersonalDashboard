@@ -56,3 +56,15 @@ function readStoredToken(storage: Storage | null): string | null {
 export function currentToken(storage: Storage | null): string | null {
   return sessionToken ?? readStoredToken(storage);
 }
+
+/** Stores a token received from pairing; anything but a device token is refused. */
+export function storeToken(token: string, storage: Storage | null): boolean {
+  if (!isDeviceToken(token)) return false;
+  try {
+    storage?.setItem(STORAGE_KEY, token);
+  } catch {
+    // The token still works for this session.
+  }
+  sessionToken = token;
+  return true;
+}

@@ -62,9 +62,10 @@ No third-party kiosk app (D-02). The kiosk is assembled from Chrome and Android 
    *VPN and apps*. Android requires a screen lock (PIN) for user credentials and shows a permanent
    "network may be monitored" notice. Cloudflare may switch the `workers.dev` certificate to another CA
    on renewal; if HTTPS breaks later, re-check the chain.
-1. **Token (one-time):** open `https://<your-worker-host>/display/#t=<device-token>` in Chrome.
-   `display` stores the token in `localStorage` and strips the hash (doc 01 §3.1). The token is typed
-   **only on the device**, never committed anywhere.
+1. **Pairing (one-time):** open `https://<your-worker-host>/display/` in Chrome, run
+   `npm run pair -- --remote` on the PC and type the printed code into the display within 10 minutes. The
+   display receives its own device token and keeps it in `localStorage` (doc 06 §2.1). Fallback: open
+   `/display/#t=<device-token>` once; the fragment is stripped at once (doc 01 §3.1).
 2. **Home-screen shortcut:** Chrome menu → *Add to Home screen*. The web app manifest
    (`/display/manifest.json`, `display: fullscreen`, `orientation: landscape`, `start_url: /display/`)
    makes the shortcut open without the address bar. The start URL carries no token; the stored one is used.

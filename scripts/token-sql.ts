@@ -8,8 +8,15 @@ export const LIST_SQL =
   'SELECT id, role, label, created_at, last_used_at, revoked_at FROM api_tokens ORDER BY created_at';
 
 /** SQL string literal. Inputs are whitelisted before this; escaping is a second guard. */
-function sqlString(value: string): string {
+export function sqlString(value: string): string {
   return `'${value.replaceAll("'", "''")}'`;
+}
+
+export function validateLabel(label: string | undefined): string {
+  if (label === undefined || !LABEL_PATTERN.test(label)) {
+    throw new Error('--label must be 1-64 letters, digits, spaces, dots, underscores or hyphens');
+  }
+  return label;
 }
 
 export interface CreatePlan {
@@ -27,13 +34,13 @@ export async function planCreate(
   if (!ROLES.includes(role as Role)) {
     throw new Error(`--role must be one of: ${ROLES.join(', ')}`);
   }
-  if (label === undefined || !LABEL_PATTERN.test(label)) {
-    throw new Error('--label must be 1-64 letters, digits, spaces, dots, underscores or hyphens');
-  }
+  const validLabel = validateLabel(label);
   const validRole = role as Role;
   const id = generateId('tok');
   const token = generateToken(validRole);
-  const values = [id, validRole, label, await hashToken(token), now.toISOString()].map(sqlString).join(', ');
+  const values = [id, validRole, validLabel, await hashToken(token), now.toISOString()]
+    .map(sqlString)
+    .join(', ');
   const sql = `INSERT INTO api_tokens (id, role, label, token_hash, created_at) VALUES (${values}) RETURNING id`;
   return { id, role: validRole, token, sql };
 }

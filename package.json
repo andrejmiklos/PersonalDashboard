@@ -26,6 +26,7 @@
     "token:create": "node scripts/token.ts create",
     "token:revoke": "node scripts/token.ts revoke",
     "token:list": "node scripts/token.ts list",
+    "pair": "node scripts/pair.ts",
     "smoke": "node scripts/smoke.ts",
     "layout:import": "node scripts/layout.ts",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""

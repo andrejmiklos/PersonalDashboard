@@ -15,6 +15,7 @@ body {
   position: absolute;
   overflow: hidden;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
@@ -77,4 +78,54 @@ body {
 
 [hidden] {
   display: none !important;
+}
+
+.pair {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.pair-code,
+.pair-submit {
+  margin: 0.25rem;
+  padding: 0.5rem 1rem;
+  min-height: 2.75rem;
+  font-size: 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #444;
+  background: #111;
+  color: #eee;
+}
+
+.pair-code {
+  width: 14rem;
+  text-align: center;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.pair-code::placeholder {
+  letter-spacing: normal;
+  text-transform: none;
+  color: #666;
+}
+
+.pair-submit {
+  background: #4fc3f7;
+  color: #000;
+  border-color: transparent;
+}
+
+.pair-submit:disabled {
+  opacity: 0.5;
+}
+
+.pair-error {
+  width: 100%;
+  margin: 0.5rem 0 0;
+  text-align: center;
+  color: #f28b82;
+  font-size: 1rem;
 }

@@ -23,6 +23,7 @@ describe('migrations', () => {
       'layouts',
       'oauth_states',
       'overrides',
+      'pairing_codes',
       'schedule_rules',
       'settings',
       'sources',

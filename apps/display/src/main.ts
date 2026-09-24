@@ -4,7 +4,8 @@ import { fetchState } from './api';
 import { clearLayout, renderLayout } from './layout/engine';
 import { shouldReload } from './reload';
 import { applyStage, fitStage } from './stage';
-import { currentToken, pairFromLocation } from './token';
+import { createPairingForm } from './pairing';
+import { currentToken, pairFromLocation, storeToken } from './token';
 
 const POLL_MS = 15_000;
 const MAX_BACKOFF_MS = 5 * 60_000;
@@ -28,6 +29,27 @@ const status = document.getElementById('status') as HTMLElement;
 let state: DisplayState | null = null;
 let etag: string | null = null;
 let failures = 0;
+let pollTimer: number | undefined;
+
+/** Single polling loop: scheduling always replaces the pending poll. */
+function schedulePoll(ms: number): void {
+  window.clearTimeout(pollTimer);
+  pollTimer = window.setTimeout(() => void poll(), ms);
+}
+
+const pairingForm = createPairingForm(stage, (token) => {
+  if (storeToken(token, storage)) {
+    pairingForm.hide();
+    etag = null;
+    showMessage('state.loading');
+    schedulePoll(0);
+  }
+});
+
+function askForPairing(key: MessageKey): void {
+  showMessage(key);
+  pairingForm.show(state?.locale ?? DEFAULT_LOCALE);
+}
 
 /** Full-stage message instead of a layout (not paired, no layout, offline before first state). */
 function showMessage(key: MessageKey): void {
@@ -43,6 +65,7 @@ function render(current: DisplayState): void {
     return;
   }
   status.hidden = true;
+  pairingForm.hide();
   renderLayout(stage, layout, current.locale, current.timezone);
 }
 
@@ -53,7 +76,7 @@ function resize(): void {
 async function poll(): Promise<void> {
   const token = currentToken(storage);
   if (token === null) {
-    showMessage(pairing === 'rejected' ? 'display.badLink' : 'display.notPaired');
+    askForPairing(pairing === 'rejected' ? 'display.badLink' : 'display.notPaired');
     return;
   }
 
@@ -75,7 +98,7 @@ async function poll(): Promise<void> {
       break;
     case 'unauthorized':
       etag = null;
-      showMessage('display.tokenRejected');
+      askForPairing('display.tokenRejected');
       nextMs = UNAUTHORIZED_POLL_MS;
       break;
     case 'failed':
@@ -84,7 +107,7 @@ async function poll(): Promise<void> {
       if (state === null) showMessage('display.offline');
       break;
   }
-  window.setTimeout(() => void poll(), nextMs);
+  schedulePoll(nextMs);
 }
 
 window.addEventListener('resize', resize);

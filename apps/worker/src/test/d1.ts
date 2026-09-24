@@ -33,8 +33,10 @@ export function createTestD1(db: DatabaseSync = migrate()): D1Database {
         return { results: db.prepare(sql).all(...params) as T[], success: true, meta: {} };
       },
       async run() {
-        const result = db.prepare(sql).run(...params);
-        return { results: [], success: true, meta: { changes: Number(result.changes) } };
+        // all() also executes writes and returns RETURNING rows, as D1's run() does.
+        const results = db.prepare(sql).all(...params);
+        const { changes } = db.prepare('SELECT changes() AS changes').get() as { changes: number };
+        return { results, success: true, meta: { changes } };
       },
     };
     return statement;

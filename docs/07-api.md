@@ -39,6 +39,11 @@ Headers (optional): `X-Display-Version`, `X-Display-Info` (base64 JSON, once per
 is configured. Supports `If-None-Match` with ETag → `304`; the ETag covers everything except `serverTime`.
 Phase 2 serves `settings.defaultLayoutId` only; schedule, overrides, rotation and power follow in Phase 5.
 
+### `POST /api/v1/display/pair` — no token
+Body `{ "code": "K7QM-2XPA" }` (case, spaces and dashes ignored). Exchanges a one-time pairing code
+(`npm run pair`) for a new device token: `201 { "token": "dsh_device_…" }`. Every failure is
+`400 invalid_code`; 10 failures lock the active code (doc 06 §2.1).
+
 ### `POST /api/v1/display/heartbeat` — D, A
 Optional separate heartbeat if the state poll is throttled; body `{ "version": "…", "info": { … } }`.
 

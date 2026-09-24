@@ -37,6 +37,27 @@ Auth middleware: parse `Authorization: Bearer …` → hash → lookup (not revo
 `crypto.subtle.timingSafeEqual`-style constant-time compare → attach `{ role, tokenId }`. Update
 `last_used_at` at most once per minute per token.
 
+### 2.1 Display pairing codes
+
+Typing a 55-character device token on the tablet is error-prone, and sending it to the tablet through a
+chat or e-mail service would hand it to a third party. Displays therefore pair with a one-time code:
+
+1. The owner runs `npm run pair -- --remote` (D1 access via wrangler, like the token CLI). It prints a code
+   such as `K7QM-2XPA`: 8 symbols from a 31-letter alphabet without look-alikes (~40 bits), generated with
+   the CSPRNG using rejection sampling. Only its SHA-256 is stored (`pairing_codes`).
+2. The code is valid for **10 minutes, once**; creating a new code deletes any other unused code, so at most
+   one is active.
+3. The display (not paired, or its token rejected) shows a code field and calls `POST /api/v1/display/pair`
+   (no token; body limit and Origin check apply). In **one D1 batch** the server checks the code, inserts a
+   new device token and marks the code used, so a code can never yield two tokens.
+4. Every failed attempt (wrong, expired, malformed) increments `failed_attempts` of the active code; after
+   **10 failures** it stops working. With ~8.5·10¹¹ codes an attacker's chance before the lock is ~10⁻¹¹.
+   All failures get the same `400 invalid_code`.
+5. The token goes only to the tablet in the HTTPS response and is stored in `localStorage`; it is never
+   displayed. An attacker can at worst lock the current code (create a new one).
+
+The `#t=<device-token>` link still works as a fallback.
+
 ## 3. Secrets inventory
 
 | Secret | Purpose | Where it lives | In git? |

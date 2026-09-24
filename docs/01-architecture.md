@@ -197,6 +197,16 @@ CREATE TABLE device_status (
   app_version TEXT,
   info        TEXT                  -- JSON: userAgent, screen size, ...
 );
+
+-- 0002: one-time display pairing codes (doc 06 §2.1)
+CREATE TABLE pairing_codes (
+  code_hash       TEXT PRIMARY KEY, -- SHA-256 of the code
+  label           TEXT NOT NULL,    -- label of the issued device token
+  created_at      TEXT NOT NULL,
+  expires_at      TEXT NOT NULL,
+  used_at         TEXT,
+  failed_attempts INTEGER NOT NULL DEFAULT 0
+);
 ```
 
 ## 7. Repository layout
