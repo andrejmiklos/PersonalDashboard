@@ -68,7 +68,8 @@ No third-party kiosk app (D-02). The kiosk is assembled from Chrome and Android 
 2. **Home-screen shortcut:** Chrome menu → *Add to Home screen*. The web app manifest
    (`/display/manifest.json`, `display: fullscreen`, `orientation: landscape`, `start_url: /display/`)
    makes the shortcut open without the address bar. The start URL carries no token; the stored one is used.
-3. **Screen pinning:** Settings → Security → *Screen pinning* on. Open the shortcut, then Overview
+3. **Screen pinning (optional):** guards against accidental exits via the Back/Overview keys next to the
+   screen edge; re-pin manually after a reboot. Settings → Security → *Screen pinning* on. Open the shortcut, then Overview
    button → pin icon on the dashboard card. Unpinning needs Back + Overview held together.
    Optionally *Ask for unlock pattern before unpinning*.
 4. **Always-on:** Settings → Developer options → **Stay awake** (screen never sleeps while charging).

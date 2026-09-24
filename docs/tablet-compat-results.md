@@ -25,7 +25,7 @@ Measured 2026-09-24 with `/display/spike.html` on the target tablet (doc 02 §1)
 |---|---|
 | Home-screen shortcut with `display: fullscreen` manifest | Works (`display-mode: fullscreen` matches, no address bar) |
 | Screen Wake Lock API | Available (HTTPS only; absent over HTTP) |
-| Screen pinning | Not reported yet |
+| Screen pinning | Not tested; optional, enable if accidental exits happen once mounted (doc 02 §3) |
 
 ## Features
 
@@ -38,6 +38,7 @@ Measured 2026-09-24 with `/display/spike.html` on the target tablet (doc 02 §1)
 | CSS | Flexbox, Grid, custom properties, `CSS.supports`, flex `gap`, `position: sticky`, `calc()`, `vw`/`vh`, unprefixed `transform`, `object-fit` |
 | Media | Inline SVG, WOFF2; Slovak diacritics render correctly |
 | Network | XHR `GET /healthz` → 200 in 126 ms (HTTPS) |
+| Build | Vite `chrome95` "hello" bundle renders (Phase 0 item 8) |
 
 ## Performance
 
