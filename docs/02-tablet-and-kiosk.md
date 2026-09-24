@@ -42,7 +42,7 @@ natively may be used; check newer APIs against Chrome 95 before using them.
 | Fonts | Self-hosted WOFF2 — a single family, 2–3 weights; no web-font CDN |
 | Icons | Inline SVG; weather icon set with a permissive licence (e.g. MIT/OFL), bundled |
 | Dates | `Intl.DateTimeFormat` with `sk`/`en` and the configured `timeZone` (verified) via `shared` helpers |
-| Newer APIs | Not in Chrome 95, e.g. `structuredClone`, `Array.prototype.at`, `Object.hasOwn`, CSS `:has()`, container queries |
+| Newer APIs | Not in Chrome 95, e.g. `structuredClone` (98), `Array.prototype.findLast` (97), `toSorted` & co. (110), CSS `:has()` and container queries (105). TypeScript `lib` is `ES2022` to catch the JS ones |
 | Storage | `localStorage` only; wrap in try/catch |
 | Time | Never trust `setInterval` drift: recompute from `Date.now()` for the clock |
 | Effects | No `filter: blur`, no big `box-shadow`, no CSS animations on large areas. Use `transform`/`opacity` only when needed |
