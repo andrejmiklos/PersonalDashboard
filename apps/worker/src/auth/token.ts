@@ -4,6 +4,16 @@ export type Role = (typeof ROLES)[number];
 /** `dsh_<role>_<43 chars base64url of 32 random bytes>` (docs/06-security-and-public-repo.md §2). */
 const TOKEN_PATTERN = /^dsh_(admin|device)_[A-Za-z0-9_-]{43}$/;
 
+/** New random token; shown to the owner once, only its hash is stored. */
+export function generateToken(role: Role): string {
+  const bytes = crypto.getRandomValues(new Uint8Array(32));
+  const base64url = btoa(String.fromCharCode(...bytes))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+  return `dsh_${role}_${base64url}`;
+}
+
 /** Returns the role encoded in a well-formed token, or null for anything else. */
 export function parseTokenRole(token: string): Role | null {
   const match = TOKEN_PATTERN.exec(token);

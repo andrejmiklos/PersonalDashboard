@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022"],
+    "types": ["node", "@cloudflare/workers-types"],
+    // Scripts run with Node's type stripping: explicit .ts imports, erasable syntax only.
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true
+  },
+  "include": ["*.ts"]
+}

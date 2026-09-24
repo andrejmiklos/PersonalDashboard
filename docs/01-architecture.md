@@ -216,7 +216,7 @@ CREATE TABLE device_status (
 └─ README.md / README.sk.md / LICENSE
 ```
 
-npm workspaces; Node ≥ 22.13 (`node:sqlite` in migration tests); TypeScript strict; ESLint + Prettier; Vitest.
+npm workspaces; Node ≥ 22.18 (TypeScript scripts run via type stripping; `node:sqlite` in tests); TypeScript strict; ESLint + Prettier; Vitest.
 
 ## 8. Tech stack summary
 

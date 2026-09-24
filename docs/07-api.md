@@ -102,8 +102,17 @@ tasks cache.
 | `POST /api/v1/tokens` | `{ role, label }` → returns the token **once** |
 | `DELETE /api/v1/tokens/:id` | Revoke (cannot revoke the token used for the call if it is the last admin token) |
 
-The CLI script (`npm run token:create`) exists for bootstrapping the first admin token when no token exists yet
-(it writes directly to D1 with `wrangler d1 execute`).
+The CLI (`scripts/token.ts`) bootstraps the first admin token when no token exists yet; it writes directly to D1
+with `wrangler d1 execute` and targets the local database unless `--remote` is given:
+
+```
+npm run token:create -- --role admin --label "owner phone" --remote
+npm run token:list -- --remote
+npm run token:revoke -- tok_abcdefghijklmnop --remote
+```
+
+The token is generated inside the script (never a command-line argument), only its SHA-256 is sent to D1, and it is
+printed once after the insert is confirmed.
 
 ## 8. Conventions
 

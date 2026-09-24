@@ -4,7 +4,7 @@
   "type": "module",
   "license": "MIT",
   "engines": {
-    "node": ">=22.13.0"
+    "node": ">=22.18.0"
   },
   "workspaces": [
     "packages/*",
@@ -14,7 +14,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "npm run typecheck --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present && tsc -p scripts",
     "test": "vitest run",
     "check": "npm run lint && npm run format:check && npm run typecheck && npm test",
     "prepare": "git config core.hooksPath .githooks",
@@ -23,10 +23,14 @@
     "deploy": "npm run clean && npm run build && wrangler deploy",
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
     "db:migrate:remote": "wrangler d1 migrations apply DB --remote",
+    "token:create": "node scripts/token.ts create",
+    "token:revoke": "node scripts/token.ts revoke",
+    "token:list": "node scripts/token.ts list",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/node": "^22.20.4",
     "eslint": "^10.11.0",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.12.0",
