@@ -12,13 +12,17 @@ export default tseslint.config(
     languageOptions: { globals: globals.node },
   },
   {
-    // Served to the tablet without transpiling: must stay ES5.
-    files: ['apps/display/static/**/*.js'],
+    files: ['apps/display/src/**/*.ts'],
+    languageOptions: { globals: globals.browser },
+  },
+  {
+    // Copied to the tablet without transpiling: must stay ES5.
+    files: ['apps/display/public/**/*.js'],
     languageOptions: { ecmaVersion: 5, sourceType: 'script', globals: globals.browser },
   },
   {
     // Syntax probes of the compatibility spike use newer syntax on purpose.
-    files: ['apps/display/static/spike-es2015.js', 'apps/display/static/spike-es2017.js'],
+    files: ['apps/display/public/spike-es2015.js', 'apps/display/public/spike-es2017.js'],
     languageOptions: { ecmaVersion: 2017 },
   },
   prettier,

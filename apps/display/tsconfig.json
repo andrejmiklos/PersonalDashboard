@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // ES2022 is fully supported by Chrome 95; newer built-ins are type errors.
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    // Vite serves every file as an ES module.
+    "moduleDetection": "force",
+    "types": ["vite/client"]
+  },
+  "include": ["src", "vite.config.ts"]
+}

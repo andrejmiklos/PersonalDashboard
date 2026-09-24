@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Dashboard</title>
-    <link rel="manifest" href="manifest.json" />
+    <link rel="manifest" href="/manifest.json" />
     <style>
       html,
       body {
@@ -22,6 +22,8 @@
     </style>
   </head>
   <body>
-    <p>Hello from the display app.</p>
+    <!-- Replaced by src/main.ts; if this text stays, the bundle did not run. -->
+    <p id="status">JavaScript bundle did not run.</p>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

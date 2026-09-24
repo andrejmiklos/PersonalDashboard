@@ -216,7 +216,7 @@ CREATE TABLE device_status (
 └─ README.md / README.sk.md / LICENSE
 ```
 
-npm workspaces; Node ≥ 20; TypeScript strict; ESLint + Prettier; Vitest.
+npm workspaces; Node ≥ 20.19 (Vite); TypeScript strict; ESLint + Prettier; Vitest.
 
 ## 8. Tech stack summary
 
