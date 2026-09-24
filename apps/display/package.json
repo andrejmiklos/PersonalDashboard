@@ -7,6 +7,9 @@
     "build": "vite build",
     "typecheck": "tsc -p ."
   },
+  "dependencies": {
+    "@dashboard/shared": "*"
+  },
   "devDependencies": {
     "vite": "^8.3.0"
   }

@@ -22,7 +22,7 @@ Common behaviour:
 | Data source | Device clock (no API) |
 | Config | `format: '24h'|'12h'` (24h), `showSeconds: bool` (false), `showDate: bool` (true), `dateStyle: 'long'|'short'` (long: "Štvrtok 24. septembra"), `showWeekNumber: bool` (false) |
 | Refresh | Aligned to the second/minute using `Date.now()`; only the changed text nodes update |
-| Notes | Uses device timezone (must match server setting). Sleep view reuses the same time formatting |
+| Notes | Formats in the server-configured timezone via `Intl` (doc 01 §9), so a wrong device timezone does not shift it. Sleep view reuses the same time formatting |
 
 ## 2. `calendar` — Google Calendar events
 
