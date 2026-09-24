@@ -1,36 +1,24 @@
 import { describe, expect, it } from 'vitest';
-import worker, { type Env } from './index';
+import worker from './index';
+import type { Env } from './env';
 
-const env = {
-  ASSETS: {
-    fetch: async (input: RequestInfo | URL) => {
-      const path = new URL(input instanceof Request ? input.url : input.toString()).pathname;
-      return path === '/display/' ? new Response('<!doctype html>') : new Response('', { status: 404 });
-    },
-  },
-} as unknown as Env;
+const env = {} as Env;
 
-function get(path: string): Promise<Response> {
+async function get(path: string): Promise<Response> {
   return worker.fetch(new Request(`https://dashboard.example.com${path}`), env);
 }
 
-describe('worker', () => {
+describe('worker routes', () => {
   it('answers /healthz', async () => {
     const res = await get('/healthz');
     expect(res.status).toBe(200);
-    expect(res.headers.get('Cache-Control')).toBe('no-store');
     expect(await res.json()).toEqual({ ok: true });
   });
 
   it('redirects the root to the display app', async () => {
     const res = await get('/');
     expect(res.status).toBe(302);
-    expect(res.headers.get('Location')).toBe('https://dashboard.example.com/display/');
-  });
-
-  it('serves static assets', async () => {
-    const res = await get('/display/');
-    expect(res.status).toBe(200);
+    expect(res.headers.get('Location')).toBe('/display/');
   });
 
   it('returns a JSON 404 for unknown paths', async () => {

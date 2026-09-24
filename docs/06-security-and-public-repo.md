@@ -84,6 +84,8 @@ Real `wrangler.jsonc` (account id, D1 database id, route) is **git-ignored**.
   style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'`;
   `X-Content-Type-Options: nosniff`; `Referrer-Policy: no-referrer`; `Permissions-Policy` minimal.
   (Old Chrome ignores unknown directives; verify the display page still works with CSP in Phase 0/1.)
+- Static files get these headers from `apps/worker/public/_headers`. Worker responses (JSON, redirects) get
+  Hono `secureHeaders` with `Content-Security-Policy: default-src 'none'; frame-ancestors 'none'; base-uri 'none'`.
 - API responses: `Cache-Control: no-store`, JSON only, uniform error shape without internals.
 - `/display/` and `/admin/` static shells are public but contain **no data and no secrets**.
 - The device token in the URL hash is never sent to the server, is removed from the address bar after
