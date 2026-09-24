@@ -96,3 +96,4 @@ All decisions below were made with the owner during requirements gathering (2026
 | [07-api.md](07-api.md) | HTTP API reference |
 | [08-implementation-plan.md](08-implementation-plan.md) | Phases, commits, acceptance criteria |
 | [09-backlog.md](09-backlog.md) | Ideas not in scope |
+| [10-operations.md](10-operations.md) | Runbook: deploy, pairing, settings, layouts, tokens, troubleshooting |

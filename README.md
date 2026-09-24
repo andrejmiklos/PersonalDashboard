@@ -34,6 +34,12 @@ Tablet (Chrome 95 kiosk) ──▶ Cloudflare Worker (API + static apps + D1) �
 Phone/PC (admin editor)       ──▶ (same Worker, admin token)
 ```
 
+## Getting started
+
+Prerequisites, first deployment, pairing the tablet, settings, layouts and troubleshooting are in the
+[operations runbook](docs/10-operations.md). The tablet itself is prepared as described in
+[docs/02-tablet-and-kiosk.md](docs/02-tablet-and-kiosk.md) §3.
+
 ## Documentation
 
 Start with [docs/00-overview.md](docs/00-overview.md).
@@ -50,6 +56,7 @@ Start with [docs/00-overview.md](docs/00-overview.md).
 | [07 API](docs/07-api.md) | HTTP API reference |
 | [08 Implementation plan](docs/08-implementation-plan.md) | Phases and commits |
 | [09 Backlog](docs/09-backlog.md) | Ideas out of scope |
+| [10 Operations](docs/10-operations.md) | Runbook: deploy, pairing, settings, troubleshooting |
 
 ## Security note
 

@@ -34,6 +34,12 @@ Tablet (Chrome 95 kiosk) ──▶ Cloudflare Worker (API + statické appky + D1
 Telefón/PC (admin editor)           ──▶ (ten istý Worker, admin token)
 ```
 
+## Ako začať
+
+Predpoklady, prvé nasadenie, spárovanie tabletu, nastavenia, layouty a riešenie problémov sú v
+[prevádzkovom runbooku](docs/10-operations.md) (po anglicky). Príprava samotného tabletu je v
+[docs/02-tablet-and-kiosk.md](docs/02-tablet-and-kiosk.md) §3.
+
 ## Dokumentácia
 
 Začni v [docs/00-overview.md](docs/00-overview.md). Technická dokumentácia je po anglicky.
