@@ -67,10 +67,11 @@ export function createQuote(ctx: TileContext): TileInstance {
     const range = fontRange(box);
     const style = getComputedStyle(ctx.el);
     const height = ctx.el.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
-    const width = ctx.el.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
     const size = largestFitting(range.min, range.max, FIT_STEPS, (rem) => {
       body.style.fontSize = `${rem}rem`;
-      return body.offsetHeight <= height && body.scrollWidth <= width;
+      // The stage is scaled, so sizes are fractional while offset/scroll sizes are rounded: allow 1 px,
+      // and compare widths on the same element, which rounds both the same way.
+      return body.offsetHeight <= height + 1 && body.scrollWidth <= body.clientWidth;
     });
     body.style.fontSize = `${size}rem`;
   }

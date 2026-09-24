@@ -49,6 +49,8 @@ export function renderLayout(
   // Gap is defined in px at 1280 wide, i.e. rem × 16.
   const padding = `${layout.grid.gap / 2 / 16}rem`;
 
+  // Attached before the tiles mount: tiles that measure text (quote) need real layout sizes.
+  stage.appendChild(root);
   const tiles: TileInstance[] = [];
   for (const tile of layout.tiles) {
     const rect = tileRect(tile, layout.grid.cols, layout.grid.rows);
@@ -76,7 +78,6 @@ export function renderLayout(
     tiles.push(instance);
   }
 
-  stage.appendChild(root);
   mounted = { key, root, tiles };
 }
 
