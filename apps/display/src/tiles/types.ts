@@ -1,4 +1,4 @@
-import type { Locale } from '@dashboard/shared';
+import { formatTime, t, type DataEnvelope, type Locale } from '@dashboard/shared';
 import type { DataClient } from '../data';
 import type { SizeClass } from '../layout/geometry';
 
@@ -37,4 +37,32 @@ export function element(tag: string, className: string, parent: HTMLElement): HT
   el.className = className;
   parent.appendChild(el);
   return el;
+}
+
+export function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
+
+/** Shows a message (loading, error) in place of the tile body. */
+export function showMessage(message: HTMLElement, body: HTMLElement, text: string): void {
+  setText(message, text);
+  message.hidden = false;
+  body.hidden = true;
+}
+
+/** Message for a failed first load; the location is the only error the owner can fix from here. */
+export function errorText(locale: Locale, code: string | null): string {
+  return t(locale, code === 'location_not_set' ? 'data.noLocation' : 'state.error');
+}
+
+/** "Updated hh:mm" for a stale payload, empty otherwise. */
+export function updatedText(ctx: TileContext, envelope: DataEnvelope<unknown>, stale: boolean): string {
+  if (!stale) return '';
+  const time = formatTime(new Date(envelope.updatedAt), {
+    locale: ctx.locale,
+    timeZone: ctx.timezone,
+    hour12: false,
+    seconds: false,
+  });
+  return t(ctx.locale, 'state.updatedAt', { time });
 }

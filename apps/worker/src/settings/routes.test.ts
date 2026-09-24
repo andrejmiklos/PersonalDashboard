@@ -1,13 +1,11 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { hashToken } from '../auth/token';
 import type { Env } from '../env';
 import worker from '../index';
 import { createTestD1, migrate } from '../test/d1';
+import { ADMIN_TOKEN, DEVICE_TOKEN, seedTokens } from '../test/tokens';
 
 // Fictional, well-formed tokens and a fictional location used only in tests.
-const ADMIN_TOKEN = `dsh_admin_${'A'.repeat(43)}`;
-const DEVICE_TOKEN = `dsh_device_${'B'.repeat(43)}`;
 const ORIGIN = 'https://dashboard.example.com';
 const DEFAULTS = {
   locale: 'sk',
@@ -44,11 +42,7 @@ describe('settings API', () => {
   beforeEach(async () => {
     db = migrate();
     env = { DB: createTestD1(db) } as Env;
-    const insert = db.prepare(
-      'INSERT INTO api_tokens (id, role, label, token_hash, created_at) VALUES (?, ?, ?, ?, ?)',
-    );
-    insert.run('tok_admin', 'admin', 'test', await hashToken(ADMIN_TOKEN), '2026-01-15T08:00:00.000Z');
-    insert.run('tok_device', 'device', 'test', await hashToken(DEVICE_TOKEN), '2026-01-15T08:00:00.000Z');
+    await seedTokens(db);
   });
 
   it('returns defaults when nothing is stored', async () => {

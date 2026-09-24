@@ -2,14 +2,12 @@ import { readdirSync, readFileSync } from 'node:fs';
 import type { DatabaseSync } from 'node:sqlite';
 import type { LayoutDocument } from '@dashboard/shared';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { hashToken } from '../auth/token';
 import type { Env } from '../env';
 import worker from '../index';
 import { createTestD1, migrate } from '../test/d1';
+import { ADMIN_TOKEN, DEVICE_TOKEN, seedTokens } from '../test/tokens';
 
 // Fictional tokens and ids used only in tests.
-const ADMIN_TOKEN = `dsh_admin_${'A'.repeat(43)}`;
-const DEVICE_TOKEN = `dsh_device_${'B'.repeat(43)}`;
 const ORIGIN = 'https://dashboard.example.com';
 const CAL_SOURCE = 'src_aaaaaaaaaaaaaaaa';
 const LIST_SOURCE = 'src_bbbbbbbbbbbbbbbb';
@@ -56,11 +54,7 @@ async function create(body: unknown = layout([clock()])): Promise<LayoutDocument
 beforeEach(async () => {
   db = migrate();
   env = { DB: createTestD1(db) } as Env;
-  const insert = db.prepare(
-    'INSERT INTO api_tokens (id, role, label, token_hash, created_at) VALUES (?, ?, ?, ?, ?)',
-  );
-  insert.run('tok_admin', 'admin', 'test', await hashToken(ADMIN_TOKEN), '2026-01-15T08:00:00.000Z');
-  insert.run('tok_device', 'device', 'test', await hashToken(DEVICE_TOKEN), '2026-01-15T08:00:00.000Z');
+  await seedTokens(db);
   db.exec(`INSERT INTO accounts (id, provider, external_id, refresh_token_enc, scopes, created_at, updated_at)
            VALUES ('acc_1', 'google', 'ext', 'enc', 'scope', 'now', 'now')`);
   db.exec(`INSERT INTO sources (id, account_id, kind, remote_id, label, enabled) VALUES

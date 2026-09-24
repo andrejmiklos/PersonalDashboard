@@ -1,15 +1,12 @@
 import type { DatabaseSync } from 'node:sqlite';
 import type { DisplayState, LayoutDocument } from '@dashboard/shared';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { hashToken } from '../auth/token';
 import type { Env } from '../env';
 import worker from '../index';
 import { createTestD1, migrate } from '../test/d1';
+import { ADMIN_TOKEN, DEVICE_TOKEN, seedTokens } from '../test/tokens';
 import { resetAppVersionCache } from './state';
 
-// Fictional tokens used only in tests.
-const ADMIN_TOKEN = `dsh_admin_${'A'.repeat(43)}`;
-const DEVICE_TOKEN = `dsh_device_${'B'.repeat(43)}`;
 const ORIGIN = 'https://dashboard.example.com';
 
 let db: DatabaseSync;
@@ -61,11 +58,7 @@ describe('GET /api/v1/display/state', () => {
           : new Response('', { status: 404 }),
     };
     env = { DB: createTestD1(db), ASSETS: assets } as unknown as Env;
-    const insert = db.prepare(
-      'INSERT INTO api_tokens (id, role, label, token_hash, created_at) VALUES (?, ?, ?, ?, ?)',
-    );
-    insert.run('tok_admin', 'admin', 'test', await hashToken(ADMIN_TOKEN), '2026-01-15T08:00:00.000Z');
-    insert.run('tok_device', 'device', 'test', await hashToken(DEVICE_TOKEN), '2026-01-15T08:00:00.000Z');
+    await seedTokens(db);
   });
 
   it('requires a token', async () => {

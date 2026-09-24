@@ -9,7 +9,16 @@ import {
   type Locale,
 } from '@dashboard/shared';
 import { isStale, msUntilMidnight, startPoller, type DataResult } from '../data';
-import { element, setText, type TileBox, type TileContext, type TileInstance } from './types';
+import {
+  clamp,
+  element,
+  errorText,
+  setText,
+  showMessage,
+  type TileBox,
+  type TileContext,
+  type TileInstance,
+} from './types';
 
 const POLL_MS = 6 * 60 * 60_000;
 const RETRY_MS = 60_000;
@@ -24,10 +33,6 @@ export interface AstroPlan {
   scale: number;
   /** Sun and moon side by side, or stacked in narrow tiles. */
   direction: 'row' | 'column';
-}
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
 }
 
 export function astroPlan(box: TileBox): AstroPlan {
@@ -119,12 +124,6 @@ export function createAstro(ctx: TileContext): TileInstance {
   const time = (iso: string) =>
     formatTime(new Date(iso), { locale: ctx.locale, timeZone: ctx.timezone, hour12: false, seconds: false });
 
-  function showMessage(text: string): void {
-    setText(message, text);
-    message.hidden = false;
-    body.hidden = true;
-  }
-
   function render(): void {
     if (!envelope) return;
     const data = envelope.data;
@@ -180,13 +179,13 @@ export function createAstro(ctx: TileContext): TileInstance {
     if (result.kind === 'ok') {
       envelope = result.envelope;
     } else if (!envelope) {
-      showMessage(t(ctx.locale, result.code === 'location_not_set' ? 'data.noLocation' : 'state.error'));
+      showMessage(message, body, errorText(ctx.locale, result.code));
       return;
     }
     render();
   }
 
-  showMessage(t(ctx.locale, 'state.loading'));
+  showMessage(message, body, t(ctx.locale, 'state.loading'));
   const poller = startPoller({
     load: () => ctx.data.load<AstroData>('astro'),
     peek: () => ctx.data.peek<AstroData>('astro'),

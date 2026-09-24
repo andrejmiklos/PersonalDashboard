@@ -1,15 +1,13 @@
 import type { DatabaseSync } from 'node:sqlite';
 import type { AirData, AstroData, DataEnvelope, QuoteData, WeatherData } from '@dashboard/shared';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { hashToken } from '../auth/token';
 import type { Env } from '../env';
 import worker from '../index';
 import { createTestD1, migrate } from '../test/d1';
+import { ADMIN_TOKEN, DEVICE_TOKEN, seedTokens } from '../test/tokens';
 import { forecastFixture } from '../test/open-meteo-forecast';
 
-// Fictional tokens and location used only in tests.
-const ADMIN_TOKEN = `dsh_admin_${'A'.repeat(43)}`;
-const DEVICE_TOKEN = `dsh_device_${'B'.repeat(43)}`;
+// Fictional location used only in tests.
 const ORIGIN = 'https://dashboard.example.com';
 const LOCATION = { label: 'Testville', lat: 50, lon: 10 };
 const T0 = new Date('2026-01-15T13:15:00.000Z');
@@ -50,11 +48,7 @@ describe('GET /api/v1/data/weather', () => {
 
     db = migrate();
     env = { DB: createTestD1(db) } as unknown as Env;
-    const insert = db.prepare(
-      'INSERT INTO api_tokens (id, role, label, token_hash, created_at) VALUES (?, ?, ?, ?, ?)',
-    );
-    insert.run('tok_admin', 'admin', 'test', await hashToken(ADMIN_TOKEN), '2026-01-15T08:00:00.000Z');
-    insert.run('tok_device', 'device', 'test', await hashToken(DEVICE_TOKEN), '2026-01-15T08:00:00.000Z');
+    await seedTokens(db);
   });
 
   afterEach(() => {
@@ -163,11 +157,7 @@ describe('GET /api/v1/data/astro', () => {
     vi.setSystemTime(new Date('2026-09-23T23:30:00.000Z'));
     db = migrate();
     env = { DB: createTestD1(db) } as unknown as Env;
-    const insert = db.prepare(
-      'INSERT INTO api_tokens (id, role, label, token_hash, created_at) VALUES (?, ?, ?, ?, ?)',
-    );
-    insert.run('tok_admin', 'admin', 'test', await hashToken(ADMIN_TOKEN), '2026-01-15T08:00:00.000Z');
-    insert.run('tok_device', 'device', 'test', await hashToken(DEVICE_TOKEN), '2026-01-15T08:00:00.000Z');
+    await seedTokens(db);
   });
 
   afterEach(() => {
@@ -216,11 +206,7 @@ describe('GET /api/v1/data/air', () => {
     vi.stubGlobal('fetch', upstreamAir);
     db = migrate();
     env = { DB: createTestD1(db) } as unknown as Env;
-    const insert = db.prepare(
-      'INSERT INTO api_tokens (id, role, label, token_hash, created_at) VALUES (?, ?, ?, ?, ?)',
-    );
-    insert.run('tok_admin', 'admin', 'test', await hashToken(ADMIN_TOKEN), '2026-01-15T08:00:00.000Z');
-    insert.run('tok_device', 'device', 'test', await hashToken(DEVICE_TOKEN), '2026-01-15T08:00:00.000Z');
+    await seedTokens(db);
   });
 
   afterEach(() => {
@@ -249,11 +235,7 @@ describe('GET /api/v1/data/quote', () => {
     vi.setSystemTime(new Date('2026-09-23T23:30:00.000Z'));
     db = migrate();
     env = { DB: createTestD1(db) } as unknown as Env;
-    const insert = db.prepare(
-      'INSERT INTO api_tokens (id, role, label, token_hash, created_at) VALUES (?, ?, ?, ?, ?)',
-    );
-    insert.run('tok_admin', 'admin', 'test', await hashToken(ADMIN_TOKEN), '2026-01-15T08:00:00.000Z');
-    insert.run('tok_device', 'device', 'test', await hashToken(DEVICE_TOKEN), '2026-01-15T08:00:00.000Z');
+    await seedTokens(db);
   });
 
   afterEach(() => {

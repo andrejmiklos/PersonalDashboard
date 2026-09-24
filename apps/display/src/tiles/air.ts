@@ -1,7 +1,6 @@
 import {
   aqiBand,
   AQI_BANDS,
-  formatTime,
   t,
   TILE_TYPES,
   type AirConfig,
@@ -11,7 +10,17 @@ import {
   type Locale,
 } from '@dashboard/shared';
 import { isStale, startPoller, type DataResult } from '../data';
-import { element, setText, type TileBox, type TileContext, type TileInstance } from './types';
+import {
+  clamp,
+  element,
+  errorText,
+  setText,
+  showMessage,
+  type TileBox,
+  type TileContext,
+  type TileInstance,
+  updatedText,
+} from './types';
 
 const POLL_MS = 60 * 60_000;
 const RETRY_MS = 60_000;
@@ -21,10 +30,6 @@ const SCALE_MAX = 120;
 export interface AirPlan {
   scale: number;
   compact: boolean;
-}
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
 }
 
 export function airPlan(box: TileBox): AirPlan {
@@ -82,12 +87,6 @@ export function createAir(ctx: TileContext): TileInstance {
   let plan: AirPlan | null = null;
   let envelope: DataEnvelope<AirData> | null = null;
 
-  function showMessage(text: string): void {
-    setText(message, text);
-    message.hidden = false;
-    body.hidden = true;
-  }
-
   function render(): void {
     if (!plan || !envelope) return;
     const texts = airTexts(envelope.data, ctx.locale);
@@ -107,32 +106,20 @@ export function createAir(ctx: TileContext): TileInstance {
     const stale = isStale(envelope, Date.now());
     ctx.el.classList.toggle('is-stale', stale);
     footer.hidden = plan.compact;
-    setText(
-      updated,
-      stale
-        ? t(ctx.locale, 'state.updatedAt', {
-            time: formatTime(new Date(envelope.updatedAt), {
-              locale: ctx.locale,
-              timeZone: ctx.timezone,
-              hour12: false,
-              seconds: false,
-            }),
-          })
-        : '',
-    );
+    setText(updated, updatedText(ctx, envelope, stale));
   }
 
   function onResult(result: DataResult<AirData>): void {
     if (result.kind === 'ok') {
       envelope = result.envelope;
     } else if (!envelope) {
-      showMessage(t(ctx.locale, result.code === 'location_not_set' ? 'data.noLocation' : 'state.error'));
+      showMessage(message, body, errorText(ctx.locale, result.code));
       return;
     }
     render();
   }
 
-  showMessage(t(ctx.locale, 'state.loading'));
+  showMessage(message, body, t(ctx.locale, 'state.loading'));
   const poller = startPoller({
     load: () => ctx.data.load<AirData>('air'),
     peek: () => ctx.data.peek<AirData>('air'),

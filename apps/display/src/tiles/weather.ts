@@ -1,5 +1,4 @@
 import {
-  formatTime,
   formatWeekday,
   t,
   TILE_TYPES,
@@ -11,7 +10,17 @@ import {
   type WeatherData,
 } from '@dashboard/shared';
 import { isStale, startPoller, type DataResult } from '../data';
-import { element, setText, type TileBox, type TileContext, type TileInstance } from './types';
+import {
+  clamp,
+  element,
+  errorText,
+  setText,
+  showMessage,
+  type TileBox,
+  type TileContext,
+  type TileInstance,
+  updatedText,
+} from './types';
 import { createWeatherIcon, weatherIcon } from './weather-icons';
 
 const POLL_MS = 15 * 60_000;
@@ -34,10 +43,6 @@ export interface WeatherPlan {
   hours: number;
   days: number;
   footer: boolean;
-}
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
 }
 
 export function weatherPlan(box: TileBox, config: WeatherConfig): WeatherPlan {
@@ -143,12 +148,6 @@ export function createWeather(ctx: TileContext): TileInstance {
   let envelope: DataEnvelope<WeatherData> | null = null;
   let lastIcon = '';
 
-  function showMessage(text: string): void {
-    setText(message, text);
-    message.hidden = false;
-    body.hidden = true;
-  }
-
   function render(): void {
     if (!plan || !envelope) return;
     const texts = weatherTexts(envelope.data, config, ctx.locale);
@@ -194,26 +193,14 @@ export function createWeather(ctx: TileContext): TileInstance {
     const stale = isStale(envelope, Date.now());
     ctx.el.classList.toggle('is-stale', stale);
     footer.hidden = !plan.footer;
-    setText(
-      updated,
-      stale
-        ? t(ctx.locale, 'state.updatedAt', {
-            time: formatTime(new Date(envelope.updatedAt), {
-              locale: ctx.locale,
-              timeZone: ctx.timezone,
-              hour12: false,
-              seconds: false,
-            }),
-          })
-        : '',
-    );
+    setText(updated, updatedText(ctx, envelope, stale));
   }
 
   function onResult(result: DataResult<WeatherData>): void {
     if (result.kind === 'ok') {
       envelope = result.envelope;
     } else if (!envelope) {
-      showMessage(t(ctx.locale, result.code === 'location_not_set' ? 'data.noLocation' : 'state.error'));
+      showMessage(message, body, errorText(ctx.locale, result.code));
       ctx.el.classList.add('is-error');
       return;
     }
@@ -222,7 +209,7 @@ export function createWeather(ctx: TileContext): TileInstance {
     render();
   }
 
-  showMessage(t(ctx.locale, 'state.loading'));
+  showMessage(message, body, t(ctx.locale, 'state.loading'));
   const poller = startPoller({
     load: () => ctx.data.load<WeatherData>('weather'),
     peek: () => ctx.data.peek<WeatherData>('weather'),

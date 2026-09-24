@@ -7,7 +7,15 @@ import {
   type QuoteData,
 } from '@dashboard/shared';
 import { isStale, msUntilMidnight, startPoller, type DataResult } from '../data';
-import { element, setText, type TileBox, type TileContext, type TileInstance } from './types';
+import {
+  element,
+  errorText,
+  setText,
+  showMessage,
+  type TileBox,
+  type TileContext,
+  type TileInstance,
+} from './types';
 
 const RETRY_MS = 60_000;
 /** Each step halves the range: 7 steps find the size within 1 % of the range. */
@@ -55,12 +63,6 @@ export function createQuote(ctx: TileContext): TileInstance {
   let box: TileBox | null = null;
   let envelope: DataEnvelope<QuoteData> | null = null;
 
-  function showMessage(value: string): void {
-    setText(message, value);
-    message.hidden = false;
-    body.hidden = true;
-  }
-
   /** Measures in the live DOM; runs only when the text or the box changes. */
   function fit(): void {
     if (!box || body.hidden) return;
@@ -96,11 +98,11 @@ export function createQuote(ctx: TileContext): TileInstance {
       if (changed) render();
       else ctx.el.classList.toggle('is-stale', isStale(envelope, Date.now()));
     } else if (!envelope) {
-      showMessage(t(ctx.locale, 'state.error'));
+      showMessage(message, body, errorText(ctx.locale, result.code));
     }
   }
 
-  showMessage(t(ctx.locale, 'state.loading'));
+  showMessage(message, body, t(ctx.locale, 'state.loading'));
   const poller = startPoller({
     load: () => ctx.data.load<QuoteData>('quote', { lang }),
     peek: () => ctx.data.peek<QuoteData>('quote', { lang }),
