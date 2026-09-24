@@ -67,7 +67,7 @@ All decisions below were made with the owner during requirements gathering (2026
 | D-12 | Look | Landscape, dark | |
 | D-13 | Access control | **Two bearer tokens**: `admin` and `device` | Device token: read + complete tasks + heartbeat only |
 | D-14 | Calendar display | Colour per calendar; all-day events in a separate strip | |
-| D-15 | Location | Bratislava, stored in DB settings, **not** in repo | |
+| D-15 | Location | The owner's city, stored in DB settings, **not** in repo | |
 | D-16 | Languages | UI SK+EN; docs EN + Slovak README; code/comments EN | |
 | D-17 | Licence | MIT | |
 | D-18 | Storage | D1 (SQLite) rather than KV | Strong consistency for rotating refresh tokens; SQL-friendly |

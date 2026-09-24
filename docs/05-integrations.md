@@ -40,7 +40,9 @@ Repeat for each Google account.
 
 ### 1.3 Data access
 
-- Access token: cached in Cache API for `expires_in − 60 s`; refreshed from the stored refresh token.
+- Access token: cached for `expires_in − 60 s`; refreshed from the stored refresh token.
+  **Open for Phase 3:** where access tokens and the last calendar/task data are cached. The Cache API does
+  not reliably persist on `*.workers.dev` (D-20), and D1 holds no event/task content so far (doc 06 §8).
 - `GET calendarList` → sources discovery (admin only, cached 10 min).
 - Events: `GET /calendar/v3/calendars/{id}/events` with `singleEvents=true`, `orderBy=startTime`,
   `timeMin`, `timeMax`, `maxResults=250`, `fields` limited to id/summary/start/end/location/status/attendees(self,responseStatus).
@@ -89,7 +91,7 @@ by re-reading the DB). This is why D1 (strong consistency) is used instead of KV
 - Air: `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=…&longitude=…&current=european_aqi,pm2_5,pm10&timezone=<tz>`
   (CAMS data; attribution must name CAMS and Open-Meteo). Normalised shape: `AirData` in `packages/shared/src/air.ts`.
 - The location (city label + latitude/longitude) is stored in `settings.location`
-  (D1), entered in the admin UI. **It is never committed.** Only the city (Bratislava) is needed;
+  (D1), entered in the admin UI. **It is never committed.** Only the city is needed;
   coordinates rounded to 2 decimals are sufficient (privacy).
 - Cached in D1 (`provider_cache`, D-20) for the TTL (weather 15 min, air 60 min). Failure: serve the
   stale payload up to 3 h; beyond that `503` and the tile shows the error state. No location set →

@@ -6,6 +6,10 @@ All `/api/*` responses carry `Cache-Control: no-store`.
 
 Roles: **A** = admin, **D** = device (admin may call everything the device can).
 
+**Implemented (Phase 2):** `/healthz`, `/display/`, `GET /display/state`, `POST /display/pair`,
+`GET /data/weather|air|astro|quote`, all of §4 (layouts) and `GET/PUT /settings`. Tokens are managed with the
+CLI (§7). Everything else below is planned; the phase is in doc 08.
+
 ## 1. Static
 
 | Path | Auth | Description |
@@ -106,7 +110,7 @@ Responses: `POST` and `duplicate` → `201` with the full document, `DELETE` →
 
 | Method & path | Description |
 |---|---|
-| `GET/PUT /api/v1/settings` | `{ locale, timezone, location: { label, lat, lon } \| null, powerMode, defaultMode, defaultLayoutId, rotation, touch }`. PUT changes only the fields it contains (unknown fields → `400`); coordinates are rounded to 2 decimals (~1 km). Phase 1 implements `locale`, `timezone`, `location`, `powerMode` |
+| `GET/PUT /api/v1/settings` | `{ locale, timezone, location: { label, lat, lon } \| null, powerMode, defaultMode, defaultLayoutId, rotation, touch }`. PUT changes only the fields it contains (unknown fields → `400`); coordinates are rounded to 2 decimals (~1 km). Implemented: `locale`, `timezone`, `location`, `powerMode`, `defaultLayoutId` |
 | `GET/PUT /api/v1/schedule` | Full list of rules (replace semantics, validated) |
 | `GET /api/v1/override` | Current override or `null` |
 | `PUT /api/v1/override` | `{ layoutId?, screen?, expiresAt? \| durationSec? }` |

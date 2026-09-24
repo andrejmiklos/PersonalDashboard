@@ -34,9 +34,10 @@ Key properties:
 ### 2.1 `apps/worker` — Cloudflare Worker (TypeScript)
 
 - Router: [Hono](https://hono.dev) (small, Workers-native).
-- Modules: `auth` (token middleware, roles), `oauth` (Google/Microsoft flows), `providers/*`
-  (google-calendar, ms-todo, open-meteo, astro), `layouts`, `schedule` (state resolution),
-  `settings`, `cache` (D1 provider cache, D-20), `crypto` (AES-GCM for refresh tokens).
+- Modules (`apps/worker/src/`): `auth` (token middleware, roles), `display` (state, pairing), `layouts`,
+  `settings`, `data` (tile data routes), `providers/*` (Open-Meteo weather and air), `astro` (suncalc),
+  `quotes`, `cache` (D1 provider cache, D-20), `http` (JSON bodies). Planned: `oauth` and the Google /
+  Microsoft providers (Phase 3), `crypto` (AES-GCM for refresh tokens, Phase 3), `schedule` (Phase 5).
 - Validation of all request bodies (zod) — layouts validated with the shared schema.
 - Cron Trigger (optional, Phase 7): warm caches, prune expired OAuth states.
 
@@ -67,14 +68,16 @@ tablet bundle small.)
 
 ### 3.1 Tablet boot
 
-1. First run: Chrome opens `https://<worker>/display/#t=<device-token>` (typed once on the device).
-   Later launches come from the home-screen shortcut (`start_url: /display/`, no token).
-2. `display` reads token from the URL hash, stores in `localStorage`, strips the hash
-   (`history.replaceState`). The hash is never sent to the server. Without a hash it uses the
-   stored token; with neither it shows a "not paired" screen.
-3. `GET /api/v1/display/state` → `{ layout, screen, rotation, serverTime, appVersion, ... }`.
-4. Render layout; each tile starts its own data polling.
-5. Poll `display/state` every 15 s with `If-None-Match` (usually an empty `304`); on failure back off up to 5 min.
+1. First run: Chrome opens `https://<worker>/display/`, which shows a code field; the owner runs
+   `npm run pair` and types the one-time code (doc 06 §2.1). Fallback: open `/display/#t=<device-token>`
+   once. Later launches come from the home-screen shortcut (`start_url: /display/`, no token).
+2. The device token (from pairing, or from the URL hash, which is stripped at once with
+   `history.replaceState` and never sent to the server) is kept in `localStorage`. Without a token the
+   display shows the pairing screen.
+3. With a token, the last cached state and tile payloads render at once (§5).
+4. `GET /api/v1/display/state` → `{ layout, screen, rotation, serverTime, appVersion, ... }`.
+5. Render layout; each tile starts its own data polling.
+6. Poll `display/state` every 15 s with `If-None-Match` (usually an empty `304`); on failure back off up to 5 min.
    On `layout.version` change → re-render. On `appVersion` change → `location.reload()`, at most once per
    version within 10 min so a stale cache cannot cause a reload loop. `appVersion` is a per-build id: the
    display build bakes it into the bundle and writes `/display/version.json`, which the Worker reads through
@@ -236,17 +239,18 @@ CREATE TABLE provider_cache (
 ├─ apps/
 │  ├─ worker/          Cloudflare Worker (API, OAuth, providers)
 │  ├─ display/         Tablet runtime (Chrome 95 bundle)
-│  └─ admin/           Editor + control panel (modern bundle)
+│  └─ admin/           Editor + control panel (modern bundle, Phase 4)
 ├─ packages/
 │  └─ shared/          Types, tile registry, i18n, date helpers
 ├─ content/
 │  └─ quotes.json      Curated quotes (SK + EN)
 ├─ migrations/         D1 SQL migrations
 ├─ examples/           Sample layouts (fictional data only)
-├─ scripts/            token:create, secrets helper, etc.
+├─ layouts-export/     Your own layouts and exports (git-ignored, never committed)
+├─ scripts/            CLI: tokens, pairing codes, settings, layout import, smoke test
 ├─ docs/               This documentation
 ├─ wrangler.example.jsonc   Committed template
-├─ .env.example / .dev.vars.example
+├─ .dev.vars.example
 └─ README.md / README.sk.md / LICENSE
 ```
 
