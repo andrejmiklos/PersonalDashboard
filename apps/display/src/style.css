@@ -25,10 +25,6 @@ body {
   text-align: center;
 }
 
-#status[hidden] {
-  display: none;
-}
-
 .layout {
   position: absolute;
   inset: 0;
@@ -57,4 +53,28 @@ body {
 .tile-placeholder {
   color: #555;
   font-size: 1rem;
+}
+
+.clock-time {
+  color: #eee;
+  font-weight: 300;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.clock-date {
+  margin-top: 0.4em;
+  color: #aaa;
+  white-space: nowrap;
+}
+
+.clock-week {
+  margin-top: 0.3em;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+[hidden] {
+  display: none !important;
 }

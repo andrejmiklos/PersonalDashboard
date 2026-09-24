@@ -1,10 +1,13 @@
 import type { LayoutDocument, Locale, TileType } from '@dashboard/shared';
+import { createClock } from '../tiles/clock';
 import { createPlaceholder } from '../tiles/placeholder';
 import type { TileFactory, TileInstance } from '../tiles/types';
 import { tileRect } from './geometry';
 
 /** Implemented tile modules; other types render a placeholder. */
-const factories: Partial<Record<TileType, TileFactory>> = {};
+const factories: Partial<Record<TileType, TileFactory>> = {
+  clock: createClock,
+};
 
 interface Mounted {
   key: string;
