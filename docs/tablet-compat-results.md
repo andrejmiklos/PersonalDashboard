@@ -51,4 +51,8 @@ still applies because of the weak CPU.
 - `apps/display` build target **`chrome95`**: native ES modules, `fetch`, CSS Grid/variables; no legacy
   plugin, no polyfills (doc 02 §2, plan Phase 0 item 8).
 - Dates formatted with `Intl` in the configured timezone instead of own tables (doc 01 §9).
+- Guard against APIs newer than Chrome 95 in `apps/display/src`: TypeScript `lib: ES2022` rejects newer JS
+  built-ins, and ESLint (`eslint.config.js`) rejects web APIs the DOM typings know but Chrome 95 lacks
+  (`structuredClone`, `AbortSignal.timeout`, `Response.json`, …). CSS is not checked automatically: stay within
+  the features listed above.
 - TLS via user-installed ISRG Root X1; tablet lock screen must be a PIN (doc 02 §3).
