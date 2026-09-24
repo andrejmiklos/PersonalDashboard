@@ -15,7 +15,7 @@ calendar and task data. Both facts drive this document.
 | Provider refresh tokens leak from DB | Encrypted (AES-GCM) with a key that lives only in Worker secrets |
 | OAuth CSRF / code injection | Single-use `state` + PKCE, 10-minute TTL, admin-initiated |
 | XSS in admin/display (calendar titles, task names, quotes) | All external text inserted via `textContent`; no `innerHTML` with data; strict CSP |
-| Personal data in logs/caches | Never log event/task content; data endpoints `Cache-Control: no-store`; Cache API holds only short-TTL normalised payloads |
+| Personal data in logs/caches | Never log event/task content; data endpoints `Cache-Control: no-store`; the D1 provider cache holds only non-personal normalised payloads (weather, air), pruned after 3 h |
 | Supply chain | Lockfile committed, Dependabot, few dependencies, `npm audit` in CI |
 
 ## 2. Roles and permissions
@@ -132,4 +132,4 @@ Real `wrangler.jsonc` (account id, D1 database id, route) is **git-ignored**.
 - Data flows: Google/Microsoft → Worker → tablet. Nothing else receives it. Open-Meteo receives only
   rounded coordinates.
 - Cloudflare processes the traffic as the host; use of Cloudflare is an accepted trade-off (D-01).
-- Cache API entries expire within minutes; D1 stores no event/task content (only config and encrypted tokens).
+- D1 stores no event/task content (only config, encrypted tokens and the weather/air provider cache, D-20).

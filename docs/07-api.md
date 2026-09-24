@@ -61,7 +61,21 @@ Response envelope: `{ "updatedAt": "ISO", "ttl": 180, "data": … }`.
 | `GET /api/v1/data/quote` | `lang=sk|en` (optional) | Today's quote |
 
 Provider failure with usable cache → `200` with `"stale": true`; without → `503` `provider_unavailable`;
-account needs re-auth → `409` `reauth_required` with `{ "accountId": "…" }`.
+account needs re-auth → `409` `reauth_required` with `{ "accountId": "…" }`; weather/air/astro without a
+location in settings → `409` `location_not_set`.
+
+`data/weather` payload (`WeatherData`, times local to the configured zone):
+
+```json
+{
+  "current": { "time": "2026-01-15T14:15", "temperature": 3.4, "feelsLike": 0.9, "code": 3, "isDay": true,
+               "windSpeed": 12.5, "precipitation": 0 },
+  "hourly": [{ "time": "2026-01-15T15:00", "temperature": 3.1, "precipitationProbability": 10, "code": 61, "isDay": true }],
+  "daily": [{ "date": "2026-01-15", "code": 71, "min": -2, "max": 4, "precipitationProbability": 40 }]
+}
+```
+
+`hourly` holds the 8 hours after the current one, `daily` today + 5 days; missing model values are `null`.
 
 ### `PATCH /api/v1/tasks/:listId/:taskId` — D, A
 Body `{ "completed": true | false }`. Only this field is accepted. `200` with the updated task; invalidates the

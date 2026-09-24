@@ -72,6 +72,7 @@ All decisions below were made with the owner during requirements gathering (2026
 | D-17 | Licence | MIT | |
 | D-18 | Storage | D1 (SQLite) rather than KV | Strong consistency for rotating refresh tokens; SQL-friendly |
 | D-19 | Layout engine | Absolute positioning in %, 12×8 grid | Chosen before Phase 0; kept because it maps 1:1 to editor coordinates |
+| D-20 | Provider cache | D1 table `provider_cache` rather than the Cache API | The Worker runs on `*.workers.dev`, where the Cache API is not reliably persistent; the 3 h stale fallback must work. Non-personal data only (weather, air) |
 
 ## 6. Accounts & external prerequisites (owner action)
 

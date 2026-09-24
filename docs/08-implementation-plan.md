@@ -38,7 +38,7 @@ Acceptance: `curl` with admin token can read/write settings; device token is lim
 4. `feat(display): boot, token handling, state polling, stage scaling`.
 5. `feat(display): layout engine (absolute % positioning)`.
 6. `feat(display): clock tile`.
-7. `feat(worker): weather provider + data/weather` (Open-Meteo, Cache API, stale fallback) + mapper tests.
+7. `feat(worker): weather provider + data/weather` (Open-Meteo, D1 cache, stale fallback) + mapper tests.
 8. `feat(display): weather tile` (icons, states).
 9. `feat(worker,display): astro tile` (suncalc).
 10. `feat(worker,display): air quality & pollen tile`.

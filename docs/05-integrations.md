@@ -85,12 +85,17 @@ by re-reading the DB). This is why D1 (strong consistency) is used instead of KV
 ## 3. Open-Meteo (weather, air quality, pollen)
 
 - No API key; free for non-commercial use; **attribution required** (CC BY 4.0) — see tile docs.
-- Forecast: `https://api.open-meteo.com/v1/forecast?latitude=…&longitude=…&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m,precipitation&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=<tz>&forecast_days=6`
+- Forecast: `https://api.open-meteo.com/v1/forecast?latitude=…&longitude=…&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m,precipitation&hourly=temperature_2m,precipitation_probability,weather_code,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=<tz>&forecast_days=6`
 - Air: `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=…&longitude=…&current=european_aqi,pm10,pm2_5,alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,ragweed_pollen,olive_pollen&timezone=<tz>`
 - The location (city label + latitude/longitude) is stored in `settings.location`
   (D1), entered in the admin UI. **It is never committed.** Only the city (Bratislava) is needed;
   coordinates rounded to 2 decimals are sufficient (privacy).
-- Failure: serve stale cache up to 3 h; beyond that the tile shows the error state.
+- Cached in D1 (`provider_cache`, D-20) for the TTL (weather 15 min, air 60 min). Failure: serve the
+  stale payload up to 3 h; beyond that `503` and the tile shows the error state. No location set →
+  `409 location_not_set`.
+- The response is validated (zod) before it is mapped; an unexpected shape counts as a provider failure.
+  Normalised shape: `WeatherData` in `packages/shared/src/weather.ts` (local times of the configured zone,
+  next 8 hours, today + 5 days).
 
 ## 4. Sun & Moon
 
@@ -108,10 +113,12 @@ Implement `Provider` interface in `apps/worker/src/providers/`:
 
 ```ts
 interface Provider<TParams, TData> {
+  name: string;                                 // for logs
   ttlSeconds: number;
-  cacheKey(params: TParams): string;
-  fetch(ctx: ProviderCtx, params: TParams): Promise<TData>;   // normalised, provider-agnostic shape
+  staleSeconds: number;                         // how long to serve an old payload while the provider fails
+  cacheKey(params: TParams): string;            // includes a shape version, e.g. `weather:v1:…`
+  fetch(params: TParams): Promise<TData>;       // normalised, provider-agnostic shape
 }
 ```
 
-and register a `data/<type>` route. Credentials go through the same `accounts` table when OAuth is needed.
+and register a `data/<type>` route that calls `loadCached(db, provider, params)`. Credentials go through the same `accounts` table when OAuth is needed.

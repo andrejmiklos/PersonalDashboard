@@ -1,4 +1,5 @@
 import { createApp } from './app';
+import { dataRoutes } from './data/routes';
 import { pairRoutes } from './display/pair';
 import { displayRoutes } from './display/state';
 import { layoutRoutes } from './layouts/routes';
@@ -12,5 +13,6 @@ app.route('/api/v1/settings', settingsRoutes);
 app.route('/api/v1/layouts', layoutRoutes);
 app.route('/api/v1/display/pair', pairRoutes);
 app.route('/api/v1/display', displayRoutes);
+app.route('/api/v1/data', dataRoutes);
 
 export default app;

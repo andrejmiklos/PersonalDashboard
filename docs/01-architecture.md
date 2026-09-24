@@ -8,7 +8,7 @@
  │ Chrome (kiosk)     │◀──── JSON ───────── │  - static assets: /display, /admin   │
  │ /display (Chrome95)│   device token      │  - REST API  /api/v1/*               │
  └────────────────────┘                     │  - OAuth callbacks /oauth/*          │
-                                            │  - provider adapters + Cache API     │
+                                            │  - provider adapters + D1 cache      │
  ┌────────────────────┐        HTTPS        │                                      │
  │ Phone / PC browser │ ──── admin token ──▶│  D1 (SQLite): layouts, schedule,     │
  │ /admin (modern)    │                     │  settings, accounts (encrypted       │
@@ -36,7 +36,7 @@ Key properties:
 - Router: [Hono](https://hono.dev) (small, Workers-native).
 - Modules: `auth` (token middleware, roles), `oauth` (Google/Microsoft flows), `providers/*`
   (google-calendar, ms-todo, open-meteo, astro), `layouts`, `schedule` (state resolution),
-  `settings`, `cache` (Cache API wrapper), `crypto` (AES-GCM for refresh tokens).
+  `settings`, `cache` (D1 provider cache, D-20), `crypto` (AES-GCM for refresh tokens).
 - Validation of all request bodies (zod) — layouts validated with the shared schema.
 - Cron Trigger (optional, Phase 7): warm caches, prune expired OAuth states.
 
@@ -81,8 +81,10 @@ tablet bundle small.)
 
 ### 3.2 Tile data
 
-Tile → `GET /api/v1/data/<type>?…` → Worker checks Cache API (key = type + normalised params) →
-miss: call provider → normalise → cache with TTL → respond `{ updatedAt, ttl, data }`.
+Tile → `GET /api/v1/data/<type>?…` → Worker reads `provider_cache` in D1 (key = type + shape version +
+normalised params) → younger than the TTL: respond with it; otherwise call provider → normalise → store →
+respond `{ updatedAt, ttl, data }`. Provider failure: a row within the stale window is served with
+`"stale": true`, otherwise `503`. Each write prunes rows older than the stale window (D-20).
 
 ### 3.3 Task completion (only write path from the tablet)
 
@@ -206,6 +208,13 @@ CREATE TABLE pairing_codes (
   expires_at      TEXT NOT NULL,
   used_at         TEXT,
   failed_attempts INTEGER NOT NULL DEFAULT 0
+);
+
+-- 0003: last normalised provider payloads (§3.2, D-20); non-personal data only
+CREATE TABLE provider_cache (
+  key        TEXT PRIMARY KEY,      -- e.g. weather:v1:<lat>:<lon>:<tz>
+  payload    TEXT NOT NULL,         -- JSON
+  fetched_at TEXT NOT NULL
 );
 ```
 
