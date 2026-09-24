@@ -3,6 +3,7 @@ import type { DataClient } from '../data';
 import { createAir } from '../tiles/air';
 import { createAstro } from '../tiles/astro';
 import { createClock } from '../tiles/clock';
+import { createCountdown } from '../tiles/countdown';
 import { createPlaceholder } from '../tiles/placeholder';
 import { createQuote } from '../tiles/quote';
 import type { TileFactory, TileInstance } from '../tiles/types';
@@ -14,6 +15,7 @@ const factories: Partial<Record<TileType, TileFactory>> = {
   air: createAir,
   astro: createAstro,
   clock: createClock,
+  countdown: createCountdown,
   quote: createQuote,
   weather: createWeather,
 };

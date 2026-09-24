@@ -56,6 +56,23 @@ function pad2(n: number): string {
   return String(n).padStart(2, '0');
 }
 
+/**
+ * The instant at which the wall clock in `timeZone` shows `local` (`YYYY-MM-DDTHH:mm`). Two correction
+ * rounds handle DST changes; a time skipped by a spring-forward shift lands just after the gap.
+ */
+export function zonedTimeToInstant(local: string, timeZone: string): Date {
+  const [date = '', time = '00:00'] = local.split('T');
+  const [y = 1970, m = 1, d = 1] = date.split('-').map(Number);
+  const [hh = 0, mm = 0] = time.split(':').map(Number);
+  const wanted = Date.UTC(y, m - 1, d, hh, mm);
+  let guess = wanted;
+  for (let i = 0; i < 2; i++) {
+    const p = zonedParts(new Date(guess), timeZone);
+    guess += wanted - Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
+  }
+  return new Date(guess);
+}
+
 /** Local calendar date `YYYY-MM-DD` in `timeZone`. */
 export function localDateString(date: Date, timeZone: string): string {
   const p = zonedParts(date, timeZone);

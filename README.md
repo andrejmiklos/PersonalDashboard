@@ -11,7 +11,7 @@ Pick tiles, arrange them in a web editor, save layouts, and let the tablet show 
 
 - Worker on Cloudflare Workers + D1: token auth (admin / device), settings, layouts API with validation
 - Tablet display: pairing with a one-time code, state polling, layout rendering
-- Tiles: clock, weather (Open-Meteo, cached on the Worker, stale fallback), sun & moon (suncalc), air quality, quote of the day (70 public-domain quotes, SK + EN)
+- Tiles: clock, weather (Open-Meteo, cached on the Worker, stale fallback), sun & moon (suncalc), air quality, quote of the day (70 public-domain quotes, SK + EN), countdown
 - CLI scripts: tokens, pairing codes, layout import, settings (location, locale, time zone), smoke test
 
 ## Features (planned)

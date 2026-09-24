@@ -114,8 +114,10 @@ The tile must never offer create/edit/delete — only complete/uncomplete.
 | Min / default size | 2×1 / 3×2 |
 | Data source | None (config only) |
 | Config | `label: string` (required, ≤ 40 chars), `target: 'YYYY-MM-DD'` or `'YYYY-MM-DDTHH:mm'` (local), `showTime: bool` (false: days only), `afterBehaviour: 'hide'|'zero'|'since'` ('zero') |
-| Display | Large number of days (or `d h m`), label below; "Today!" on the day |
-| Refresh | Recomputed each minute from the device clock |
+| Display | Large number of calendar days with unit (SK plurals: deň / dni / dní), label below in the accent colour; "Today!" for the whole day of a date-only target, until the time of a target with a time. `showTime`: `1 d 19 h 8 min` (or `2 h 35 min` on the last day) |
+| After the event | `hide`: empty tile; `zero`: "0 days"; `since`: "5 days since" (with `showTime` and a time: the duration since) |
+| Time zone | Days and the target are in the settings time zone, not the device one; a target with a time stays at that local time across DST changes (`zonedTimeToInstant`) |
+| Refresh | Recomputed each minute (aligned to the minute) from the device clock; no API |
 
 ## 9. Tile registry (in `packages/shared`)
 

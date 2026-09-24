@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { dayNumber, formatDate, formatTime, isoWeekNumber, localDateString, zonedParts } from './dates';
+import {
+  dayNumber,
+  formatDate,
+  formatTime,
+  isoWeekNumber,
+  localDateString,
+  zonedParts,
+  zonedTimeToInstant,
+} from './dates';
 
 const TZ = 'Europe/Bratislava';
 
@@ -60,5 +68,25 @@ describe('formatting', () => {
   it('formats a long date with a capital first letter', () => {
     expect(formatDate(date, { locale: 'sk', timeZone: TZ, style: 'long' })).toBe('Štvrtok 15. januára');
     expect(formatDate(date, { locale: 'en', timeZone: TZ, style: 'long' })).toBe('Thursday, January 15');
+  });
+});
+
+describe('zonedTimeToInstant', () => {
+  it('converts local wall time in winter and summer', () => {
+    expect(zonedTimeToInstant('2026-12-24T18:00', 'Europe/Bratislava').toISOString()).toBe(
+      '2026-12-24T17:00:00.000Z',
+    );
+    expect(zonedTimeToInstant('2026-07-01T00:00', 'Europe/Bratislava').toISOString()).toBe(
+      '2026-06-30T22:00:00.000Z',
+    );
+  });
+
+  it('handles zones west of UTC and the day after a DST change', () => {
+    expect(zonedTimeToInstant('2026-03-09T09:30', 'America/New_York').toISOString()).toBe(
+      '2026-03-09T13:30:00.000Z',
+    );
+    expect(zonedTimeToInstant('2026-03-29T12:00', 'Europe/Bratislava').toISOString()).toBe(
+      '2026-03-29T10:00:00.000Z',
+    );
   });
 });
