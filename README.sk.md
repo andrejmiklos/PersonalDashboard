@@ -5,7 +5,14 @@ Vyberieš si dlaždice, rozložíš ich vo webovom editore, uložíš layouty a 
 
 > English version: [README.md](README.md)
 
-**Stav:** plánovanie hotové, implementácia ešte nezačala. Pozri [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
+**Stav:** prebieha fáza 2 (runtime displeja + prvé dlaždice). Pozri [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
+
+## Čo už funguje
+
+- Worker na Cloudflare Workers + D1: autentifikácia tokenmi (admin / zariadenie), nastavenia, API layoutov s validáciou
+- Displej na tablete: párovanie jednorazovým kódom, pollovanie stavu, vykresľovanie layoutu, dlaždica hodín
+- Dátový endpoint počasia (Open-Meteo, s cache a záložnými staršími dátami); dlaždica počasia nasleduje
+- CLI skripty: tokeny, párovacie kódy, import layoutu, smoke test
 
 ## Funkcie (plánované)
 

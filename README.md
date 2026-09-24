@@ -5,7 +5,14 @@ Pick tiles, arrange them in a web editor, save layouts, and let the tablet show 
 
 > Slovak version: [README.sk.md](README.sk.md)
 
-**Status:** planning complete, implementation not started. See [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
+**Status:** Phase 2 (display runtime + first tiles) in progress. See [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
+
+## Working now
+
+- Worker on Cloudflare Workers + D1: token auth (admin / device), settings, layouts API with validation
+- Tablet display: pairing with a one-time code, state polling, layout rendering, clock tile
+- Weather data endpoint (Open-Meteo, cached, stale fallback); the weather tile follows
+- CLI scripts: tokens, pairing codes, layout import, smoke test
 
 ## Features (planned)
 
