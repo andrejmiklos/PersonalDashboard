@@ -165,7 +165,7 @@ printed once after the insert is confirmed.
 - Timestamps ISO-8601 UTC; dates `YYYY-MM-DD`.
 - Pagination not needed (single-owner data).
 - Versioning: `/api/v1`; breaking changes → `/v2`, with `appVersion` reload logic keeping the tablet in step.
-- Rate limits: Cloudflare rule + basic per-token counter (optional).
+- Rate limits: per client IP (doc 06 §6); over the limit → `429 rate_limited` with `Retry-After`.
 - Request bodies: `Content-Type: application/json` (else `415`), size-limited per route (`413`), validated with zod
   (`400 validation_error`, message names the first invalid field). State-changing requests with an `Origin` other
   than the Worker's own get `403 forbidden_origin`.

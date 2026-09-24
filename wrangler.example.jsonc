@@ -23,6 +23,12 @@
       "migrations_dir": "migrations",
     },
   ],
+  // Per-IP limits (docs/06-security-and-public-repo.md §6). namespace_id: any integer string, unique in the
+  // account. Without these entries the Worker runs without rate limiting.
+  "ratelimits": [
+    { "name": "API_LIMITER", "namespace_id": "1001", "simple": { "limit": 120, "period": 60 } },
+    { "name": "PAIR_LIMITER", "namespace_id": "1002", "simple": { "limit": 5, "period": 60 } },
+  ],
   // Optional custom domain instead of *.workers.dev:
   // "routes": [{ "pattern": "dashboard.example.com", "custom_domain": true }]
 }

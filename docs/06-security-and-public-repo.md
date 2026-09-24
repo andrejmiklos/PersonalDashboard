@@ -11,7 +11,8 @@ calendar and task data. Both facts drive this document.
 | Stranger calls the API and reads events/tasks | Bearer tokens on every `/api/v1/*` route; tokens ≥ 256-bit random; only hashes stored |
 | Stolen device token (tablet) | Role `device` is limited (read data + complete tasks + heartbeat); revoke in admin; rotate |
 | Stolen admin token | Stored only on owner's phone/PC; rotate via CLI script; short docs on how |
-| Brute-force of tokens | 256-bit tokens make it infeasible; plus Cloudflare rate-limiting rule and constant-time comparison |
+| Brute-force of tokens | 256-bit tokens make it infeasible; constant-time comparison; per-IP rate limits (§6) |
+| Flooding the Worker (quota exhaustion) | Partly: the per-IP limits protect D1 and pairing codes, but rejected requests still count as Worker invocations (100k/day on the free plan). Only a WAF rule on a custom domain stops them before the Worker (backlog) |
 | Provider refresh tokens leak from DB | Encrypted (AES-GCM) with a key that lives only in Worker secrets |
 | OAuth CSRF / code injection | Single-use `state` + PKCE, 10-minute TTL, admin-initiated |
 | XSS in admin/display (calendar titles, task names, quotes) | All external text inserted via `textContent`; no `innerHTML` with data; strict CSP |
@@ -114,8 +115,12 @@ Real `wrangler.jsonc` (account id, D1 database id, route) is **git-ignored**.
 - `/display/` and `/admin/` static shells are public but contain **no data and no secrets**.
 - The device token in the URL hash is never sent to the server, is removed from the address bar after
   first load, and is kept in `localStorage`. Do not put the token in a query string.
-- Cloudflare: enable a rate-limiting rule (free tier allows one) for `/api/*` and `/oauth/*`; bot fight
-  mode is not required.
+- Rate limits: Workers Rate Limiting bindings keyed by `CF-Connecting-IP` (`apps/worker/src/http/rate-limit.ts`,
+  configured in `wrangler.jsonc`, see `wrangler.example.jsonc`): `API_LIMITER` 120 requests / 60 s for all
+  `/api/*`, `PAIR_LIMITER` 5 / 60 s for `POST /display/pair`; over the limit → `429 rate_limited` with
+  `Retry-After: 60`. Counting is per Cloudflare location and approximate. Without the bindings (local dev,
+  tests) or when the limiter fails, requests pass: tokens and codes stay unguessable, the limits only curb
+  abuse. WAF rate-limiting rules are not available on `*.workers.dev` (they need a zone, see backlog).
 - Input validation: zod for every body/param; size limits; reject unknown fields.
 - CORS: none (same-origin). Reject `Origin` headers that do not match on state-changing requests.
 - Logging: structured, without tokens/PII; `wrangler tail` only for debugging.

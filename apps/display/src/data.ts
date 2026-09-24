@@ -7,7 +7,12 @@ const REQUEST_TIMEOUT_MS = 10_000;
 /** A cached payload older than this is not shown any more, even while offline. */
 const MAX_CACHED_AGE_MS = 24 * 60 * 60_000;
 /** Failures that say nothing about the data itself; the last payload is still worth showing. */
-const TRANSIENT_CODES = new Set<string | null>([null, 'provider_unavailable', 'internal_error']);
+const TRANSIENT_CODES = new Set<string | null>([
+  null,
+  'provider_unavailable',
+  'internal_error',
+  'rate_limited',
+]);
 
 /**
  * `code` is the API error code (e.g. `location_not_set`), or null for network and unexpected errors.

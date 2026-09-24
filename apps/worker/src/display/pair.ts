@@ -4,6 +4,7 @@ import { generateToken, hashToken, sha256Hex } from '../auth/token';
 import type { AppEnv } from '../env';
 import { ApiError } from '../errors';
 import { limitBody, readJson } from '../http/json-body';
+import { rateLimit } from '../http/rate-limit';
 import { generateId } from '../ids';
 import { normalizePairingCode, PAIRING_CODE_PATTERN, PAIRING_MAX_FAILED } from './pairing-code';
 
@@ -31,34 +32,39 @@ async function registerFailure(db: D1Database, now: string): Promise<void> {
  */
 export const pairRoutes = new Hono<AppEnv>();
 
-pairRoutes.post('/', limitBody(256), async (c) => {
-  const db = c.env.DB;
-  const now = new Date().toISOString();
-  const { code } = await readJson(c, pairSchema);
-  const normalized = normalizePairingCode(code);
-  if (!PAIRING_CODE_PATTERN.test(normalized)) {
-    await registerFailure(db, now);
-    throw invalidCode();
-  }
+pairRoutes.post(
+  '/',
+  rateLimit((env) => env.PAIR_LIMITER),
+  limitBody(256),
+  async (c) => {
+    const db = c.env.DB;
+    const now = new Date().toISOString();
+    const { code } = await readJson(c, pairSchema);
+    const normalized = normalizePairingCode(code);
+    if (!PAIRING_CODE_PATTERN.test(normalized)) {
+      await registerFailure(db, now);
+      throw invalidCode();
+    }
 
-  const codeHash = await sha256Hex(normalized);
-  const active = 'code_hash = ? AND used_at IS NULL AND expires_at > ? AND failed_attempts < ?';
-  const token = generateToken('device');
-  const [issued] = await db.batch<{ id: string }>([
-    db
-      .prepare(
-        `INSERT INTO api_tokens (id, role, label, token_hash, created_at)
+    const codeHash = await sha256Hex(normalized);
+    const active = 'code_hash = ? AND used_at IS NULL AND expires_at > ? AND failed_attempts < ?';
+    const token = generateToken('device');
+    const [issued] = await db.batch<{ id: string }>([
+      db
+        .prepare(
+          `INSERT INTO api_tokens (id, role, label, token_hash, created_at)
          SELECT ?, 'device', label, ?, ? FROM pairing_codes WHERE ${active} RETURNING id`,
-      )
-      .bind(generateId('tok'), await hashToken(token), now, codeHash, now, PAIRING_MAX_FAILED),
-    db
-      .prepare(`UPDATE pairing_codes SET used_at = ? WHERE ${active}`)
-      .bind(now, codeHash, now, PAIRING_MAX_FAILED),
-  ]);
+        )
+        .bind(generateId('tok'), await hashToken(token), now, codeHash, now, PAIRING_MAX_FAILED),
+      db
+        .prepare(`UPDATE pairing_codes SET used_at = ? WHERE ${active}`)
+        .bind(now, codeHash, now, PAIRING_MAX_FAILED),
+    ]);
 
-  if (issued?.results.length !== 1) {
-    await registerFailure(db, now);
-    throw invalidCode();
-  }
-  return c.json({ token }, 201);
-});
+    if (issued?.results.length !== 1) {
+      await registerFailure(db, now);
+      throw invalidCode();
+    }
+    return c.json({ token }, 201);
+  },
+);
