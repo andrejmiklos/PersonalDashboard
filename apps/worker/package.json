@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "build": "node -e \"require('fs').cpSync('public', '../../dist/public', { recursive: true })\"",
-    "typecheck": "tsc -p ."
+    "typecheck": "tsc -p . && tsc -p tsconfig.test.json"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20260923.1"
+    "@cloudflare/workers-types": "^5.20260923.1",
+    "@types/node": "^22.20.4"
   }
 }
