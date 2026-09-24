@@ -62,6 +62,12 @@ export function localDateString(date: Date, timeZone: string): string {
   return `${p.year}-${pad2(p.month)}-${pad2(p.day)}`;
 }
 
+/** Short weekday of a local `YYYY-MM-DD` date: "št" / "Thu". */
+export function formatWeekday(isoDate: string, locale: Locale): string {
+  // Noon UTC formatted in UTC is that calendar day in every locale.
+  return formatter(locale, { timeZone: 'UTC', weekday: 'short' }).format(new Date(`${isoDate}T12:00:00Z`));
+}
+
 /** Days since 1970-01-01 for a `YYYY-MM-DD` string; used for deterministic daily rotation. */
 export function dayNumber(isoDate: string): number {
   const [y, m, d] = isoDate.split('-').map(Number);

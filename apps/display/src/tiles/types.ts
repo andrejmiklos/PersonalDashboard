@@ -1,4 +1,5 @@
 import type { Locale } from '@dashboard/shared';
+import type { DataClient } from '../data';
 import type { SizeClass } from '../layout/geometry';
 
 export interface TileContext {
@@ -7,6 +8,8 @@ export interface TileContext {
   config: Record<string, unknown>;
   locale: Locale;
   timezone: string;
+  /** Tile data from the Worker, authorised with the device token. */
+  data: DataClient;
 }
 
 export interface TileBox {

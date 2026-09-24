@@ -1,12 +1,15 @@
 import type { LayoutDocument, Locale, TileType } from '@dashboard/shared';
+import type { DataClient } from '../data';
 import { createClock } from '../tiles/clock';
 import { createPlaceholder } from '../tiles/placeholder';
 import type { TileFactory, TileInstance } from '../tiles/types';
+import { createWeather } from '../tiles/weather';
 import { tileRect } from './geometry';
 
 /** Implemented tile modules; other types render a placeholder. */
 const factories: Partial<Record<TileType, TileFactory>> = {
   clock: createClock,
+  weather: createWeather,
 };
 
 interface Mounted {
@@ -26,6 +29,7 @@ export function renderLayout(
   layout: LayoutDocument,
   locale: Locale,
   timezone: string,
+  data: DataClient,
 ): void {
   const key = `${layout.id}|${layout.version}|${locale}|${timezone}`;
   if (mounted?.key === key) return;
@@ -52,7 +56,7 @@ export function renderLayout(
     box.appendChild(content);
     root.appendChild(box);
 
-    const ctx = { el: content, config: tile.config, locale, timezone };
+    const ctx = { el: content, config: tile.config, locale, timezone, data };
     const factory = factories[tile.type];
     const instance = factory ? factory(ctx) : createPlaceholder(tile.type, ctx);
     const inset = layout.grid.gap;

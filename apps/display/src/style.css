@@ -129,3 +129,202 @@ body {
   color: #f28b82;
   font-size: 1rem;
 }
+
+/* Weather tile: sizes in em, the tile sets its font size (tiles/weather.ts). */
+.tile-content.wx {
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 0.75em;
+}
+
+.tile-content.wx-compact,
+.tile-content.is-error {
+  justify-content: center;
+}
+
+.tile-content.is-stale .wx-body {
+  opacity: 0.55;
+}
+
+.wx-message {
+  margin: auto;
+  color: #888;
+  font-size: 0.875em;
+  text-align: center;
+}
+
+.wx-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.wx-now {
+  display: flex;
+  align-items: center;
+  height: 4.5em;
+  flex-shrink: 0;
+}
+
+.wx-compact .wx-now {
+  justify-content: center;
+  height: auto;
+}
+
+.wx-now-icon {
+  width: 4.25em;
+  height: 4.25em;
+  flex-shrink: 0;
+  margin-right: 0.5em;
+}
+
+.wx-now-icon .wi {
+  width: 100%;
+  height: 100%;
+}
+
+.wx-now-text {
+  min-width: 0;
+}
+
+.wx-temp {
+  color: #eee;
+  font-size: 2.5em;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.wx-cond,
+.wx-details {
+  color: #aaa;
+  font-size: 0.875em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wx-cond {
+  color: #ccc;
+  margin-top: 0.2em;
+}
+
+.wx-details {
+  font-size: 0.75em;
+}
+
+.wx-hours {
+  display: flex;
+  justify-content: space-between;
+  height: 4.25em;
+  margin-top: 0.75em;
+  flex-shrink: 0;
+}
+
+.wx-hour {
+  width: 3.25em;
+  text-align: center;
+  font-size: 0.8125em;
+}
+
+.wx-hour-time {
+  color: #888;
+}
+
+.wx-hour .wi {
+  display: block;
+  width: 1.75em;
+  height: 1.75em;
+  margin: 0.1em auto;
+}
+
+.wx-hour-temp {
+  color: #ddd;
+}
+
+.wx-precip {
+  color: var(--accent);
+  font-size: 0.85em;
+  min-height: 1em;
+}
+
+.wx-days {
+  margin-top: 0.75em;
+}
+
+.wx-day {
+  display: flex;
+  align-items: center;
+  height: 1.75em;
+  font-size: 0.875em;
+}
+
+.wx-day-name {
+  flex: 1;
+  color: #aaa;
+}
+
+.wx-day .wi {
+  width: 1.5em;
+  height: 1.5em;
+  margin-right: 0.5em;
+}
+
+.wx-day .wx-precip {
+  width: 3em;
+  min-height: 0;
+  text-align: right;
+}
+
+.wx-day-min,
+.wx-day-max {
+  width: 2.5em;
+  text-align: right;
+}
+
+.wx-day-min {
+  color: #888;
+}
+
+.wx-foot {
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
+  color: #666;
+  font-size: 0.625em;
+  white-space: nowrap;
+}
+
+.wi path {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.wi .wi-sun,
+.wi .wi-bolt {
+  stroke: #ffd54f;
+}
+
+.wi .wi-moon {
+  stroke: #e0e0e0;
+}
+
+.wi .wi-cloud {
+  stroke: #b0bec5;
+  /* Tile background, so a sun or moon behind the cloud is hidden. */
+  fill: #111;
+}
+
+.wi .wi-water {
+  stroke: #4fc3f7;
+}
+
+.wi .wi-snow {
+  stroke: #e3f2fd;
+  stroke-width: 2;
+}
+
+.wi .wi-fog {
+  stroke: #90a4ae;
+}

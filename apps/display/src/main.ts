@@ -1,6 +1,7 @@
 import './style.css';
 import { DEFAULT_LOCALE, t, type DisplayState, type MessageKey } from '@dashboard/shared';
 import { fetchState } from './api';
+import { createDataClient } from './data';
 import { clearLayout, renderLayout } from './layout/engine';
 import { shouldReload } from './reload';
 import { applyStage, fitStage } from './stage';
@@ -22,6 +23,8 @@ function safeLocalStorage(): Storage | null {
 const storage = safeLocalStorage();
 // First thing on boot: take the token out of the URL.
 const pairing = pairFromLocation(window.location, window.history, storage);
+
+const dataClient = createDataClient(() => currentToken(storage));
 
 const stage = document.getElementById('stage') as HTMLElement;
 const status = document.getElementById('status') as HTMLElement;
@@ -66,7 +69,7 @@ function render(current: DisplayState): void {
   }
   status.hidden = true;
   pairingForm.hide();
-  renderLayout(stage, layout, current.locale, current.timezone);
+  renderLayout(stage, layout, current.locale, current.timezone, dataClient);
 }
 
 function resize(): void {

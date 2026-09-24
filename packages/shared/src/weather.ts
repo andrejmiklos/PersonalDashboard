@@ -36,6 +36,50 @@ export interface WeatherData {
   daily: WeatherDay[];
 }
 
+export type WeatherCondition =
+  | 'clear'
+  | 'mainlyClear'
+  | 'partlyCloudy'
+  | 'overcast'
+  | 'fog'
+  | 'drizzle'
+  | 'freezingDrizzle'
+  | 'rain'
+  | 'freezingRain'
+  | 'snow'
+  | 'snowGrains'
+  | 'rainShowers'
+  | 'snowShowers'
+  | 'thunderstorm'
+  | 'thunderstormHail'
+  | 'unknown';
+
+const CONDITIONS: [WeatherCondition, number[]][] = [
+  ['clear', [0]],
+  ['mainlyClear', [1]],
+  ['partlyCloudy', [2]],
+  ['overcast', [3]],
+  ['fog', [45, 48]],
+  ['drizzle', [51, 53, 55]],
+  ['freezingDrizzle', [56, 57]],
+  ['rain', [61, 63, 65]],
+  ['freezingRain', [66, 67]],
+  ['snow', [71, 73, 75]],
+  ['snowGrains', [77]],
+  ['rainShowers', [80, 81, 82]],
+  ['snowShowers', [85, 86]],
+  ['thunderstorm', [95]],
+  ['thunderstormHail', [96, 99]],
+];
+
+/** WMO weather interpretation code → condition; its text is the i18n key `weather.<condition>`. */
+export function weatherCondition(code: number | null): WeatherCondition {
+  for (const [condition, codes] of CONDITIONS) {
+    if (code !== null && codes.includes(code)) return condition;
+  }
+  return 'unknown';
+}
+
 /** Hours after the current one in `WeatherData.hourly` (docs/03-tiles.md §5). */
 export const WEATHER_HOURS = 8;
 /** Today + 5 days, the maximum of the tile's `dailyDays`. */

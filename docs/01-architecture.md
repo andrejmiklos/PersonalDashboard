@@ -45,7 +45,8 @@ Key properties:
 - No framework; small render helpers. Every tile is a module implementing
   `mount(el, ctx) / update(data) / resize(box) / destroy()`.
 - Layout engine: absolute positioning from grid coordinates (see doc 04).
-- Data layer: `fetch`-based client with timeouts, polling scheduler per tile type, stale tracking.
+- Data layer (`src/data.ts`): `fetch`-based client with timeouts, bound to the device token and passed to
+  tiles as `ctx.data`; a poller per tile with failure backoff; stale tracking (`isStale`).
 - Built with Vite, `build.target: 'chrome95'` (Phase 0 measurement); no legacy plugin, no polyfills.
 
 ### 2.3 `apps/admin` — editor & control panel (TypeScript, modern browsers)
