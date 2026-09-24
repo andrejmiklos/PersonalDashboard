@@ -100,7 +100,13 @@
     add('viewport', window.innerWidth + '×' + window.innerHeight);
     add('device time', new Date().toString());
     add('timezone offset (min)', new Date().getTimezoneOffset());
-    add('Fully Kiosk JS interface', typeof window.fully !== 'undefined');
+    add(
+      'display-mode: fullscreen (home-screen shortcut)',
+      safe(function () {
+        return window.matchMedia('(display-mode: fullscreen)').matches;
+      }),
+    );
+    add('Screen Wake Lock API', has(navigator, 'wakeLock'));
 
     add('ES2015 syntax (arrow/let/class/template)', window.__spikeEs2015 === true);
     add('ES2017 syntax (async/await)', window.__spikeEs2017 === true);

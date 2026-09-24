@@ -1,0 +1,10 @@
+{
+  "name": "Dashboard spike",
+  "short_name": "Spike",
+  "start_url": "/display/spike.html",
+  "scope": "/display/",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#000000",
+  "theme_color": "#000000"
+}
