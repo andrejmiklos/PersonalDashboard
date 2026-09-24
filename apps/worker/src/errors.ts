@@ -9,13 +9,14 @@ export interface ErrorBody {
 
 /** An error that is safe to show to the client as is. */
 export class ApiError extends Error {
-  constructor(
-    readonly status: ContentfulStatusCode,
-    readonly code: string,
-    message: string,
-  ) {
+  readonly status: ContentfulStatusCode;
+  readonly code: string;
+
+  constructor(status: ContentfulStatusCode, code: string, message: string) {
     super(message);
     this.name = 'ApiError';
+    this.status = status;
+    this.code = code;
   }
 }
 
