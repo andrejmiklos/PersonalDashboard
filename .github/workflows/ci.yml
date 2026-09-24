@@ -12,6 +12,10 @@ permissions:
 jobs:
   gitleaks:
     runs-on: ubuntu-latest
+    # On pull_request events the action lists the PR's commits through the API.
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
@@ -19,6 +23,8 @@ jobs:
       - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # PR comments would need pull-requests: write; a failed job is enough.
+          GITLEAKS_ENABLE_COMMENTS: false
 
   check:
     runs-on: ubuntu-latest
