@@ -5,7 +5,8 @@ Vyberieš si dlaždice, rozložíš ich vo webovom editore, uložíš layouty a 
 
 > English version: [README.md](README.md)
 
-**Stav:** prebieha fáza 2 (runtime displeja + prvé dlaždice). Pozri [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
+**Stav:** fázy 0–2 hotové (jadro backendu, runtime displeja, prvé dlaždice, správanie offline); ďalej nasleduje
+fáza 3 (Google Kalendár a Microsoft To Do). Pozri [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
 
 ## Čo už funguje
 
