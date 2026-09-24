@@ -16,7 +16,7 @@ calendar and task data. Both facts drive this document.
 | OAuth CSRF / code injection | Single-use `state` + PKCE, 10-minute TTL, admin-initiated |
 | XSS in admin/display (calendar titles, task names, quotes) | All external text inserted via `textContent`; no `innerHTML` with data; strict CSP |
 | Personal data in logs/caches | Never log event/task content; data endpoints `Cache-Control: no-store`; the D1 provider cache holds only non-personal normalised payloads (weather, air), pruned after 3 h |
-| Supply chain | Lockfile committed, Dependabot, few dependencies, `npm audit` in CI |
+| Supply chain | Lockfile committed (`npm ci`), few dependencies, weekly Dependabot PRs for npm and GitHub Actions (`.github/dependabot.yml`), `npm audit --audit-level=high` in CI, actions pinned to commit SHAs |
 
 ## 2. Roles and permissions
 
