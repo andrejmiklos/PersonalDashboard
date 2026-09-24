@@ -1,3 +1,5 @@
+import type { AuthInfo } from './auth/middleware';
+
 /** Worker bindings; configured in wrangler.jsonc (template: wrangler.example.jsonc). */
 export interface Env {
   ASSETS: Fetcher;
@@ -7,4 +9,8 @@ export interface Env {
 /** Hono generic for handlers and middleware of this Worker. */
 export interface AppEnv {
   Bindings: Env;
+  Variables: {
+    /** Set by requireAuth. */
+    auth: AuthInfo;
+  };
 }

@@ -1,23 +1,8 @@
-import { readdirSync, readFileSync } from 'node:fs';
-import { DatabaseSync } from 'node:sqlite';
+import type { DatabaseSync } from 'node:sqlite';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { migrate } from './test/d1';
 
-// D1 is SQLite, so the migrations are checked against Node's built-in SQLite.
-const MIGRATIONS_DIR = new URL('../../../migrations/', import.meta.url);
 const NOW = '2026-01-15T08:00:00.000Z';
-
-function migrate(): DatabaseSync {
-  const db = new DatabaseSync(':memory:');
-  // D1 enforces foreign keys by default; plain SQLite does not.
-  db.exec('PRAGMA foreign_keys = ON');
-  const files = readdirSync(MIGRATIONS_DIR)
-    .filter((f) => f.endsWith('.sql'))
-    .sort();
-  for (const file of files) {
-    db.exec(readFileSync(new URL(file, MIGRATIONS_DIR), 'utf8'));
-  }
-  return db;
-}
 
 describe('migrations', () => {
   let db: DatabaseSync;

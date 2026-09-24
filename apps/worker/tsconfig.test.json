@@ -4,6 +4,6 @@
     // Tests run in Node (Vitest), so they may use Node built-ins.
     "types": ["@cloudflare/workers-types", "node"]
   },
-  "include": ["src/**/*.test.ts"],
+  "include": ["src/**/*.test.ts", "src/test"],
   "exclude": []
 }
