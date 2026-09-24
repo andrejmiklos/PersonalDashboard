@@ -20,7 +20,7 @@ function safeLocalStorage(): Storage | null {
 
 const storage = safeLocalStorage();
 // First thing on boot: take the token out of the URL.
-pairFromLocation(window.location, window.history, storage);
+const pairing = pairFromLocation(window.location, window.history, storage);
 
 const stage = document.getElementById('stage') as HTMLElement;
 const status = document.getElementById('status') as HTMLElement;
@@ -53,7 +53,7 @@ function resize(): void {
 async function poll(): Promise<void> {
   const token = currentToken(storage);
   if (token === null) {
-    showMessage('display.notPaired');
+    showMessage(pairing === 'rejected' ? 'display.badLink' : 'display.notPaired');
     return;
   }
 
@@ -75,7 +75,7 @@ async function poll(): Promise<void> {
       break;
     case 'unauthorized':
       etag = null;
-      showMessage('display.notPaired');
+      showMessage('display.tokenRejected');
       nextMs = UNAUTHORIZED_POLL_MS;
       break;
     case 'failed':

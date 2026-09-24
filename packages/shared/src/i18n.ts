@@ -14,6 +14,8 @@ const en = {
   'state.error': 'Unavailable',
   'state.updatedAt': 'Updated {time}',
   'display.notPaired': 'This display is not paired. Open it once with its device link.',
+  'display.badLink': 'The link does not contain a valid device token. Check it and open it again.',
+  'display.tokenRejected': 'The server rejected the device token (wrong or revoked). Open a new device link.',
   'display.offline': 'Offline',
   'display.noLayout': 'No layout is selected for this display.',
   'tile.clock': 'Clock',
@@ -36,6 +38,9 @@ const sk: Messages = {
   'state.error': 'Nedostupné',
   'state.updatedAt': 'Aktualizované {time}',
   'display.notPaired': 'Tento displej nie je spárovaný. Otvorte ho raz cez jeho odkaz zariadenia.',
+  'display.badLink': 'Odkaz neobsahuje platný token zariadenia. Skontrolujte ho a otvorte znova.',
+  'display.tokenRejected':
+    'Server odmietol token zariadenia (nesprávny alebo zrušený). Otvorte nový odkaz zariadenia.',
   'display.offline': 'Offline',
   'display.noLayout': 'Pre tento displej nie je vybraný žiadny layout.',
   'tile.clock': 'Hodiny',
