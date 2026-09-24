@@ -1,0 +1,444 @@
+[
+  {
+    "id": "q001",
+    "sk": "Neodvažujeme sa nie preto, že veci sú ťažké. Sú ťažké preto, že sa neodvažujeme.",
+    "en": "It is not because things are difficult that we do not dare; it is because we do not dare that they are difficult.",
+    "author": "Seneca"
+  },
+  {
+    "id": "q002",
+    "sk": "Kým život odkladáme, pominie.",
+    "en": "While we are postponing, life speeds by.",
+    "author": "Seneca"
+  },
+  {
+    "id": "q003",
+    "sk": "Všetko ostatné je cudzie, iba čas je náš.",
+    "en": "Nothing is ours except time.",
+    "author": "Seneca"
+  },
+  {
+    "id": "q004",
+    "sk": "Nemáme málo času, ale veľa ho premrháme.",
+    "en": "It is not that we have a short time to live, but that we waste a lot of it.",
+    "author": "Seneca"
+  },
+  {
+    "id": "q005",
+    "sk": "Kto je všade, nie je nikde.",
+    "en": "Everywhere means nowhere.",
+    "author": "Seneca"
+  },
+  {
+    "id": "q006",
+    "sk": "Ľudia sa učia tým, že učia iných.",
+    "en": "People learn while they teach.",
+    "author": "Seneca"
+  },
+  {
+    "id": "q007",
+    "sk": "Ak chceš byť milovaný, miluj.",
+    "en": "If you would be loved, love.",
+    "author": "Seneca"
+  },
+  {
+    "id": "q008",
+    "sk": "Kto nevie, do ktorého prístavu sa plaví, tomu nijaký vietor nie je priaznivý.",
+    "en": "If one does not know to which port one is sailing, no wind is favourable.",
+    "author": "Seneca"
+  },
+  {
+    "id": "q009",
+    "sk": "Aké sú tvoje zvyčajné myšlienky, taká bude aj tvoja myseľ.",
+    "en": "Such as are your habitual thoughts, such also will be the character of your mind.",
+    "author": "Marcus Aurelius"
+  },
+  {
+    "id": "q010",
+    "sk": "Hľaď do svojho vnútra. Tam je prameň dobra.",
+    "en": "Look within. Within is the fountain of good.",
+    "author": "Marcus Aurelius"
+  },
+  {
+    "id": "q011",
+    "sk": "Prestaň rozprávať o tom, aký má byť dobrý človek, a buď ním.",
+    "en": "Stop talking about what a good man should be, and be one.",
+    "author": "Marcus Aurelius"
+  },
+  {
+    "id": "q012",
+    "sk": "Najlepšia pomsta je nepodobať sa tomu, kto ti ublížil.",
+    "en": "The best way of avenging yourself is not to become like the wrongdoer.",
+    "author": "Marcus Aurelius"
+  },
+  {
+    "id": "q013",
+    "sk": "Nežij, akoby si mal žiť desaťtisíc rokov.",
+    "en": "Do not act as if you were going to live ten thousand years.",
+    "author": "Marcus Aurelius"
+  },
+  {
+    "id": "q014",
+    "sk": "Ľudí neznepokojujú veci, ale ich predstavy o veciach.",
+    "en": "People are disturbed not by things, but by the opinions they have about things.",
+    "author": "Epictetus",
+    "authorSk": "Epiktétos"
+  },
+  {
+    "id": "q015",
+    "sk": "Najprv si povedz, kým chceš byť, a potom rob, čo treba.",
+    "en": "First say to yourself what you would be; and then do what you have to do.",
+    "author": "Epictetus",
+    "authorSk": "Epiktétos"
+  },
+  {
+    "id": "q016",
+    "sk": "Čo nechceš, aby robili tebe, nerob ani ty iným.",
+    "en": "What you do not want done to yourself, do not do to others.",
+    "author": "Confucius",
+    "authorSk": "Konfucius"
+  },
+  {
+    "id": "q017",
+    "sk": "Vedieť, čo vieš, a vedieť, čo nevieš – to je skutočné poznanie.",
+    "en": "To know what you know and to know what you do not know – that is true knowledge.",
+    "author": "Confucius",
+    "authorSk": "Konfucius"
+  },
+  {
+    "id": "q018",
+    "sk": "Učenie bez premýšľania je márne, premýšľanie bez učenia je nebezpečné.",
+    "en": "Learning without thought is labour lost; thought without learning is perilous.",
+    "author": "Confucius",
+    "authorSk": "Konfucius"
+  },
+  {
+    "id": "q019",
+    "sk": "Mať chyby a nenapraviť ich – to je skutočná chyba.",
+    "en": "To have faults and not to reform them – that is a fault indeed.",
+    "author": "Confucius",
+    "authorSk": "Konfucius"
+  },
+  {
+    "id": "q020",
+    "sk": "Aj cesta dlhá tisíc míľ sa začína prvým krokom.",
+    "en": "A journey of a thousand miles begins with a single step.",
+    "author": "Lao Tzu",
+    "authorSk": "Lao-c’"
+  },
+  {
+    "id": "q021",
+    "sk": "Kto pozná iných, je múdry. Kto pozná seba, je osvietený.",
+    "en": "He who knows others is wise; he who knows himself is enlightened.",
+    "author": "Lao Tzu",
+    "authorSk": "Lao-c’"
+  },
+  {
+    "id": "q022",
+    "sk": "Kto vie, že má dosť, je bohatý.",
+    "en": "He who knows he has enough is rich.",
+    "author": "Lao Tzu",
+    "authorSk": "Lao-c’"
+  },
+  {
+    "id": "q023",
+    "sk": "Nemožno dvakrát vstúpiť do tej istej rieky.",
+    "en": "You cannot step into the same river twice.",
+    "author": "Heraclitus",
+    "authorSk": "Hérakleitos"
+  },
+  {
+    "id": "q024",
+    "sk": "Povaha človeka je jeho osudom.",
+    "en": "Character is destiny.",
+    "author": "Heraclitus",
+    "authorSk": "Hérakleitos"
+  },
+  {
+    "id": "q025",
+    "sk": "Neskúmaný život nestojí za to, aby sa žil.",
+    "en": "The unexamined life is not worth living.",
+    "author": "Socrates",
+    "authorSk": "Sókratés"
+  },
+  {
+    "id": "q026",
+    "sk": "Spravodlivými sa stávame tým, že konáme spravodlivo, a statočnými tým, že konáme statočne.",
+    "en": "We become just by doing just acts, and brave by doing brave acts.",
+    "author": "Aristotle",
+    "authorSk": "Aristotelés"
+  },
+  {
+    "id": "q027",
+    "sk": "Jedna lastovička leto nerobí.",
+    "en": "One swallow does not make a summer.",
+    "author": "Aristotle",
+    "authorSk": "Aristotelés"
+  },
+  {
+    "id": "q028",
+    "sk": "Začiatok je najdôležitejšou časťou každej práce.",
+    "en": "The beginning is the most important part of the work.",
+    "author": "Plato",
+    "authorSk": "Platón"
+  },
+  {
+    "id": "q029",
+    "sk": "Dobre urobené je lepšie ako dobre povedané.",
+    "en": "Well done is better than well said.",
+    "author": "Benjamin Franklin"
+  },
+  {
+    "id": "q030",
+    "sk": "Stratený čas sa už nikdy nenájde.",
+    "en": "Lost time is never found again.",
+    "author": "Benjamin Franklin"
+  },
+  {
+    "id": "q031",
+    "sk": "Kto skoro chodí spať a skoro vstáva, je zdravý, bohatý a múdry.",
+    "en": "Early to bed and early to rise, makes a man healthy, wealthy, and wise.",
+    "author": "Benjamin Franklin"
+  },
+  {
+    "id": "q032",
+    "sk": "Vždy konaj správne. Niektorých to poteší, ostatných ohromí.",
+    "en": "Always do right. This will gratify some people and astonish the rest.",
+    "author": "Mark Twain"
+  },
+  {
+    "id": "q033",
+    "sk": "Odvaha je odpor voči strachu a jeho zvládnutie, nie jeho absencia.",
+    "en": "Courage is resistance to fear, mastery of fear – not absence of fear.",
+    "author": "Mark Twain"
+  },
+  {
+    "id": "q034",
+    "sk": "Snažme sa žiť tak, aby keď raz zomrieme, bolo ľúto aj hrobárovi.",
+    "en": "Let us endeavour so to live that when we come to die even the undertaker will be sorry.",
+    "author": "Mark Twain"
+  },
+  {
+    "id": "q035",
+    "sk": "Náš život sa drobí na maličkosti. Zjednodušuj, zjednodušuj.",
+    "en": "Our life is frittered away by detail. Simplify, simplify.",
+    "author": "Henry David Thoreau"
+  },
+  {
+    "id": "q036",
+    "sk": "Kto s dôverou kráča za svojimi snami, dočká sa úspechu, aký by v bežných hodinách nečakal.",
+    "en": "If one advances confidently in the direction of his dreams, he will meet with a success unexpected in common hours.",
+    "author": "Henry David Thoreau"
+  },
+  {
+    "id": "q037",
+    "sk": "Jediný spôsob, ako mať priateľa, je byť priateľom.",
+    "en": "The only way to have a friend is to be one.",
+    "author": "Ralph Waldo Emerson"
+  },
+  {
+    "id": "q038",
+    "sk": "Nič veľké sa nikdy nedosiahlo bez nadšenia.",
+    "en": "Nothing great was ever achieved without enthusiasm.",
+    "author": "Ralph Waldo Emerson"
+  },
+  {
+    "id": "q039",
+    "sk": "Skúsenosť je meno, ktoré každý dáva svojim chybám.",
+    "en": "Experience is the name everyone gives to their mistakes.",
+    "author": "Oscar Wilde"
+  },
+  {
+    "id": "q040",
+    "sk": "Mať rád sám seba je začiatok celoživotnej romance.",
+    "en": "To love oneself is the beginning of a lifelong romance.",
+    "author": "Oscar Wilde"
+  },
+  {
+    "id": "q041",
+    "sk": "Človek blúdi, kým sa snaží.",
+    "en": "Man errs as long as he strives.",
+    "author": "Johann Wolfgang von Goethe"
+  },
+  {
+    "id": "q042",
+    "sk": "Nestačí vedieť, treba aj použiť. Nestačí chcieť, treba aj konať.",
+    "en": "Knowing is not enough; we must apply. Willing is not enough; we must do.",
+    "author": "Johann Wolfgang von Goethe"
+  },
+  {
+    "id": "q043",
+    "sk": "Železo bez používania hrdzavie; rovnako nečinnosť oslabuje silu ducha.",
+    "en": "Iron rusts from disuse; even so does inaction sap the vigour of the mind.",
+    "author": "Leonardo da Vinci"
+  },
+  {
+    "id": "q044",
+    "sk": "Nič nie je samo osebe dobré ani zlé, až myslenie to tak robí.",
+    "en": "There is nothing either good or bad, but thinking makes it so.",
+    "author": "William Shakespeare"
+  },
+  {
+    "id": "q045",
+    "sk": "Chyba, milý Brutus, nie je v našich hviezdach, ale v nás samých.",
+    "en": "The fault, dear Brutus, is not in our stars, but in ourselves.",
+    "author": "William Shakespeare"
+  },
+  {
+    "id": "q046",
+    "sk": "Stručnosť je dušou vtipu.",
+    "en": "Brevity is the soul of wit.",
+    "author": "William Shakespeare"
+  },
+  {
+    "id": "q047",
+    "sk": "Predstavivosť je dôležitejšia ako vedomosti.",
+    "en": "Imagination is more important than knowledge.",
+    "author": "Albert Einstein"
+  },
+  {
+    "id": "q048",
+    "sk": "Život je ako jazda na bicykli. Aby si udržal rovnováhu, musíš ísť ďalej.",
+    "en": "Life is like riding a bicycle. To keep your balance you must keep moving.",
+    "author": "Albert Einstein"
+  },
+  {
+    "id": "q049",
+    "sk": "Nech všetko plynie samo, bez násilia.",
+    "en": "Let everything flow of its own accord, without force.",
+    "author": "John Amos Comenius",
+    "authorSk": "Ján Amos Komenský"
+  },
+  {
+    "id": "q050",
+    "sk": "Veriť, milovať, pracovať.",
+    "en": "To believe, to love, to work.",
+    "author": "Milan Rastislav Štefánik"
+  },
+  {
+    "id": "q051",
+    "sk": "Kormidlo udrží každý, keď je more pokojné.",
+    "en": "Anyone can hold the helm when the sea is calm.",
+    "author": "Publilius Syrus"
+  },
+  {
+    "id": "q052",
+    "sk": "Využi deň a čo najmenej sa spoliehaj na zajtrajšok.",
+    "en": "Seize the day, trusting as little as possible in tomorrow.",
+    "author": "Horace",
+    "authorSk": "Horácius"
+  },
+  {
+    "id": "q053",
+    "sk": "Kto začal, má polovicu hotovú. Odváž sa byť múdry.",
+    "en": "He who has begun is half done. Dare to be wise.",
+    "author": "Horace",
+    "authorSk": "Horácius"
+  },
+  {
+    "id": "q054",
+    "sk": "Ak máš záhradu a knižnicu, nechýba ti nič.",
+    "en": "If you have a garden and a library, you have everything you need.",
+    "author": "Cicero"
+  },
+  {
+    "id": "q055",
+    "sk": "Kvapka vyhĺbi kameň.",
+    "en": "Dripping water hollows out stone.",
+    "author": "Ovid",
+    "authorSk": "Ovídius"
+  },
+  {
+    "id": "q056",
+    "sk": "Práca všetko premôže.",
+    "en": "Work conquers all.",
+    "author": "Virgil",
+    "authorSk": "Vergílius"
+  },
+  {
+    "id": "q057",
+    "sk": "Tento list je dlhší ako zvyčajne, lebo som nemal čas napísať ho kratší.",
+    "en": "I have made this letter longer than usual, only because I have not had the time to make it shorter.",
+    "author": "Blaise Pascal"
+  },
+  {
+    "id": "q058",
+    "sk": "Lepšie je nepriateľom dobrého.",
+    "en": "The best is the enemy of the good.",
+    "author": "Voltaire"
+  },
+  {
+    "id": "q059",
+    "sk": "Správne vidíme len srdcom. To podstatné je očiam neviditeľné.",
+    "en": "One sees clearly only with the heart. What is essential is invisible to the eye.",
+    "author": "Antoine de Saint-Exupéry"
+  },
+  {
+    "id": "q060",
+    "sk": "Dokonalosť nedosiahneme vtedy, keď už niet čo pridať, ale keď už niet čo odobrať.",
+    "en": "Perfection is achieved not when there is nothing more to add, but when there is nothing left to take away.",
+    "author": "Antoine de Saint-Exupéry"
+  },
+  {
+    "id": "q061",
+    "sk": "Buď trpezlivý so všetkým, čo je v tvojom srdci nevyriešené.",
+    "en": "Be patient toward all that is unsolved in your heart.",
+    "author": "Rainer Maria Rilke"
+  },
+  {
+    "id": "q062",
+    "sk": "Kto má prečo žiť, znesie takmer akékoľvek ako.",
+    "en": "He who has a why to live can bear almost any how.",
+    "author": "Friedrich Nietzsche"
+  },
+  {
+    "id": "q063",
+    "sk": "Život možno pochopiť len spätne, ale žiť ho treba dopredu.",
+    "en": "Life can only be understood backwards; but it must be lived forwards.",
+    "author": "Søren Kierkegaard"
+  },
+  {
+    "id": "q064",
+    "sk": "Kto sa bojí utrpenia, už trpí tým, čoho sa bojí.",
+    "en": "He who fears he shall suffer, already suffers what he fears.",
+    "author": "Michel de Montaigne"
+  },
+  {
+    "id": "q065",
+    "sk": "Kto veľa číta a veľa chodí, veľa vidí a veľa vie.",
+    "en": "He who reads much and walks much, sees much and knows much.",
+    "author": "Miguel de Cervantes"
+  },
+  {
+    "id": "q066",
+    "sk": "Ak som videl ďalej, tak preto, že som stál na pleciach obrov.",
+    "en": "If I have seen further, it is by standing on the shoulders of giants.",
+    "author": "Isaac Newton"
+  },
+  {
+    "id": "q067",
+    "sk": "Génius je jedno percento inšpirácie a deväťdesiatdeväť percent potu.",
+    "en": "Genius is one per cent inspiration, ninety-nine per cent perspiration.",
+    "author": "Thomas Edison"
+  },
+  {
+    "id": "q068",
+    "sk": "Všetko, čím sme, je výsledkom toho, čo sme si mysleli.",
+    "en": "All that we are is the result of what we have thought.",
+    "author": "Dhammapada"
+  },
+  {
+    "id": "q069",
+    "sk": "Zo všetkého, čo múdrosť dáva pre šťastný život, je najväčšie priateľstvo.",
+    "en": "Of all the things wisdom provides for a happy life, by far the greatest is friendship.",
+    "author": "Epicurus",
+    "authorSk": "Epikuros"
+  },
+  {
+    "id": "q070",
+    "sk": "Umenie je dlhé, život krátky.",
+    "en": "Art is long, life is short.",
+    "author": "Hippocrates",
+    "authorSk": "Hippokrates"
+  }
+]

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createDataClient, isStale, nextDelay } from './data';
+import { createDataClient, isStale, msUntilMidnight, nextDelay } from './data';
 
 // Fictional token used only in tests.
 const DEVICE_TOKEN = `dsh_device_${'B'.repeat(43)}`;
@@ -66,5 +66,26 @@ describe('nextDelay', () => {
     const minute = 60_000;
     expect(nextDelay(0, minute, 15 * minute)).toBe(15 * minute);
     expect([1, 2, 3, 4, 5].map((n) => nextDelay(n, minute, 15 * minute) / minute)).toEqual([1, 2, 4, 8, 15]);
+  });
+});
+
+describe('msUntilMidnight', () => {
+  it('counts to the next local midnight plus a minute', () => {
+    // 22:30 in Bratislava (UTC+2 in summer).
+    const now = new Date('2026-09-24T20:30:00.000Z');
+    expect(msUntilMidnight(now, 'Europe/Bratislava')).toBe(91 * 60_000);
+  });
+});
+
+describe('createDataClient query', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('appends query parameters', async () => {
+    const fetchMock = vi.fn(async () => Response.json({ updatedAt: '', ttl: 1, data: null }));
+    vi.stubGlobal('fetch', fetchMock);
+    await createDataClient(() => DEVICE_TOKEN)('quote', { lang: 'en' });
+    expect((fetchMock.mock.calls[0] as unknown as [string])[0]).toBe('/api/v1/data/quote?lang=en');
   });
 });

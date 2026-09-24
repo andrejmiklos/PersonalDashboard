@@ -1,5 +1,5 @@
 import type { DatabaseSync } from 'node:sqlite';
-import type { AirData, AstroData, DataEnvelope, WeatherData } from '@dashboard/shared';
+import type { AirData, AstroData, DataEnvelope, QuoteData, WeatherData } from '@dashboard/shared';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { hashToken } from '../auth/token';
 import type { Env } from '../env';
@@ -239,5 +239,42 @@ describe('GET /api/v1/data/air', () => {
     await call('GET', '/data/air');
     expect(upstreamAir).toHaveBeenCalledTimes(1);
     expect(new URL(String(upstreamAir.mock.calls[0]?.[0])).host).toBe('air-quality-api.open-meteo.com');
+  });
+});
+
+describe('GET /api/v1/data/quote', () => {
+  beforeEach(async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    // 23:30 UTC is already the next day in Europe/Bratislava.
+    vi.setSystemTime(new Date('2026-09-23T23:30:00.000Z'));
+    db = migrate();
+    env = { DB: createTestD1(db) } as unknown as Env;
+    const insert = db.prepare(
+      'INSERT INTO api_tokens (id, role, label, token_hash, created_at) VALUES (?, ?, ?, ?, ?)',
+    );
+    insert.run('tok_admin', 'admin', 'test', await hashToken(ADMIN_TOKEN), '2026-01-15T08:00:00.000Z');
+    insert.run('tok_device', 'device', 'test', await hashToken(DEVICE_TOKEN), '2026-01-15T08:00:00.000Z');
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('returns the quote of the local day in the settings locale without needing a location', async () => {
+    const res = await call('GET', '/data/quote');
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as DataEnvelope<QuoteData>;
+    expect(body).toMatchObject({ ttl: 86400, data: { date: '2026-09-24', lang: 'sk' } });
+    expect(body.data.text.length).toBeGreaterThan(0);
+  });
+
+  it('honours lang and rejects unknown values', async () => {
+    const body = (await (await call('GET', '/data/quote?lang=en')).json()) as DataEnvelope<QuoteData>;
+    expect(body.data.lang).toBe('en');
+    const bad = await call('GET', '/data/quote?lang=de');
+    expect(bad.status).toBe(400);
+    expect(await bad.json()).toEqual({
+      error: { code: 'validation_error', message: 'lang: expected sk or en' },
+    });
   });
 });

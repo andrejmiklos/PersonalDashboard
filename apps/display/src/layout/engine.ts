@@ -4,6 +4,7 @@ import { createAir } from '../tiles/air';
 import { createAstro } from '../tiles/astro';
 import { createClock } from '../tiles/clock';
 import { createPlaceholder } from '../tiles/placeholder';
+import { createQuote } from '../tiles/quote';
 import type { TileFactory, TileInstance } from '../tiles/types';
 import { createWeather } from '../tiles/weather';
 import { tileRect } from './geometry';
@@ -13,6 +14,7 @@ const factories: Partial<Record<TileType, TileFactory>> = {
   air: createAir,
   astro: createAstro,
   clock: createClock,
+  quote: createQuote,
   weather: createWeather,
 };
 

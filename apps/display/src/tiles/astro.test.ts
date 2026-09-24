@@ -1,14 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { sizeClassOf } from '../layout/geometry';
-import {
-  arcPoint,
-  astroPlan,
-  formatDuration,
-  moonLitPath,
-  msUntilMidnight,
-  sunProgress,
-  travelledPath,
-} from './astro';
+import { arcPoint, astroPlan, formatDuration, moonLitPath, sunProgress, travelledPath } from './astro';
 
 function box(w: number, h: number) {
   return { refWidth: w, refHeight: h, sizeClass: sizeClassOf(w, h) };
@@ -82,13 +74,5 @@ describe('formatDuration', () => {
   it('formats hours and minutes', () => {
     expect(formatDuration(725, 'sk')).toBe('12 h 5 min');
     expect(formatDuration(0, 'en')).toBe('0 h 0 min');
-  });
-});
-
-describe('msUntilMidnight', () => {
-  it('counts to the next local midnight plus a minute', () => {
-    // 22:30 in Bratislava (UTC+2 in summer).
-    const now = new Date('2026-09-24T20:30:00.000Z');
-    expect(msUntilMidnight(now, 'Europe/Bratislava')).toBe(91 * 60_000);
   });
 });

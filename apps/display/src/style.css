@@ -621,3 +621,38 @@ body {
 .air-fg-extremelyPoor {
   color: #c47ddb;
 }
+
+/* Quote of the day tile (tiles/quote.ts); the body's font size is fitted to the box. */
+.tile-content.quote {
+  padding: 0.75rem 1rem;
+}
+
+.tile-content.quote.is-stale .quote-body {
+  opacity: 0.55;
+}
+
+.quote-message {
+  color: #888;
+  font-size: 0.875rem;
+}
+
+.quote-body {
+  margin: 0;
+  width: 100%;
+}
+
+.quote-text {
+  margin: 0;
+  color: #ddd;
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.quote-author {
+  margin-top: 0.5em;
+  color: #888;
+  font-size: 0.6em;
+  text-align: right;
+}

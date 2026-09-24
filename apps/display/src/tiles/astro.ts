@@ -3,20 +3,18 @@ import {
   formatTime,
   t,
   TILE_TYPES,
-  zonedParts,
   type AstroConfig,
   type AstroData,
   type DataEnvelope,
   type Locale,
 } from '@dashboard/shared';
-import { isStale, startPoller, type DataResult } from '../data';
+import { isStale, msUntilMidnight, startPoller, type DataResult } from '../data';
 import { element, setText, type TileBox, type TileContext, type TileInstance } from './types';
 
 const POLL_MS = 6 * 60 * 60_000;
 const RETRY_MS = 60_000;
 /** The sun moves along the arc between polls. */
 const TICK_MS = 5 * 60_000;
-const DAY_MS = 86_400_000;
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 // Sun arc in a 100×50 box: half an ellipse above the horizon line.
@@ -80,13 +78,6 @@ export function moonLitPath(phase: number, cx: number, cy: number, r: number): s
 
 export function formatDuration(minutes: number, locale: Locale): string {
   return t(locale, 'astro.duration', { h: Math.floor(minutes / 60), m: minutes % 60 });
-}
-
-/** Milliseconds until the next local midnight in `timeZone`, plus a minute of margin. */
-export function msUntilMidnight(now: Date, timeZone: string): number {
-  const p = zonedParts(now, timeZone);
-  const sinceMidnight = ((p.hour * 60 + p.minute) * 60 + p.second) * 1000 + now.getMilliseconds();
-  return DAY_MS - sinceMidnight + 60_000;
 }
 
 function svg(tag: string, attrs: Record<string, string>, parent: Element): SVGElement {

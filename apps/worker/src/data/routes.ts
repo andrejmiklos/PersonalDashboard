@@ -1,4 +1,4 @@
-import { localDateString, type AstroData, type DataEnvelope } from '@dashboard/shared';
+import { localDateString, type AstroData, type DataEnvelope, type QuoteData } from '@dashboard/shared';
 import { Hono } from 'hono';
 import { computeAstro } from '../astro/compute';
 import { requireAuth } from '../auth/middleware';
@@ -7,11 +7,14 @@ import type { AppEnv } from '../env';
 import { ApiError } from '../errors';
 import { airProvider } from '../providers/open-meteo/air';
 import { weatherProvider } from '../providers/open-meteo/weather';
+import { quoteOfDay } from '../quotes/select';
 import { readSettings } from '../settings/repository';
 import type { Settings } from '../settings/schema';
 
 /** Computed values do not expire on the server; the client refreshes every 6 h and at midnight. */
 const ASTRO_TTL_SECONDS = 6 * 60 * 60;
+/** One quote per local date; the client fetches again just after midnight. */
+const QUOTE_TTL_SECONDS = 24 * 60 * 60;
 
 /** `/api/v1/data/*` tile data (docs/07-api.md §3). */
 export const dataRoutes = new Hono<AppEnv>();
@@ -57,6 +60,21 @@ dataRoutes.get('/astro', async (c) => {
     updatedAt: new Date().toISOString(),
     ttl: ASTRO_TTL_SECONDS,
     data: computeAstro(day, lat, lon, settings.timezone),
+  };
+  return c.json(body);
+});
+
+dataRoutes.get('/quote', async (c) => {
+  const lang = c.req.query('lang');
+  if (lang !== undefined && lang !== 'sk' && lang !== 'en') {
+    throw new ApiError(400, 'validation_error', 'lang: expected sk or en');
+  }
+  const settings = await readSettings(c.env.DB);
+  const today = localDateString(new Date(), settings.timezone);
+  const body: DataEnvelope<QuoteData> = {
+    updatedAt: new Date().toISOString(),
+    ttl: QUOTE_TTL_SECONDS,
+    data: quoteOfDay(today, lang ?? settings.locale),
   };
   return c.json(body);
 });

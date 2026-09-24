@@ -1,4 +1,4 @@
-import type { DataEnvelope } from '@dashboard/shared';
+import { zonedParts, type DataEnvelope } from '@dashboard/shared';
 
 // Tile data layer (docs/01-architecture.md §2.2 and §5).
 
@@ -8,18 +8,19 @@ const REQUEST_TIMEOUT_MS = 10_000;
 export type DataResult<T> =
   { kind: 'ok'; envelope: DataEnvelope<T> } | { kind: 'error'; code: string | null };
 
-/** Loads `GET /api/v1/data/<type>`; bound to the device token by the caller. */
-export type DataClient = <T>(type: string) => Promise<DataResult<T>>;
+/** Loads `GET /api/v1/data/<type>?<query>`; bound to the device token by the caller. */
+export type DataClient = <T>(type: string, query?: Record<string, string>) => Promise<DataResult<T>>;
 
 export function createDataClient(getToken: () => string | null): DataClient {
-  return async <T>(type: string): Promise<DataResult<T>> => {
+  return async <T>(type: string, query?: Record<string, string>): Promise<DataResult<T>> => {
     const token = getToken();
     if (token === null) return { kind: 'error', code: 'unauthorized' };
     // AbortSignal.timeout is Chrome 103+.
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
     try {
-      const res = await fetch(`/api/v1/data/${encodeURIComponent(type)}`, {
+      const search = query ? `?${new URLSearchParams(query).toString()}` : '';
+      const res = await fetch(`/api/v1/data/${encodeURIComponent(type)}${search}`, {
         headers: { Authorization: `Bearer ${token}` },
         signal: controller.signal,
         cache: 'no-store',
@@ -77,6 +78,15 @@ export function startPoller<T>(options: PollerOptions<T>): { stop(): void } {
       window.clearTimeout(timer);
     },
   };
+}
+
+const DAY_MS = 86_400_000;
+
+/** Milliseconds until the next local midnight in `timeZone`, plus a minute of margin. */
+export function msUntilMidnight(now: Date, timeZone: string): number {
+  const p = zonedParts(now, timeZone);
+  const sinceMidnight = ((p.hour * 60 + p.minute) * 60 + p.second) * 1000 + now.getMilliseconds();
+  return DAY_MS - sinceMidnight + 60_000;
 }
 
 export function nextDelay(failures: number, retryMs: number, intervalMs: number): number {

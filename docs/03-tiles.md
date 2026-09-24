@@ -60,10 +60,11 @@ The tile must never offer create/edit/delete — only complete/uncomplete.
 | Min / default size | 3×2 / 6×2 |
 | Data source | `content/quotes.json` bundled into the Worker |
 | Config | `language: 'auto'|'sk'|'en'` (auto = UI locale), `showAuthor: bool` (true) |
-| Selection | Deterministic per local date: shuffled order by a fixed seed, `index = dayNumber mod N` after a permutation, so no repeats until the list is exhausted; changes at local midnight |
-| Content file | `[{ "id": "q001", "sk": "…", "en": "…", "author": "…" }]` — only public-domain / clearly attributable short quotes; no copyrighted long text |
-| Refresh | Fetched once and again after midnight |
-| Text fitting | Font size auto-shrinks (binary search in `resize`) to fit the box; max 3 attempts on resize only |
+| Selection | Deterministic per local date (settings time zone): Fisher–Yates order from a fixed seed (mulberry32), `quote = order[dayNumber mod N]`, so no repeats until the list is exhausted; changes at local midnight |
+| Content file | `[{ "id": "q001", "sk": "…", "en": "…", "author": "…", "authorSk"?: "…" }]` — `authorSk` when the Slovak name differs (Konfucius); a `null` text falls back to the other language, the author name follows the requested one. Only public-domain / clearly attributable short quotes (≤ 180 characters); rules in doc 05 §5 |
+| Display | Quote in language-specific marks („…“ / “…”), italic, centred; author right-aligned below |
+| Refresh | Fetched once and again just after local midnight |
+| Text fitting | Largest font size that fits the box (binary search, 7 steps, 0.75–3 rem); runs only when the quote or the box changes |
 
 ## 5. `weather` — Weather (Open-Meteo)
 

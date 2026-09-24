@@ -108,8 +108,12 @@ principal phase is found by stepping days and bisecting to under a second.
 ## 5. Quotes
 
 - `content/quotes.json` bundled at build time into the Worker (import as JSON).
-- Format and selection rule in doc 03. Contribution rules: short quotes only, attribute the author, prefer
-  public-domain sources, provide both SK and EN text (or mark one `null` → falls back to the other).
+- Format and selection rule in doc 03. Contribution rules: short quotes only (≤ 180 characters), attribute the
+  author, provide both SK and EN text (or mark one `null` → falls back to the other).
+- Only authors who died more than 70 years ago (public domain in the EU); translations are our own.
+- Only quotes with a known source (work, letter, speech). Popular misattributions are left out, e.g. "We are
+  what we repeatedly do" (Will Durant, not Aristotle) or most internet "Mark Twain" quotes.
+- `apps/worker/src/quotes/select.test.ts` checks the file (count, ids, lengths, fields).
 
 ## 6. Adding another provider later
 

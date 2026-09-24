@@ -107,7 +107,7 @@ on its next state poll (≤ 15 s).
 | `data/weather` | 15 min | 15 min | 96 |
 | `data/air` | 60 min | 60 min | 24 |
 | `data/astro` | 6 h + at midnight | none (computed per request) | 5 |
-| `data/quote` | at midnight | 24 h | 1 |
+| `data/quote` | at midnight | none (bundled) | 1 |
 
 Total ≈ 8 000 Worker requests/day vs. 100 000 free. D1 free tier (5 M reads, 100 k writes/day) is
 ample. `last_seen` writes are throttled to once per minute.
