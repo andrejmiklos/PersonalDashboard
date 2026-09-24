@@ -118,6 +118,7 @@ The tile must never offer create/edit/delete — only complete/uncomplete.
 | After the event | `hide`: empty tile; `zero`: "0 days"; `since`: "5 days since" (with `showTime` and a time: the duration since) |
 | Time zone | Days and the target are in the settings time zone, not the device one; a target with a time stays at that local time across DST changes (`zonedTimeToInstant`) |
 | Refresh | Recomputed each minute (aligned to the minute) from the device clock; no API |
+| Calendar source (Phase 3, D-21) | Config gains `source: 'manual' \| 'calendar'` (default `manual`, the fields above) and, for `calendar`, `sourceIds` (calendars) and `maxEvents` (null = as many as fit). Shows the nearest upcoming events of those calendars: the first one large (days or "Today!"), the next ones as a list "label · N days". Data from the calendar endpoint with a long look-ahead (up to 365 days) and a small limit; past events simply drop off, so `afterBehaviour` applies to the manual source only |
 
 ## 9. Tile registry (in `packages/shared`)
 

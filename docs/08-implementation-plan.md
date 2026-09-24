@@ -56,12 +56,14 @@ with clock, weather, astro, air, quote, countdown; pulling Wi-Fi shows stale sta
 3. `feat(worker): Google OAuth connect + calendar provider` (multi-account) + mapper tests with fictional fixtures.
 4. `feat(worker): calendar data endpoint` (merge, all-day handling, cache, reauth handling).
 5. `feat(display): calendar tile` (colour per calendar, all-day strip, size classes).
-6. `feat(worker): Microsoft OAuth connect + To Do provider` (rotating refresh tokens safe).
-7. `feat(worker): tasks data + PATCH complete/uncomplete`.
-8. `feat(display): tasks tile with touch completion` (optimistic, undo chip, large touch targets).
-9. `docs: provider setup walkthrough verified end-to-end` (update doc 05 with real-world gotchas, no personal data).
+6. `feat(worker,display): countdown from calendar events` (D-21: `source: 'calendar'`, nearest events of the
+   chosen calendars, first large + list; long look-ahead with a small limit on the calendar endpoint).
+7. `feat(worker): Microsoft OAuth connect + To Do provider` (rotating refresh tokens safe).
+8. `feat(worker): tasks data + PATCH complete/uncomplete`.
+9. `feat(display): tasks tile with touch completion` (optimistic, undo chip, large touch targets).
+10. `docs: provider setup walkthrough verified end-to-end` (update doc 05 with real-world gotchas, no personal data).
 
-Acceptance: real calendars and lists appear on the tablet; completing a task on the tablet reflects in
+Acceptance: real calendars and lists appear on the tablet; a calendar countdown shows the nearest real events; completing a task on the tablet reflects in
 Microsoft To Do; killing a refresh token produces a "reconnect" state, not a crash.
 
 ## Phase 4 — Admin app and layout editor
