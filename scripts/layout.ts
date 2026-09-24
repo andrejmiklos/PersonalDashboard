@@ -3,27 +3,9 @@
 // --default also makes it the layout the display shows. The admin token is asked for without echo.
 import { readFileSync, statSync } from 'node:fs';
 import { parseArgs } from 'node:util';
-import { askBaseUrl, askToken, requireTty, runMain } from './cli.ts';
+import { askBaseUrl, askToken, requestJson, requireTty, runMain } from './cli.ts';
 
 const MAX_BYTES = 64 * 1024;
-
-interface ApiError {
-  error?: { code?: string; message?: string };
-}
-
-async function send(url: string, token: string, method: string, body: unknown): Promise<unknown> {
-  const res = await fetch(url, {
-    method,
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-  const json = (await res.json().catch(() => ({}))) as unknown;
-  if (!res.ok) {
-    const error = (json as ApiError).error;
-    throw new Error(`${method} failed: ${res.status} ${error?.code ?? ''} ${error?.message ?? ''}`.trim());
-  }
-  return json;
-}
 
 runMain(async () => {
   const { values, positionals } = parseArgs({
@@ -43,7 +25,7 @@ runMain(async () => {
   const baseUrl = await askBaseUrl(rawUrl);
   const token = (await askToken('admin', false)) as string;
 
-  const created = (await send(`${baseUrl}/api/v1/layouts`, token, 'POST', layout)) as {
+  const created = (await requestJson(`${baseUrl}/api/v1/layouts`, token, 'POST', layout)) as {
     id: string;
     name: string;
     version: number;
@@ -51,7 +33,7 @@ runMain(async () => {
   };
   console.log(`Created ${created.id} "${created.name}" (${created.tiles.length} tiles).`);
   if (values.default) {
-    await send(`${baseUrl}/api/v1/settings`, token, 'PUT', { defaultLayoutId: created.id });
+    await requestJson(`${baseUrl}/api/v1/settings`, token, 'PUT', { defaultLayoutId: created.id });
     console.log('It is now the default layout; the display switches within 15 s.');
   }
 });

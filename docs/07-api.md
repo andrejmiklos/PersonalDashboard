@@ -107,6 +107,17 @@ Responses: `POST` and `duplicate` → `201` with the full document, `DELETE` →
 | `DELETE /api/v1/override` | Clear |
 | `GET /api/v1/devices` | `[{ id, label, lastSeen, appVersion, info }]` |
 
+Until the admin app exists, the CLI reads and changes settings (admin token asked for without echo):
+
+```
+npm run settings -- https://<worker-host>
+npm run settings -- https://<worker-host> --location "My city" --lat 50 --lon 10
+npm run settings -- https://<worker-host> --no-location
+npm run settings -- https://<worker-host> --locale en --timezone Europe/Prague
+```
+
+Negative coordinates need `=`: `--lon=-3.7`.
+
 ## 6. Admin: accounts & sources
 
 | Method & path | Description |

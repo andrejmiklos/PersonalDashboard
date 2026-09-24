@@ -64,6 +64,32 @@ export async function askBaseUrl(raw: string | undefined): Promise<string> {
   return url.origin;
 }
 
+interface ApiError {
+  error?: { code?: string; message?: string };
+}
+
+/** Calls the admin API; non-2xx answers become an error with the API code and message. */
+export async function requestJson(
+  url: string,
+  token: string,
+  method: string,
+  body?: unknown,
+): Promise<unknown> {
+  const headers: Record<string, string> = { Authorization: `Bearer ${token}` };
+  if (body !== undefined) headers['Content-Type'] = 'application/json';
+  const res = await fetch(url, {
+    method,
+    headers,
+    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+  });
+  const json = (await res.json().catch(() => ({}))) as unknown;
+  if (!res.ok) {
+    const error = (json as ApiError).error;
+    throw new Error(`${method} failed: ${res.status} ${error?.code ?? ''} ${error?.message ?? ''}`.trim());
+  }
+  return json;
+}
+
 export function runMain(main: () => Promise<void>): void {
   main().catch((err: unknown) => {
     console.error(err instanceof Error ? err.message : err);
