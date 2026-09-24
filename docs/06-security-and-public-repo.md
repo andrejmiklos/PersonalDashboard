@@ -105,8 +105,10 @@ Real `wrangler.jsonc` (account id, D1 database id, route) is **git-ignored**.
 
 ## 6. Web hardening
 
-- Response headers on all HTML: `Content-Security-Policy: default-src 'self'; img-src 'self' data:;
-  style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'`;
+- Response headers on all HTML: `Content-Security-Policy: default-src 'self'; img-src 'self'; style-src 'self';
+  script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'` — no `'unsafe-inline'`: the
+  bundle has no inline styles or scripts, and tiles set styles through the CSSOM (`el.style.x = …`), which CSP
+  does not restrict; never use `setAttribute('style', …)` or inline `<style>`/`style="…"` in HTML.
   `X-Content-Type-Options: nosniff`; `Referrer-Policy: no-referrer`; `Permissions-Policy` minimal.
   (Old Chrome ignores unknown directives; verify the display page still works with CSP in Phase 0/1.)
 - Static files get these headers from `apps/worker/public/_headers`. Worker responses (JSON, redirects) get
