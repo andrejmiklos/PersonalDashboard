@@ -4,8 +4,6 @@ import type { AuthInfo } from './auth/middleware';
 export interface Env {
   ASSETS: Fetcher;
   DB: D1Database;
-  /** Build id of the deployed apps; the display reloads when it changes. */
-  APP_VERSION?: string;
 }
 
 /** Hono generic for handlers and middleware of this Worker. */

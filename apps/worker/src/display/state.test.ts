@@ -1,11 +1,11 @@
 import type { DatabaseSync } from 'node:sqlite';
-import type { LayoutDocument } from '@dashboard/shared';
+import type { DisplayState, LayoutDocument } from '@dashboard/shared';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { hashToken } from '../auth/token';
 import type { Env } from '../env';
 import worker from '../index';
 import { createTestD1, migrate } from '../test/d1';
-import type { DisplayState } from './state';
+import { resetAppVersionCache } from './state';
 
 // Fictional tokens used only in tests.
 const ADMIN_TOKEN = `dsh_admin_${'A'.repeat(43)}`;
@@ -53,7 +53,14 @@ async function createDefaultLayout(): Promise<LayoutDocument> {
 describe('GET /api/v1/display/state', () => {
   beforeEach(async () => {
     db = migrate();
-    env = { DB: createTestD1(db), APP_VERSION: 'test-build' } as Env;
+    resetAppVersionCache();
+    const assets = {
+      fetch: async (url: string) =>
+        new URL(url).pathname === '/display/version.json'
+          ? Response.json({ version: 'test-build' })
+          : new Response('', { status: 404 }),
+    };
+    env = { DB: createTestD1(db), ASSETS: assets } as unknown as Env;
     const insert = db.prepare(
       'INSERT INTO api_tokens (id, role, label, token_hash, created_at) VALUES (?, ?, ?, ?, ?)',
     );
@@ -81,6 +88,12 @@ describe('GET /api/v1/display/state', () => {
       timezone: 'Europe/Bratislava',
       power: { mode: 'always_on' },
     });
+  });
+
+  it('reports the development version when version.json is missing', async () => {
+    env = { DB: env.DB } as Env;
+    const state = (await (await getState()).json()) as DisplayState;
+    expect(state.appVersion).toBe('dev');
   });
 
   it('embeds the default layout', async () => {

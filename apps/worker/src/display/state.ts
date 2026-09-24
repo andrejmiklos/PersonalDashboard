@@ -1,4 +1,4 @@
-import type { LayoutDocument, Locale } from '@dashboard/shared';
+import { DEV_APP_VERSION, type DisplayState, type LayoutDocument } from '@dashboard/shared';
 import { Hono } from 'hono';
 import { requireAuth } from '../auth/middleware';
 import { sha256Hex } from '../auth/token';
@@ -7,18 +7,30 @@ import { ApiError } from '../errors';
 import { getLayout } from '../layouts/repository';
 import { readSettings } from '../settings/repository';
 
-/** Response of `GET /api/v1/display/state` (docs/07-api.md §2). */
-export interface DisplayState {
-  serverTime: string;
-  appVersion: string;
-  screen: 'on' | 'off';
-  layoutSpec: { kind: 'layout'; layoutId: string } | null;
-  layouts: Record<string, LayoutDocument>;
-  rotation: null;
-  touch: { enabled: boolean; cycle: string[]; timeoutSec: number };
-  locale: Locale;
-  timezone: string;
-  power: { mode: 'always_on' | 'scheduled' | 'manual' };
+let cachedVersion: string | undefined;
+
+/**
+ * Build id written by the display build to /display/version.json. Assets are immutable within a
+ * deployment, so one read per isolate is enough; failures are not cached.
+ */
+async function readAppVersion(assets: Fetcher | undefined): Promise<string> {
+  if (cachedVersion !== undefined) return cachedVersion;
+  try {
+    const res = await assets?.fetch('https://assets.invalid/display/version.json');
+    const version = res?.ok ? ((await res.json()) as { version?: unknown }).version : undefined;
+    if (typeof version === 'string' && /^[a-z0-9-]{1,64}$/.test(version)) {
+      cachedVersion = version;
+      return version;
+    }
+  } catch {
+    // Fall through to the development value.
+  }
+  return DEV_APP_VERSION;
+}
+
+/** For tests: forget the cached build id. */
+export function resetAppVersionCache(): void {
+  cachedVersion = undefined;
 }
 
 async function loadDefaultLayout(db: D1Database, id: string | null): Promise<LayoutDocument | null> {
@@ -48,7 +60,7 @@ displayRoutes.get('/state', requireAuth('device', 'admin'), async (c) => {
   const layout = await loadDefaultLayout(c.env.DB, settings.defaultLayoutId);
 
   const state: Omit<DisplayState, 'serverTime'> = {
-    appVersion: c.env.APP_VERSION ?? 'dev',
+    appVersion: await readAppVersion(c.env.ASSETS),
     screen: 'on',
     layoutSpec: layout ? { kind: 'layout', layoutId: layout.id } : null,
     layouts: layout ? { [layout.id]: layout } : {},

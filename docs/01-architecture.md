@@ -73,7 +73,11 @@ tablet bundle small.)
    stored token; with neither it shows a "not paired" screen.
 3. `GET /api/v1/display/state` → `{ layout, screen, rotation, serverTime, appVersion, ... }`.
 4. Render layout; each tile starts its own data polling.
-5. Poll `display/state` every 15 s. On `layout.version` change → re-render. On `appVersion` change → `location.reload()`.
+5. Poll `display/state` every 15 s with `If-None-Match` (usually an empty `304`); on failure back off up to 5 min.
+   On `layout.version` change → re-render. On `appVersion` change → `location.reload()`, at most once per
+   version within 10 min so a stale cache cannot cause a reload loop. `appVersion` is a per-build id: the
+   display build bakes it into the bundle and writes `/display/version.json`, which the Worker reads through
+   its `ASSETS` binding.
 
 ### 3.2 Tile data
 
