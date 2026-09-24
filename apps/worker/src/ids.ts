@@ -10,3 +10,4 @@ export function generateId(prefix: 'tok' | 'lay' | 'src' | 'acc'): string {
 }
 
 export const ID_PATTERN = /^[a-z]{3}_[a-z2-7]{16}$/;
+export const LAYOUT_ID_PATTERN = /^lay_[a-z2-7]{16}$/;

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { LAYOUT_ID_PATTERN } from '../ids';
 
 function isTimeZone(value: string): boolean {
   try {
@@ -25,6 +26,8 @@ export const settingsSchemas = {
     })
     .nullable(),
   powerMode: z.enum(['always_on', 'scheduled', 'manual']),
+  /** Layout shown when nothing else applies; must exist (checked on PUT). */
+  defaultLayoutId: z.string().regex(LAYOUT_ID_PATTERN, 'Invalid layout id').nullable(),
 };
 
 export const settingsPatchSchema = z
@@ -33,6 +36,7 @@ export const settingsPatchSchema = z
     timezone: settingsSchemas.timezone.optional(),
     location: settingsSchemas.location.optional(),
     powerMode: settingsSchemas.powerMode.optional(),
+    defaultLayoutId: settingsSchemas.defaultLayoutId.optional(),
   })
   .refine((patch) => Object.keys(patch).length > 0, 'At least one setting is required');
 
@@ -46,6 +50,7 @@ export const DEFAULT_SETTINGS: Settings = {
   timezone: 'Europe/Bratislava',
   location: null,
   powerMode: 'always_on',
+  defaultLayoutId: null,
 };
 
 export const SETTING_KEYS = Object.keys(settingsSchemas) as SettingKey[];

@@ -15,7 +15,7 @@ export interface CheckResult {
 
 type Fetch = (input: string, init?: RequestInit) => Promise<Response>;
 
-const SETTING_KEYS = ['locale', 'location', 'powerMode', 'timezone'];
+const SETTING_KEYS = ['defaultLayoutId', 'locale', 'location', 'powerMode', 'timezone'];
 const WORKER_CSP = "default-src 'none'; frame-ancestors 'none'; base-uri 'none'";
 
 async function errorCode(res: Response): Promise<string | undefined> {
@@ -107,6 +107,17 @@ export async function runChecks(input: SmokeInput, fetchImpl: Fetch = fetch): Pr
   if (input.deviceToken !== undefined) {
     const device = await fetchImpl(settings, { headers: bearer(input.deviceToken) });
     checks.push(await expectError('device token -> 403', device, 403, 'forbidden'));
+    const state = await fetchImpl(url('/api/v1/display/state'), { headers: bearer(input.deviceToken) });
+    const etag = state.headers.get('ETag');
+    checks.push(
+      result('device reads display state', state.status === 200 && etag !== null, `${state.status}`),
+    );
+    if (etag !== null) {
+      const again = await fetchImpl(url('/api/v1/display/state'), {
+        headers: { ...bearer(input.deviceToken), 'If-None-Match': etag },
+      });
+      checks.push(result('display state honours ETag', again.status === 304, `${again.status}`));
+    }
   }
   return checks;
 }

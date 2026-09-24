@@ -9,7 +9,13 @@ import { createTestD1, migrate } from '../test/d1';
 const ADMIN_TOKEN = `dsh_admin_${'A'.repeat(43)}`;
 const DEVICE_TOKEN = `dsh_device_${'B'.repeat(43)}`;
 const ORIGIN = 'https://dashboard.example.com';
-const DEFAULTS = { locale: 'sk', timezone: 'Europe/Bratislava', location: null, powerMode: 'always_on' };
+const DEFAULTS = {
+  locale: 'sk',
+  timezone: 'Europe/Bratislava',
+  location: null,
+  powerMode: 'always_on',
+  defaultLayoutId: null,
+};
 
 let db: DatabaseSync;
 let env: Env;

@@ -3,6 +3,7 @@ import { Hono, type MiddlewareHandler } from 'hono';
 import { requireAuth } from '../auth/middleware';
 import type { AppEnv } from '../env';
 import { ApiError } from '../errors';
+import { LAYOUT_ID_PATTERN } from '../ids';
 import { limitBody, readJson } from '../http/json-body';
 import {
   createLayout,
@@ -15,11 +16,9 @@ import {
 import { layoutInputSchema, layoutPutSchema } from './schema';
 import { validateLayout } from './validate';
 
-const LAYOUT_ID = /^lay_[a-z2-7]{16}$/;
-
 /** Rejects malformed ids before they reach D1. */
 const checkId: MiddlewareHandler<AppEnv> = async (c, next) => {
-  if (!LAYOUT_ID.test(c.req.param('id') ?? '')) {
+  if (!LAYOUT_ID_PATTERN.test(c.req.param('id') ?? '')) {
     throw new ApiError(404, 'not_found', 'Layout not found');
   }
   await next();

@@ -35,8 +35,9 @@ Headers (optional): `X-Display-Version`, `X-Display-Info` (base64 JSON, once per
 }
 ```
 
-`layoutSpec.kind`: `layout` | `pinned` | `rotation` (`{ layoutIds, secondsEach, anchor }`).
-Supports `If-None-Match` with ETag → `304`.
+`layoutSpec.kind`: `layout` | `pinned` | `rotation` (`{ layoutIds, secondsEach, anchor }`); `null` when no layout
+is configured. Supports `If-None-Match` with ETag → `304`; the ETag covers everything except `serverTime`.
+Phase 2 serves `settings.defaultLayoutId` only; schedule, overrides, rotation and power follow in Phase 5.
 
 ### `POST /api/v1/display/heartbeat` — D, A
 Optional separate heartbeat if the state poll is throttled; body `{ "version": "…", "info": { … } }`.

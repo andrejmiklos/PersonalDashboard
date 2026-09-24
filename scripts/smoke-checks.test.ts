@@ -37,7 +37,7 @@ describe('runChecks', () => {
     );
 
     expect(checks.filter((check) => !check.ok)).toEqual([]);
-    expect(checks).toHaveLength(12);
+    expect(checks).toHaveLength(14);
     expect(db.prepare('SELECT COUNT(*) AS n FROM settings').get()).toEqual({ n: 0 });
   });
 

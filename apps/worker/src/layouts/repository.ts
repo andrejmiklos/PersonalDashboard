@@ -98,21 +98,23 @@ export async function duplicateLayout(db: D1Database, id: string, now: Date): Pr
   return createLayout(db, body, now);
 }
 
-/** Deletes a layout unless a schedule rule or the override still uses it (the FKs would cascade silently). */
+/** Deletes a layout unless the default setting, a schedule rule or the override still uses it (the FKs would cascade silently). */
 export async function deleteLayout(db: D1Database, id: string): Promise<void> {
   const refs = await db
     .prepare(
       `SELECT (SELECT COUNT(*) FROM schedule_rules WHERE layout_id = ?1) AS rules,
-              (SELECT COUNT(*) FROM overrides WHERE layout_id = ?1) AS overrides`,
+              (SELECT COUNT(*) FROM overrides WHERE layout_id = ?1) AS overrides,
+              (SELECT COUNT(*) FROM settings WHERE key = 'defaultLayoutId' AND value = json_quote(?1)) AS defaults`,
     )
     .bind(id)
-    .first<{ rules: number; overrides: number }>();
-  if (refs && (refs.rules > 0 || refs.overrides > 0)) {
-    throw new ApiError(
-      409,
-      'layout_in_use',
-      `Layout is used by ${refs.rules} schedule rule(s) and ${refs.overrides} override(s)`,
-    );
+    .first<{ rules: number; overrides: number; defaults: number }>();
+  if (refs && (refs.rules > 0 || refs.overrides > 0 || refs.defaults > 0)) {
+    const uses = [
+      refs.defaults > 0 ? 'the default layout setting' : '',
+      refs.rules > 0 ? `${refs.rules} schedule rule(s)` : '',
+      refs.overrides > 0 ? 'the override' : '',
+    ].filter(Boolean);
+    throw new ApiError(409, 'layout_in_use', `Layout is used by ${uses.join(', ')}`);
   }
   const deleted = await db.prepare('DELETE FROM layouts WHERE id = ? RETURNING id').bind(id).first();
   if (!deleted) throw notFound();

@@ -20,10 +20,15 @@ export function parseTokenRole(token: string): Role | null {
   return match ? (match[1] as Role) : null;
 }
 
-/** Hex SHA-256 of the token; only this is stored in D1. */
-export async function hashToken(token: string): Promise<string> {
-  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token));
+/** Lowercase hex SHA-256 of a UTF-8 string. */
+export async function sha256Hex(text: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/** Hash of the token; only this is stored in D1. */
+export function hashToken(token: string): Promise<string> {
+  return sha256Hex(token);
 }
 
 /**
