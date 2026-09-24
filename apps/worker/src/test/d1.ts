@@ -39,5 +39,22 @@ export function createTestD1(db: DatabaseSync = migrate()): D1Database {
     };
     return statement;
   };
-  return { prepare } as unknown as D1Database;
+  type Statement = ReturnType<typeof prepare>;
+
+  // D1 runs a batch as one transaction: all statements succeed or none do.
+  const batch = async (statements: Statement[]) => {
+    db.exec('BEGIN');
+    try {
+      const results = [];
+      for (const statement of statements) {
+        results.push(await statement.run());
+      }
+      db.exec('COMMIT');
+      return results;
+    } catch (err) {
+      db.exec('ROLLBACK');
+      throw err;
+    }
+  };
+  return { prepare, batch } as unknown as D1Database;
 }

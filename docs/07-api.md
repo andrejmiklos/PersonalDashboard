@@ -76,7 +76,7 @@ tasks cache.
 
 | Method & path | Description |
 |---|---|
-| `GET/PUT /api/v1/settings` | `{ locale, timezone, location: { label, lat, lon }, powerMode, defaultMode, defaultLayoutId, rotation, touch }` |
+| `GET/PUT /api/v1/settings` | `{ locale, timezone, location: { label, lat, lon } \| null, powerMode, defaultMode, defaultLayoutId, rotation, touch }`. PUT changes only the fields it contains (unknown fields → `400`); coordinates are rounded to 2 decimals (~1 km). Phase 1 implements `locale`, `timezone`, `location`, `powerMode` |
 | `GET/PUT /api/v1/schedule` | Full list of rules (replace semantics, validated) |
 | `GET /api/v1/override` | Current override or `null` |
 | `PUT /api/v1/override` | `{ layoutId?, screen?, expiresAt? \| durationSec? }` |
@@ -121,3 +121,6 @@ printed once after the insert is confirmed.
 - Pagination not needed (single-owner data).
 - Versioning: `/api/v1`; breaking changes → `/v2`, with `appVersion` reload logic keeping the tablet in step.
 - Rate limits: Cloudflare rule + basic per-token counter (optional).
+- Request bodies: `Content-Type: application/json` (else `415`), size-limited per route (`413`), validated with zod
+  (`400 validation_error`, message names the first invalid field). State-changing requests with an `Origin` other
+  than the Worker's own get `403 forbidden_origin`.
