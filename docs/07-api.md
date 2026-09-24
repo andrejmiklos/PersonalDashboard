@@ -22,12 +22,13 @@ CLI (§7). Everything else below is planned; the phase is in doc 08.
 ## 2. Display endpoints
 
 ### `GET /api/v1/display/state` — D, A
-Headers (optional): `X-Display-Version`, `X-Display-Info` (base64 JSON, once per minute).
+Headers (optional, Phase 5; not sent or read yet): `X-Display-Version`, `X-Display-Info` (base64 JSON, once per
+minute).
 
 ```json
 {
   "serverTime": "2026-09-24T07:15:00Z",
-  "appVersion": "1.0.3",
+  "appVersion": "mfz3k2q1-7h2k9d",
   "screen": "on",
   "layoutSpec": { "kind": "layout", "layoutId": "lay_1" },
   "layouts": { "lay_1": { /* full layout document */ } },

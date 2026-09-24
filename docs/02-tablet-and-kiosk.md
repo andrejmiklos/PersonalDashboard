@@ -39,7 +39,7 @@ natively may be used; check newer APIs against Chrome 95 before using them.
 | Layout | Flexbox, CSS Grid and `gap` allowed; tiles still positioned absolutely in % (D-19) |
 | CSS variables | Allowed (design tokens as custom properties) |
 | Units | Prefer `rem`/`%`/`vw`; set root font size from viewport width |
-| Fonts | Self-hosted WOFF2 — a single family, 2–3 weights; no web-font CDN |
+| Fonts | Self-hosted WOFF2 — a single family, 2–3 weights; no web-font CDN. Until the Phase 6 design pass the system `sans-serif` is used |
 | Icons | Inline SVG; weather icon set with a permissive licence (e.g. MIT/OFL), bundled |
 | Dates | `Intl.DateTimeFormat` with `sk`/`en` and the configured `timeZone` (verified) via `shared` helpers |
 | Newer APIs | Not in Chrome 95, e.g. `structuredClone` (98), `Array.prototype.findLast` (97), `toSorted` & co. (110), CSS `:has()` and container queries (105). TypeScript `lib` is `ES2022` to catch the JS ones |
@@ -124,6 +124,8 @@ schedule — check Android 5 support before relying on it.
 - Mount away from direct sun; keep vents free; LCD panel → no burn-in, but the sleep clock still moves.
 
 ## 6. Device identity & monitoring
+
+Planned for Phase 5 (`feat(display): heartbeat + device status`); the display does not send any of this yet.
 
 - The device token identifies the device (`device_status.device_id` = token id).
 - Every `display/state` poll sends `X-Display-Version` (app build) and, once per minute, a small info

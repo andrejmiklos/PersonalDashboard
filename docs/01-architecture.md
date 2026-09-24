@@ -43,8 +43,9 @@ Key properties:
 
 ### 2.2 `apps/display` — tablet runtime (TypeScript → Chrome 95 bundle)
 
-- No framework; small render helpers. Every tile is a module implementing
-  `mount(el, ctx) / update(data) / resize(box) / destroy()`.
+- No framework; small render helpers. Every tile is a factory `(ctx) => { resize(box), destroy() }`
+  (`src/tiles/types.ts`): it builds its own DOM in `ctx.el`, loads its data through `ctx.data` with its own
+  poller and updates only the text that changed.
 - Layout engine: absolute positioning from grid coordinates (see doc 04).
 - Data layer (`src/data.ts`): `fetch`-based client with timeouts, bound to the device token and passed to
   tiles as `ctx.data`; a poller per tile with failure backoff; stale tracking (`isStale`).
@@ -113,7 +114,7 @@ on its next state poll (≤ 15 s).
 | `data/quote` | at midnight | none (bundled) | 1 |
 
 Total ≈ 8 000 Worker requests/day vs. 100 000 free. D1 free tier (5 M reads, 100 k writes/day) is
-ample. `last_seen` writes are throttled to once per minute.
+ample. `last_used_at` writes are throttled to once per minute per token (so will be `last_seen`, Phase 5).
 
 ## 5. Offline / failure behaviour
 
@@ -266,7 +267,7 @@ npm workspaces; Node ≥ 22.18 (TypeScript scripts run via type stripping; `node
 | Validation | zod (worker only) | Schema-first API |
 | Display build | Vite, target `chrome95` | Phase 0: tablet runs Chrome 95 |
 | Admin UI | Preact + Vite | Small, modern |
-| Tests | Vitest (+ `@cloudflare/vitest-pool-workers`) | Worker-accurate tests |
+| Tests | Vitest; D1 tests on `node:sqlite` with the real migrations | Fast; SQL checked against the real schema |
 | Lint | ESLint, Prettier | |
 | Secrets scan | gitleaks (pre-commit + CI) | Public repo |
 | Deploy | `wrangler deploy` from the owner's machine | No CI secrets needed at first |
