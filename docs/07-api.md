@@ -72,6 +72,10 @@ tasks cache.
 | `POST /api/v1/layouts/:id/duplicate` | Copy with new id and "(copy)" name |
 | `DELETE /api/v1/layouts/:id` | `409` if referenced by rule/default/rotation/override |
 
+Responses: `POST` and `duplicate` → `201` with the full document, `DELETE` → `204`. Errors: `400 validation_error`
+(message names the first invalid field, e.g. `tiles.2: c1 overlaps c3`), `404 not_found` (also for malformed ids),
+`409 version_conflict`, `409 layout_in_use`, `413` over 64 KB. Config defaults are filled in on save.
+
 ## 5. Admin: schedule, mode, overrides, settings
 
 | Method & path | Description |

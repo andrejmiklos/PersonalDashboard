@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "name": "Evening minimal",
+  "grid": { "cols": 12, "rows": 8, "gap": 12 },
+  "theme": {},
+  "tiles": [
+    { "id": "clock", "type": "clock", "x": 0, "y": 0, "w": 8, "h": 4, "config": {} },
+    {
+      "id": "weather",
+      "type": "weather",
+      "x": 8,
+      "y": 0,
+      "w": 4,
+      "h": 4,
+      "config": { "showHourly": false, "dailyDays": 2 }
+    },
+    { "id": "quote", "type": "quote", "x": 0, "y": 5, "w": 12, "h": 3, "config": { "language": "auto" } }
+  ]
+}

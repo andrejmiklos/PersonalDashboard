@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "name": "Night clock",
+  "grid": { "cols": 12, "rows": 8, "gap": 0 },
+  "theme": { "accent": "#7A5C3A" },
+  "tiles": [
+    {
+      "id": "clock",
+      "type": "clock",
+      "x": 2,
+      "y": 2,
+      "w": 8,
+      "h": 4,
+      "config": { "showDate": false, "showSeconds": false }
+    }
+  ]
+}
