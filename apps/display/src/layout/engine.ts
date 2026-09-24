@@ -1,5 +1,6 @@
 import type { LayoutDocument, Locale, TileType } from '@dashboard/shared';
 import type { DataClient } from '../data';
+import { createAir } from '../tiles/air';
 import { createAstro } from '../tiles/astro';
 import { createClock } from '../tiles/clock';
 import { createPlaceholder } from '../tiles/placeholder';
@@ -9,6 +10,7 @@ import { tileRect } from './geometry';
 
 /** Implemented tile modules; other types render a placeholder. */
 const factories: Partial<Record<TileType, TileFactory>> = {
+  air: createAir,
   astro: createAstro,
   clock: createClock,
   weather: createWeather,

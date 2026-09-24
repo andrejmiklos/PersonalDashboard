@@ -49,12 +49,7 @@ export interface AstroConfig {
   showNextPhase: boolean;
 }
 
-export const POLLEN_TYPES = ['alder', 'birch', 'grass', 'mugwort', 'ragweed', 'olive'] as const;
-export type PollenType = (typeof POLLEN_TYPES)[number];
-
 export interface AirConfig {
-  showPollen: boolean;
-  pollenTypes: PollenType[];
   showParticles: boolean;
 }
 
@@ -170,14 +165,12 @@ export const TILE_TYPES: { readonly [T in TileType]: TileTypeMeta<T> } = {
   },
   air: {
     type: 'air',
-    minW: 3,
-    minH: 2,
-    defaultW: 3,
-    defaultH: 3,
+    minW: 2,
+    minH: 1,
+    defaultW: 2,
+    defaultH: 2,
     configDefaults: {
-      showPollen: true,
-      pollenTypes: ['birch', 'grass', 'ragweed', 'mugwort', 'alder'],
-      showParticles: false,
+      showParticles: true,
     },
   },
   countdown: {

@@ -3,7 +3,6 @@ import {
   GRID_ROWS,
   LAYOUT_SCHEMA_VERSION,
   MAX_TILES,
-  POLLEN_TYPES,
   type TileConfigs,
   type TileType,
 } from '@dashboard/shared';
@@ -85,12 +84,6 @@ export const tileConfigSchemas = {
     showNextPhase: bool,
   }),
   air: z.strictObject({
-    showPollen: bool,
-    pollenTypes: z
-      .array(z.enum(POLLEN_TYPES))
-      .max(POLLEN_TYPES.length)
-      .refine((types) => new Set(types).size === types.length, 'Duplicate pollen type')
-      .optional(),
     showParticles: bool,
   }),
   countdown: z.strictObject({

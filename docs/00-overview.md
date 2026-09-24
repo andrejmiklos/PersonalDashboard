@@ -25,7 +25,7 @@ See [02-tablet-and-kiosk.md](02-tablet-and-kiosk.md) for the compatibility rules
 
 | ID | Requirement |
 |---|---|
-| FR-1 | Tiles: clock & date, calendar events, tasks, quote of the day, weather, sun & moon, air quality & pollen, countdown |
+| FR-1 | Tiles: clock & date, calendar events, tasks, quote of the day, weather, sun & moon, air quality, countdown |
 | FR-2 | Calendar tile reads **multiple Google accounts / calendars**, colour per calendar, all-day events shown separately |
 | FR-3 | Tasks tile reads **Microsoft To Do** (personal account, multiple lists) and lets the user **complete/uncomplete tasks by touch** |
 | FR-4 | Quote of the day from a curated list stored in the repo (SK + EN) |
@@ -61,7 +61,7 @@ All decisions below were made with the owner during requirements gathering (2026
 | D-06 | Microsoft To Do | Personal MS account, **multiple lists**, read + complete | Graph `Tasks.ReadWrite` |
 | D-07 | Weather | Open-Meteo | Attribution required (CC BY 4.0) |
 | D-08 | Quote of the day | Own JSON list in repo, SK + EN | Deterministic per date |
-| D-09 | Extra tiles | Sun & moon, air quality & pollen, countdown | Nothing else selected (see backlog) |
+| D-09 | Extra tiles | Sun & moon, air quality, countdown | Nothing else selected (see backlog). Pollen dropped during Phase 2 (2026-09): not needed by the owner |
 | D-10 | Layout switching | Manual, schedule, rotation, touch | Precedence in doc 04 |
 | D-11 | Power control | Scheduled + manual (+ always-on) | Light sensor / motion not selected |
 | D-12 | Look | Landscape, dark | |

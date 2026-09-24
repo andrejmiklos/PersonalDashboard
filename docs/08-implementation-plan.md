@@ -41,7 +41,7 @@ Acceptance: `curl` with admin token can read/write settings; device token is lim
 7. `feat(worker): weather provider + data/weather` (Open-Meteo, D1 cache, stale fallback) + mapper tests.
 8. `feat(display): weather tile` (icons, states).
 9. `feat(worker,display): astro tile` (suncalc).
-10. `feat(worker,display): air quality & pollen tile`.
+10. `feat(worker,display): air quality tile` (pollen dropped, D-09).
 11. `feat(worker,display): quote tile` (+ initial `content/quotes.json`, ≥ 60 quotes SK/EN).
 12. `feat(display): countdown tile`.
 13. `feat(display): offline/stale handling and nightly reload`.

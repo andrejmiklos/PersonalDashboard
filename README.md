@@ -11,13 +11,13 @@ Pick tiles, arrange them in a web editor, save layouts, and let the tablet show 
 
 - Worker on Cloudflare Workers + D1: token auth (admin / device), settings, layouts API with validation
 - Tablet display: pairing with a one-time code, state polling, layout rendering
-- Tiles: clock, weather (Open-Meteo, cached on the Worker, stale fallback), sun & moon (suncalc)
+- Tiles: clock, weather (Open-Meteo, cached on the Worker, stale fallback), sun & moon (suncalc), air quality
 - CLI scripts: tokens, pairing codes, layout import, settings (location, locale, time zone), smoke test
 
 ## Features (planned)
 
 - Tiles: clock & date, Google Calendar events (multiple accounts), Microsoft To Do tasks (tap to complete),
-  quote of the day, weather, sun & moon, air quality & pollen, countdown
+  quote of the day, weather, sun & moon, air quality, countdown
 - Drag & drop layout editor (phone/PC), multiple saved layouts
 - Layout switching: manual, scheduled, rotation, touch on the tablet
 - Display power: always on, scheduled, manual on/off
@@ -54,7 +54,8 @@ This repository is public. It contains no secrets, no personal data and no real 
 supplied through Cloudflare secrets and git-ignored local files (`.dev.vars`, `wrangler.jsonc`). Read
 [docs/06-security-and-public-repo.md](docs/06-security-and-public-repo.md) before contributing.
 
-Weather and air-quality data by [Open-Meteo.com](https://open-meteo.com) (CC BY 4.0).
+Weather and air-quality data by [Open-Meteo.com](https://open-meteo.com) (CC BY 4.0); air quality from the
+Copernicus Atmosphere Monitoring Service (CAMS).
 
 ## License
 

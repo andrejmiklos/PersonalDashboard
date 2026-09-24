@@ -11,13 +11,13 @@ Vyberieš si dlaždice, rozložíš ich vo webovom editore, uložíš layouty a 
 
 - Worker na Cloudflare Workers + D1: autentifikácia tokenmi (admin / zariadenie), nastavenia, API layoutov s validáciou
 - Displej na tablete: párovanie jednorazovým kódom, pollovanie stavu, vykresľovanie layoutu
-- Dlaždice: hodiny, počasie (Open-Meteo, cache na Workeri, záložné staršie dáta), slnko a mesiac (suncalc)
+- Dlaždice: hodiny, počasie (Open-Meteo, cache na Workeri, záložné staršie dáta), slnko a mesiac (suncalc), kvalita ovzdušia
 - CLI skripty: tokeny, párovacie kódy, import layoutu, nastavenia (poloha, jazyk, časové pásmo), smoke test
 
 ## Funkcie (plánované)
 
 - Dlaždice: čas a dátum, udalosti z Google Kalendára (viac účtov), úlohy z Microsoft To Do (odškrtnutie dotykom),
-  motto dňa, počasie, slnko a mesiac, kvalita ovzdušia a peľ, odpočet do udalosti
+  motto dňa, počasie, slnko a mesiac, kvalita ovzdušia, odpočet do udalosti
 - Editor layoutov ťahaním myšou/prstom (telefón/PC), viac uložených layoutov
 - Prepínanie layoutov: manuálne, podľa plánu, rotácia, dotykom na tablete
 - Napájanie displeja: stále zapnutý, podľa plánu, manuálne zap/vyp
@@ -41,7 +41,8 @@ Repozitár je verejný. Neobsahuje žiadne tajomstvá, osobné údaje ani skuto�
 Cloudflare secrets a lokálne súbory mimo gitu (`.dev.vars`, `wrangler.jsonc`). Pred úpravami si prečítaj
 [docs/06-security-and-public-repo.md](docs/06-security-and-public-repo.md).
 
-Údaje o počasí a ovzduší: [Open-Meteo.com](https://open-meteo.com) (CC BY 4.0).
+Údaje o počasí a ovzduší: [Open-Meteo.com](https://open-meteo.com) (CC BY 4.0); kvalita ovzdušia zo služby
+Copernicus Atmosphere Monitoring Service (CAMS).
 
 ## Licencia
 

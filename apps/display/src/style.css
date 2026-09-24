@@ -464,3 +464,160 @@ body {
 .astro-column .astro-moon-name {
   margin-top: 0;
 }
+
+/* Air quality tile (tiles/air.ts); band colours follow the EEA European AQI. */
+.tile-content.air {
+  padding: 0.75em;
+}
+
+.tile-content.air.is-stale .air-body {
+  opacity: 0.55;
+}
+
+.air-message {
+  color: #888;
+  font-size: 0.875em;
+  text-align: center;
+}
+
+.air-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.air-head {
+  /* Auto margins here and on the footer centre the content above the footer. */
+  margin-top: auto;
+  text-align: center;
+}
+
+.air-value {
+  color: #eee;
+  font-size: 3em;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.air-label {
+  margin-top: 0.15em;
+  font-size: 1.125em;
+  white-space: nowrap;
+}
+
+.air-scale {
+  position: relative;
+  display: flex;
+  height: 0.5em;
+  margin: 0.9em 0 0.5em;
+}
+
+.air-segment {
+  flex: 1;
+  margin-right: 2px;
+}
+
+.air-segment:first-child {
+  border-radius: 0.25em 0 0 0.25em;
+}
+
+.air-segment:last-of-type {
+  margin-right: 0;
+  border-radius: 0 0.25em 0.25em 0;
+}
+
+.air-marker {
+  position: absolute;
+  top: -0.3em;
+  width: 0.3em;
+  height: 1.1em;
+  margin-left: -0.15em;
+  border-radius: 0.15em;
+  background: #fff;
+  box-shadow: 0 0 0 2px #111;
+}
+
+.air-index,
+.air-particles {
+  color: #888;
+  font-size: 0.75em;
+  text-align: center;
+  margin-top: 0.3em;
+}
+
+.air-particles {
+  color: #aaa;
+}
+
+.air-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 0.5em;
+  color: #666;
+  font-size: 0.625em;
+  white-space: nowrap;
+}
+
+.air-compact .air-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  margin: auto 0;
+}
+
+.air-compact .air-value {
+  margin-right: 0.25em;
+}
+
+.air-bg-good {
+  background: #50f0e6;
+}
+
+.air-bg-fair {
+  background: #50ccaa;
+}
+
+.air-bg-moderate {
+  background: #f0e641;
+}
+
+.air-bg-poor {
+  background: #ff5050;
+}
+
+.air-bg-veryPoor {
+  background: #960032;
+}
+
+.air-bg-extremelyPoor {
+  background: #7d2181;
+}
+
+/* Text variants of the two darkest bands are lightened for contrast on the dark tile. */
+.air-fg-good {
+  color: #50f0e6;
+}
+
+.air-fg-fair {
+  color: #50ccaa;
+}
+
+.air-fg-moderate {
+  color: #f0e641;
+}
+
+.air-fg-poor {
+  color: #ff5050;
+}
+
+.air-fg-veryPoor {
+  color: #ff5c8f;
+}
+
+.air-fg-extremelyPoor {
+  color: #c47ddb;
+}

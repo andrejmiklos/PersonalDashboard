@@ -92,17 +92,19 @@ The tile must never offer create/edit/delete — only complete/uncomplete.
 | Refresh | Client polls every 6 h and just after local midnight; the sun moves along the arc every 5 min |
 | Payload | `AstroData` in `packages/shared/src/astro.ts`: `{ date, sunrise, sunset, dayLengthMin, moon: { phase: 0..1, illumination: 0..1, name }, nextPhase: { name, date } }`; `sunrise`/`sunset` are UTC instants or `null` (polar day: `dayLengthMin` 1440, polar night: 0); `name` is one of 8 phases, each covering an eighth of the cycle |
 
-## 7. `air` — Air quality & pollen (Open-Meteo)
+## 7. `air` — Air quality (Open-Meteo, CAMS)
 
 | Item | Value |
 |---|---|
-| Min / default size | 3×2 / 3×3 |
-| Data source | Open-Meteo Air Quality API (`air-quality-api.open-meteo.com`): `european_aqi`, `pm2_5`, `pm10`, pollen fields (alder, birch, grass, mugwort, ragweed, olive) |
-| Config | `showPollen: bool` (true), `pollenTypes: string[]` (birch, grass, ragweed, mugwort, alder), `showParticles: bool` (false) |
-| Display | AQI value + band label (Good … Extremely poor) with colour band; pollen rows with level bars |
-| Behaviour | Pollen values are `null` outside the season/coverage → show "not in season / mimo sezóny", never 0 |
-| Refresh | 60 min |
-| Attribution | Same as weather |
+| Min / default size | 2×1 / 2×2 |
+| Data source | Open-Meteo Air Quality API (`air-quality-api.open-meteo.com`, CAMS models): current `european_aqi`, `pm2_5`, `pm10` |
+| Config | `showParticles: bool` (true) |
+| Display | European AQI value, band label in the band colour, a six-band scale (EEA colours, 0–120) with a marker, "European air quality index" caption, PM2.5 / PM10 in µg/m³. `compact`: value + band only |
+| Bands | Open-Meteo / EEA: 0–20 good, 20–40 fair, 40–60 moderate, 60–80 poor, 80–100 very poor, above 100 extremely poor |
+| States | As weather: loading, location not set, error, stale |
+| Refresh | 60 min; retry after 1 min on failure, doubling |
+| Attribution | "Air quality: CAMS, Open-Meteo.com" in the footer at `regular`+ size — Open-Meteo requires crediting the CAMS ENSEMBLE data provider and Open-Meteo |
+| Pollen | Not shown (owner decision, D-09); see backlog |
 
 ## 8. `countdown` — Countdown to an event
 

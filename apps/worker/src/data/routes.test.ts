@@ -1,5 +1,5 @@
 import type { DatabaseSync } from 'node:sqlite';
-import type { AstroData, DataEnvelope, WeatherData } from '@dashboard/shared';
+import type { AirData, AstroData, DataEnvelope, WeatherData } from '@dashboard/shared';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { hashToken } from '../auth/token';
 import type { Env } from '../env';
@@ -202,5 +202,42 @@ describe('GET /api/v1/data/astro', () => {
     expect(await res.json()).toEqual({
       error: { code: 'validation_error', message: 'date: expected YYYY-MM-DD' },
     });
+  });
+});
+
+describe('GET /api/v1/data/air', () => {
+  const upstreamAir = vi.fn<typeof fetch>();
+
+  beforeEach(async () => {
+    upstreamAir.mockReset();
+    upstreamAir.mockImplementation(async () =>
+      Response.json({ current: { time: '2026-01-15T14:00', european_aqi: 18, pm2_5: 4.6, pm10: 8.9 } }),
+    );
+    vi.stubGlobal('fetch', upstreamAir);
+    db = migrate();
+    env = { DB: createTestD1(db) } as unknown as Env;
+    const insert = db.prepare(
+      'INSERT INTO api_tokens (id, role, label, token_hash, created_at) VALUES (?, ?, ?, ?, ?)',
+    );
+    insert.run('tok_admin', 'admin', 'test', await hashToken(ADMIN_TOKEN), '2026-01-15T08:00:00.000Z');
+    insert.run('tok_device', 'device', 'test', await hashToken(DEVICE_TOKEN), '2026-01-15T08:00:00.000Z');
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('answers 409 until a location is set', async () => {
+    expect((await call('GET', '/data/air')).status).toBe(409);
+    expect(upstreamAir).not.toHaveBeenCalled();
+  });
+
+  it('serves the air quality through the provider cache', async () => {
+    await setLocation(LOCATION);
+    const body = (await (await call('GET', '/data/air')).json()) as DataEnvelope<AirData>;
+    expect(body).toMatchObject({ ttl: 3600, data: { aqi: 18, pm2_5: 4.6, pm10: 8.9 } });
+    await call('GET', '/data/air');
+    expect(upstreamAir).toHaveBeenCalledTimes(1);
+    expect(new URL(String(upstreamAir.mock.calls[0]?.[0])).host).toBe('air-quality-api.open-meteo.com');
   });
 });

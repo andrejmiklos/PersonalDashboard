@@ -5,6 +5,7 @@ import { requireAuth } from '../auth/middleware';
 import { loadCached } from '../cache/provider-cache';
 import type { AppEnv } from '../env';
 import { ApiError } from '../errors';
+import { airProvider } from '../providers/open-meteo/air';
 import { weatherProvider } from '../providers/open-meteo/weather';
 import { readSettings } from '../settings/repository';
 import type { Settings } from '../settings/schema';
@@ -35,6 +36,12 @@ dataRoutes.get('/weather', async (c) => {
   const settings = await readSettings(c.env.DB);
   const { lat, lon } = requireLocation(settings);
   return c.json(await loadCached(c.env.DB, weatherProvider, { lat, lon, timezone: settings.timezone }));
+});
+
+dataRoutes.get('/air', async (c) => {
+  const settings = await readSettings(c.env.DB);
+  const { lat, lon } = requireLocation(settings);
+  return c.json(await loadCached(c.env.DB, airProvider, { lat, lon, timezone: settings.timezone }));
 });
 
 dataRoutes.get('/astro', async (c) => {

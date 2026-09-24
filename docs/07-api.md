@@ -56,7 +56,7 @@ Response envelope: `{ "updatedAt": "ISO", "ttl": 180, "data": … }`.
 | `GET /api/v1/data/calendar` | `sources=id1,id2&days=3` | Events, merged, sorted |
 | `GET /api/v1/data/tasks` | `sources=id1,id2&completed=0` | Tasks by list |
 | `GET /api/v1/data/weather` | — | Location from settings |
-| `GET /api/v1/data/air` | — | AQI + pollen |
+| `GET /api/v1/data/air` | — | European AQI, PM2.5, PM10 |
 | `GET /api/v1/data/astro` | `date=YYYY-MM-DD` (optional) | Sun/moon |
 | `GET /api/v1/data/quote` | `lang=sk|en` (optional) | Today's quote |
 

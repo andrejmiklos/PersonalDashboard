@@ -19,4 +19,5 @@ Ideas raised during requirements gathering but **not selected** by the owner; ke
 | Portrait orientation / per-orientation layouts | Grid model would need `cols`/`rows` per orientation |
 | Light theme / automatic day-night theme | Theme tokens exist; switch would be a schedule input |
 | Cloudflare Access in front of `/admin` | Optional extra layer, see doc 06 |
+| Pollen in the air tile | Dropped in Phase 2. Open-Meteo returns `0` (not `null`) out of season in Europe and `null` only outside coverage; values swing strongly within a day, so show today's maximum with per-type thresholds |
 | Custom domain | Removes the `workers.dev` host from configuration; also helps with TLS troubleshooting |
