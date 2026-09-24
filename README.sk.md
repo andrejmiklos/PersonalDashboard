@@ -13,20 +13,22 @@ fáza 3 (Google Kalendár a Microsoft To Do). Pozri [docs/08-implementation-plan
 - Worker na Cloudflare Workers + D1: autentifikácia tokenmi (admin / zariadenie), nastavenia, API layoutov s validáciou
 - Displej na tablete: párovanie jednorazovým kódom, pollovanie stavu, vykresľovanie layoutu, Screen Wake Lock
   (obrazovka nezhasne)
-- Dlaždice: hodiny, počasie (Open-Meteo, cache na Workeri, záložné staršie dáta), slnko a mesiac (suncalc), kvalita ovzdušia, citát dňa (70 voľných citátov, SK + EN), odpočet
+- Dlaždice: hodiny a dátum, počasie (Open-Meteo, cache na Workeri, záložné staršie dáta), slnko a mesiac (suncalc), kvalita ovzdušia, citát dňa (70 voľných citátov, SK + EN), odpočet
+- Slovenské a anglické rozhranie, tmavá téma, kiosk na celú obrazovku v orientácii na šírku
 - Odolnosť voči výpadkom: posledný layout a dáta dlaždíc z `localStorage`, označenie starých dát, odznak
   offline, nočný reload len keď server odpovedá
+- Zabezpečenie: limity požiadaviek na IP adresu, prísna Content-Security-Policy, gitleaks (pre-commit + CI),
+  `npm audit` v CI, Dependabot, GitHub Actions pripnuté na SHA commitu
 - CLI skripty: tokeny, párovacie kódy, import layoutu, nastavenia (poloha, jazyk, časové pásmo), smoke test
-
-## Funkcie (plánované)
-
-- Dlaždice: čas a dátum, udalosti z Google Kalendára (viac účtov), úlohy z Microsoft To Do (odškrtnutie dotykom),
-  motto dňa, počasie, slnko a mesiac, kvalita ovzdušia, odpočet do udalosti
-- Editor layoutov ťahaním myšou/prstom (telefón/PC), viac uložených layoutov
-- Prepínanie layoutov: manuálne, podľa plánu, rotácia, dotykom na tablete
-- Napájanie displeja: stále zapnutý, podľa plánu, manuálne zap/vyp
-- Slovenské a anglické rozhranie, tmavá téma, orientácia na šírku
 - Beží na bezplatnej vrstve Cloudflare Workers + D1; doma netreba server
+
+## Plánované
+
+- Dlaždice: udalosti z Google Kalendára (viac účtov), úlohy z Microsoft To Do (odškrtnutie dotykom), odpočet do
+  najbližších udalostí z kalendára (fáza 3)
+- Editor layoutov ťahaním myšou/prstom (telefón/PC) a správa uložených layoutov (fáza 4)
+- Prepínanie layoutov: manuálne, podľa plánu, rotácia, dotykom na tablete (fáza 5)
+- Napájanie displeja: stále zapnutý, podľa plánu, manuálne zap/vyp (fáza 5)
 
 ## Architektúra
 

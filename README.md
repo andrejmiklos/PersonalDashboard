@@ -12,20 +12,22 @@ Pick tiles, arrange them in a web editor, save layouts, and let the tablet show 
 
 - Worker on Cloudflare Workers + D1: token auth (admin / device), settings, layouts API with validation
 - Tablet display: pairing with a one-time code, state polling, layout rendering, screen wake lock
-- Tiles: clock, weather (Open-Meteo, cached on the Worker, stale fallback), sun & moon (suncalc), air quality, quote of the day (70 public-domain quotes, SK + EN), countdown
+- Tiles: clock & date, weather (Open-Meteo, cached on the Worker, stale fallback), sun & moon (suncalc), air quality, quote of the day (70 public-domain quotes, SK + EN), countdown
+- Slovak and English UI, dark theme, landscape fullscreen kiosk
 - Offline resilience: last layout and tile data from `localStorage`, stale indicators, offline badge, nightly
   reload only when the server answers
+- Hardening: per-IP rate limits, strict Content-Security-Policy, gitleaks (pre-commit + CI), `npm audit` in CI,
+  Dependabot, GitHub Actions pinned to commit SHAs
 - CLI scripts: tokens, pairing codes, layout import, settings (location, locale, time zone), smoke test
+- Runs on the Cloudflare Workers + D1 free tier; no server at home
 
-## Features (planned)
+## Planned
 
-- Tiles: clock & date, Google Calendar events (multiple accounts), Microsoft To Do tasks (tap to complete),
-  quote of the day, weather, sun & moon, air quality, countdown
-- Drag & drop layout editor (phone/PC), multiple saved layouts
-- Layout switching: manual, scheduled, rotation, touch on the tablet
-- Display power: always on, scheduled, manual on/off
-- Slovak and English UI, dark theme, landscape
-- Runs on Cloudflare Workers + D1 free tier; no server at home
+- Tiles: Google Calendar events (multiple accounts), Microsoft To Do tasks (tap to complete), countdown to the
+  nearest calendar events (Phase 3)
+- Drag & drop layout editor (phone/PC) and management of saved layouts (Phase 4)
+- Layout switching: manual, scheduled, rotation, touch on the tablet (Phase 5)
+- Display power: always on, scheduled, manual on/off (Phase 5)
 
 ## Architecture in one picture
 
