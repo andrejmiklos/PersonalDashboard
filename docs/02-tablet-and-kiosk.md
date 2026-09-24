@@ -74,7 +74,9 @@ No third-party kiosk app (D-02). The kiosk is assembled from Chrome and Android 
    button → pin icon on the dashboard card. Unpinning needs Back + Overview held together.
    Optionally *Ask for unlock pattern before unpinning*.
 4. **Always-on:** Settings → Developer options → **Stay awake** (screen never sleeps while charging).
-   `display` also requests a Screen Wake Lock (available, verified in Phase 0) as a second guard.
+   `display` also holds a Screen Wake Lock as a second guard (`apps/display/src/wake-lock.ts`, HTTPS only,
+   verified in Phase 0). Chrome releases it while the page is hidden, so it is requested again when the page
+   becomes visible.
 5. Settings → Display → brightness set manually; *Adaptive brightness* off.
 6. Lock screen: **PIN** (required by the user CA from step 0; it cannot be set to *None* while the
    certificate is installed). With *Stay awake* it only appears after a reboot. Disable Play Store

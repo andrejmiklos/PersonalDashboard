@@ -10,6 +10,7 @@ import { shouldReload } from './reload';
 import { applyStage, fitStage } from './stage';
 import { createPairingForm } from './pairing';
 import { currentToken, pairFromLocation, storeToken } from './token';
+import { keepScreenAwake } from './wake-lock';
 
 const POLL_MS = 15_000;
 const MAX_BACKOFF_MS = 5 * 60_000;
@@ -139,6 +140,8 @@ window.addEventListener('resize', resize);
 document.addEventListener('contextmenu', (event) => event.preventDefault());
 // Wi-Fi back: do not wait for the backoff.
 window.addEventListener('online', () => schedulePoll(0));
+// Absent over plain HTTP.
+keepScreenAwake('wakeLock' in navigator ? navigator.wakeLock : undefined, document);
 resize();
 showMessage('state.loading');
 // Show the last known dashboard at once; the first poll replaces it (docs/01-architecture.md §5).

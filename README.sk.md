@@ -11,7 +11,8 @@ fáza 3 (Google Kalendár a Microsoft To Do). Pozri [docs/08-implementation-plan
 ## Čo už funguje
 
 - Worker na Cloudflare Workers + D1: autentifikácia tokenmi (admin / zariadenie), nastavenia, API layoutov s validáciou
-- Displej na tablete: párovanie jednorazovým kódom, pollovanie stavu, vykresľovanie layoutu
+- Displej na tablete: párovanie jednorazovým kódom, pollovanie stavu, vykresľovanie layoutu, Screen Wake Lock
+  (obrazovka nezhasne)
 - Dlaždice: hodiny, počasie (Open-Meteo, cache na Workeri, záložné staršie dáta), slnko a mesiac (suncalc), kvalita ovzdušia, citát dňa (70 voľných citátov, SK + EN), odpočet
 - Odolnosť voči výpadkom: posledný layout a dáta dlaždíc z `localStorage`, označenie starých dát, odznak
   offline, nočný reload len keď server odpovedá
