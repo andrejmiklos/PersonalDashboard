@@ -91,7 +91,9 @@ npm run layout:import -- layouts-export/my-layout.json https://<worker-host> --d
 ```
 
 Never put your own layout into `examples/`: labels such as countdowns are personal data (doc 06 §4).
-The display switches within 15 s.
+The display switches within 15 s. The server fills in the defaults of every tile config when a layout is saved, so
+after an update that changes a default (e.g. `showWind` is on since the new weather tile) import the layout again to
+pick it up.
 
 ## 5. Shipping a change
 

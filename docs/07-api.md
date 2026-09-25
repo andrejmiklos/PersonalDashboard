@@ -95,7 +95,8 @@ served neither fresh nor from its cache, the request fails (`503`) instead of re
   "current": { "time": "2026-01-15T14:15", "temperature": 3.4, "feelsLike": 0.9, "code": 3, "isDay": true,
                "windSpeed": 12.5, "precipitation": 0 },
   "hourly": [{ "time": "2026-01-15T15:00", "temperature": 3.1, "precipitationProbability": 10, "code": 61, "windSpeed": 13.8, "isDay": true }],
-  "daily": [{ "date": "2026-01-15", "code": 71, "min": -2, "max": 4, "precipitationProbability": 40 }]
+  "daily": [{ "date": "2026-01-15", "code": 71, "min": -2, "max": 4, "precipitationProbability": 40 }],
+  "place": "Your city"
 }
 ```
 

@@ -150,4 +150,5 @@ Real `wrangler.jsonc` (account id, D1 database id, route) is **git-ignored**.
   cannot be swapped between rows; a leak of D1 alone reveals nothing without the `TOKEN_ENC_KEY` secret.
 - The tablet keeps the last display state (layouts, e.g. countdown labels) and tile payloads in its
   `localStorage` for offline use (doc 01 §5). A `401` on the state poll clears them, so a revoked display does
-  not show the owner's data after a restart.
+  not show the owner's data after a restart. The weather answer carries the name of the place from the settings
+  (`place`), so the city is stored on the tablet as well; it never reaches the repository.

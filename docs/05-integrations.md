@@ -171,7 +171,7 @@ interface Provider<TParams, TData> {
   name: string;                                 // for logs
   ttlSeconds: number;
   staleSeconds: number;                         // how long to serve an old payload while the provider fails
-  cacheKey(params: TParams): string;            // includes a shape version, e.g. `weather:v1:…`
+  cacheKey(params: TParams): string;            // includes a shape version, e.g. `weather:v2:…`
   fetch(params: TParams): Promise<TData>;       // normalised, provider-agnostic shape
 }
 ```
