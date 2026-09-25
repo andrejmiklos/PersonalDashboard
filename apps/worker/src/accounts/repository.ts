@@ -224,9 +224,9 @@ export async function upsertSource(db: D1Database, input: SourceInput): Promise<
 }
 
 export interface SourcePatch {
-  label?: string;
-  color?: string | null;
-  enabled?: boolean;
+  label?: string | undefined;
+  color?: string | null | undefined;
+  enabled?: boolean | undefined;
 }
 
 export async function updateSource(db: D1Database, id: string, patch: SourcePatch): Promise<Source> {

@@ -6,9 +6,10 @@ All `/api/*` responses carry `Cache-Control: no-store`.
 
 Roles: **A** = admin, **D** = device (admin may call everything the device can).
 
-**Implemented (Phase 2):** `/healthz`, `/display/`, `GET /display/state`, `POST /display/pair`,
-`GET /data/weather|air|astro|quote`, all of §4 (layouts) and `GET/PUT /settings`. Tokens are managed with the
-CLI (§7). Everything else below is planned; the phase is in doc 08.
+**Implemented:** `/healthz`, `/display/`, `GET /display/state`, `POST /display/pair`,
+`GET /data/weather|air|astro|quote`, all of §4 (layouts), `GET/PUT /settings` and, for Google, all of §6 (accounts,
+sources, connect flow; Phase 3). Tokens are managed with the CLI (§7). Everything else below is planned; the phase
+is in doc 08.
 
 ## 1. Static
 
@@ -133,12 +134,16 @@ Negative coordinates need `=`: `--lon=-3.7`.
 
 | Method & path | Description |
 |---|---|
-| `GET /api/v1/accounts` | `[{ id, provider, displayName, status }]` (never tokens) |
-| `DELETE /api/v1/accounts/:id` | Removes account + sources (cascade) |
-| `POST /api/v1/admin/oauth/:provider/start` | `provider ∈ google|microsoft`; returns `{ url }` |
-| `GET /api/v1/accounts/:id/discover` | Live list of remote calendars / task lists |
-| `GET /api/v1/sources` | Enabled/known sources |
-| `PUT /api/v1/sources/:id` | `{ label?, color?, enabled? }`; `POST /api/v1/accounts/:id/sources` to add from discovery |
+| `GET /api/v1/accounts` | `[{ id, provider, displayName, status }]` (never tokens or scopes) |
+| `DELETE /api/v1/accounts/:id` | Removes account + sources (cascade) → `204`. It does not revoke the grant at the provider (doc 06 §7) |
+| `POST /api/v1/admin/oauth/:provider/start` | `provider ∈ google|microsoft`; returns `{ url }`; the browser returns to `/oauth/:provider/callback` (doc 05 §1.2) |
+| `GET /api/v1/accounts/:id/discover` | Live list of remote calendars / task lists: `[{ kind, remoteId, label, color, sourceId }]`; `color` is the provider's hint, `sourceId` is set when it was added already |
+| `GET /api/v1/sources` | Known sources `[{ id, accountId, kind, remoteId, label, color, enabled }]`; `?kind=calendar|task_list` |
+| `POST /api/v1/accounts/:id/sources` | `{ remoteId, label?, color? }` adds a discovered calendar / list (`201`; `404` when the account has none like it); label defaults to the remote name, colour to the next of eight palette colours; adding a known one updates label and colour |
+| `PUT /api/v1/sources/:id` | `{ label?, color?, enabled? }`; colour `#rrggbb` or `null`; unknown fields → `400` |
+
+A provider that needs a new consent answers `409 reauth_required` with `accountId` in the error object; an
+unreachable one `503 provider_unavailable`.
 
 ## 7. Admin: tokens
 

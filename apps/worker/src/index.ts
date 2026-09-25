@@ -1,3 +1,4 @@
+import { accountRoutes, sourceRoutes } from './accounts/routes';
 import { createApp } from './app';
 import { dataRoutes } from './data/routes';
 import { pairRoutes } from './display/pair';
@@ -22,6 +23,8 @@ app.use(
 );
 app.route('/', createOAuthRoutes(resolveOAuthProvider));
 app.route('/api/v1/settings', settingsRoutes);
+app.route('/api/v1/accounts', accountRoutes);
+app.route('/api/v1/sources', sourceRoutes);
 app.route('/api/v1/layouts', layoutRoutes);
 app.route('/api/v1/display/pair', pairRoutes);
 app.route('/api/v1/display', displayRoutes);

@@ -4,19 +4,27 @@ import { HTTPException } from 'hono/http-exception';
 
 /** Uniform error body (docs/07-api.md). */
 export interface ErrorBody {
-  error: { code: string; message: string };
+  error: { code: string; message: string } & Record<string, string>;
 }
 
 /** An error that is safe to show to the client as is. */
 export class ApiError extends Error {
   readonly status: ContentfulStatusCode;
   readonly code: string;
+  /** Extra string fields of the error object, e.g. the `accountId` of `reauth_required`. */
+  readonly extra: Record<string, string>;
 
-  constructor(status: ContentfulStatusCode, code: string, message: string) {
+  constructor(
+    status: ContentfulStatusCode,
+    code: string,
+    message: string,
+    extra: Record<string, string> = {},
+  ) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
     this.code = code;
+    this.extra = extra;
   }
 }
 
@@ -28,14 +36,20 @@ const HTTP_EXCEPTION_CODES: Partial<Record<number, string>> = {
   413: 'payload_too_large',
 };
 
-export function errorJson(c: Context, status: ContentfulStatusCode, code: string, message: string): Response {
-  const body: ErrorBody = { error: { code, message } };
+export function errorJson(
+  c: Context,
+  status: ContentfulStatusCode,
+  code: string,
+  message: string,
+  extra: Record<string, string> = {},
+): Response {
+  const body: ErrorBody = { error: { ...extra, code, message } };
   return c.json(body, status);
 }
 
 export function handleError(err: Error, c: Context): Response {
   if (err instanceof ApiError) {
-    return errorJson(c, err.status, err.code, err.message);
+    return errorJson(c, err.status, err.code, err.message, err.extra);
   }
   // Thrown by Hono itself and its middleware (e.g. malformed input).
   if (err instanceof HTTPException) {
