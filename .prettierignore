@@ -3,3 +3,5 @@ coverage/
 .wrangler/
 package-lock.json
 *.md
+# Google Search Console verification file: must stay byte for byte as issued
+docs/google*.html
