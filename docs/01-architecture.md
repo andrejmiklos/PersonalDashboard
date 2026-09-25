@@ -36,8 +36,9 @@ Key properties:
 - Router: [Hono](https://hono.dev) (small, Workers-native).
 - Modules (`apps/worker/src/`): `auth` (token middleware, roles), `display` (state, pairing), `layouts`,
   `settings`, `data` (tile data routes), `providers/*` (Open-Meteo weather and air), `astro` (suncalc),
-  `quotes`, `cache` (D1 provider cache, D-20), `http` (JSON bodies). Planned: `oauth` and the Google /
-  Microsoft providers (Phase 3), `crypto` (AES-GCM for refresh tokens, Phase 3), `schedule` (Phase 5).
+  `quotes`, `cache` (D1 provider cache, D-20), `http` (JSON bodies), `crypto` (AES-GCM secret box), `accounts`
+  (accounts, sources, sealed provider credentials). Planned: `oauth` and the Google / Microsoft providers
+  (Phase 3), `schedule` (Phase 5).
 - Validation of all request bodies (zod) — layouts validated with the shared schema.
 - Cron Trigger (optional, Phase 7): warm caches, prune expired OAuth states.
 
@@ -231,6 +232,11 @@ CREATE TABLE provider_cache (
   payload    TEXT NOT NULL,         -- JSON
   fetched_at TEXT NOT NULL
 );
+
+-- 0004: short-lived credentials per account (sealed like the refresh token, doc 06 §8)
+ALTER TABLE accounts ADD COLUMN access_token_enc TEXT;
+ALTER TABLE accounts ADD COLUMN access_expires_at TEXT;
+ALTER TABLE accounts ADD COLUMN refresh_lock_until TEXT; -- serialises refreshes of one account
 ```
 
 ## 7. Repository layout
