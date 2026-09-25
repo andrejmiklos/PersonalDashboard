@@ -6,13 +6,16 @@ Pick tiles, arrange them in a web editor, save layouts, and let the tablet show 
 > Slovak version: [README.sk.md](README.sk.md)
 
 **Status:** Phases 0–2 done (backend core, display runtime, first tiles, offline handling); Phase 3 (Google
-Calendar and Microsoft To Do) is in progress: the Google side (connect, sealed cache, calendar tile) is built. See [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
+Calendar and Microsoft To Do) is implemented; connecting the owner's real accounts and checking it on the tablet is
+the remaining acceptance step. See [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
 
 ## Working now
 
 - Worker on Cloudflare Workers + D1: token auth (admin / device), settings, layouts API with validation
 - Tablet display: pairing with a one-time code, state polling, layout rendering, screen wake lock
 - Tiles: clock & date, weather (Open-Meteo, cached on the Worker, stale fallback), sun & moon (suncalc), air quality, quote of the day (70 public-domain quotes, SK + EN), countdown
+- Google Calendar (several accounts) and Microsoft To Do connected by OAuth; tokens and cached events/tasks are sealed in D1 with AES-GCM; accounts, calendars and lists are chosen with `npm run accounts`
+- Tiles: calendar (colour per calendar, all-day strip), tasks (tap to complete, undo), countdown to the nearest calendar events
 - Slovak and English UI, dark theme, landscape fullscreen kiosk
 - Offline resilience: last layout and tile data from `localStorage`, stale indicators, offline badge, nightly
   reload only when the server answers
@@ -23,8 +26,6 @@ Calendar and Microsoft To Do) is in progress: the Google side (connect, sealed c
 
 ## Planned
 
-- Tiles: Google Calendar events (multiple accounts), Microsoft To Do tasks (tap to complete), countdown to the
-  nearest calendar events (Phase 3)
 - Drag & drop layout editor (phone/PC) and management of saved layouts (Phase 4)
 - Layout switching: manual, scheduled, rotation, touch on the tablet (Phase 5)
 - Display power: always on, scheduled, manual on/off (Phase 5)

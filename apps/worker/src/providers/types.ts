@@ -1,4 +1,4 @@
-/** A source of tile data (docs/05-integrations.md §6). */
+/** A source of tile data (docs/05-integrations.md §7). */
 export interface Provider<TParams, TData> {
   /** Short name for logs. */
   name: string;

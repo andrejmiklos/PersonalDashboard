@@ -132,7 +132,25 @@ principal phase is found by stepping days and bisecting to under a second.
   what we repeatedly do" (Will Durant, not Aristotle) or most internet "Mark Twain" quotes.
 - `apps/worker/src/quotes/select.test.ts` checks the file (count, ids, lengths, fields).
 
-## 6. Adding another provider later
+## 6. Order of the setup
+
+1. Google Cloud and Microsoft Entra setup (§1.1, §2.1), with the redirect URIs of your Worker host.
+2. `wrangler secret put` for the five secrets, then migrate and deploy (doc 10 §4.1).
+3. `npm run accounts -- … --connect google` (and `microsoft`): open the printed address, sign in, allow.
+4. `--discover` and `--add` the calendars and lists to show; give each a colour (doc 10 §4.2).
+5. Put the source ids into the tiles of your layout and import it.
+
+What the providers document, not yet confirmed on the owner's own accounts:
+
+- Google shows "Google hasn't verified this app" once per account for an unverified production app: *Advanced →
+  Go to <app> (unsafe)*.
+- A Google OAuth client in *Testing* status issues refresh tokens that expire after 7 days; publish it (§1.1).
+- Both providers compare the redirect URI character by character, including `https` and the missing trailing slash.
+- Microsoft client secrets expire (at most 24 months): note the date, create a new secret before it, `wrangler
+  secret put MS_CLIENT_SECRET`, then delete the old one.
+- A Microsoft refresh token that was not used for 90 days stops working; the account then needs to be connected again.
+
+## 7. Adding another provider later
 
 Implement `Provider` interface in `apps/worker/src/providers/`:
 

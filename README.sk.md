@@ -6,7 +6,7 @@ Vyberieš si dlaždice, rozložíš ich vo webovom editore, uložíš layouty a 
 > English version: [README.md](README.md)
 
 **Stav:** fázy 0–2 hotové (jadro backendu, runtime displeja, prvé dlaždice, správanie offline); fáza 3 (Google
-Kalendár a Microsoft To Do) prebieha: strana Googlu (pripojenie, šifrovaná cache, dlaždica kalendára) je hotová. Pozri [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
+Kalendár a Microsoft To Do) je implementovaná; zostáva pripojiť skutočné účty vlastníka a overiť to na tablete. Pozri [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
 
 ## Čo už funguje
 
@@ -14,6 +14,8 @@ Kalendár a Microsoft To Do) prebieha: strana Googlu (pripojenie, šifrovaná ca
 - Displej na tablete: párovanie jednorazovým kódom, pollovanie stavu, vykresľovanie layoutu, Screen Wake Lock
   (obrazovka nezhasne)
 - Dlaždice: hodiny a dátum, počasie (Open-Meteo, cache na Workeri, záložné staršie dáta), slnko a mesiac (suncalc), kvalita ovzdušia, citát dňa (70 voľných citátov, SK + EN), odpočet
+- Google Kalendár (viac účtov) a Microsoft To Do pripojené cez OAuth; tokeny a cache udalostí/úloh sú v D1 zašifrované (AES-GCM); účty, kalendáre a zoznamy sa vyberajú príkazom `npm run accounts`
+- Dlaždice: kalendár (farba podľa kalendára, pásik celodenných udalostí), úlohy (odškrtnutie dotykom, Späť), odpočet do najbližších udalostí z kalendára
 - Slovenské a anglické rozhranie, tmavá téma, kiosk na celú obrazovku v orientácii na šírku
 - Odolnosť voči výpadkom: posledný layout a dáta dlaždíc z `localStorage`, označenie starých dát, odznak
   offline, nočný reload len keď server odpovedá
@@ -24,8 +26,6 @@ Kalendár a Microsoft To Do) prebieha: strana Googlu (pripojenie, šifrovaná ca
 
 ## Plánované
 
-- Dlaždice: udalosti z Google Kalendára (viac účtov), úlohy z Microsoft To Do (odškrtnutie dotykom), odpočet do
-  najbližších udalostí z kalendára (fáza 3)
 - Editor layoutov ťahaním myšou/prstom (telefón/PC) a správa uložených layoutov (fáza 4)
 - Prepínanie layoutov: manuálne, podľa plánu, rotácia, dotykom na tablete (fáza 5)
 - Napájanie displeja: stále zapnutý, podľa plánu, manuálne zap/vyp (fáza 5)
