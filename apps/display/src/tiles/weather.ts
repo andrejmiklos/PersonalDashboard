@@ -29,12 +29,15 @@ const RETRY_MS = 60_000;
 // Block heights in em; the tile's font size is 1rem × scale, so these match style.css.
 const EM = 16;
 const PAD = 0.75;
-const PLACE_H = 1.5;
-const NOW_H = 4.5;
+/** Icon and temperature (with the place name beside them). */
+const TOP_H = 5.25;
+const LINE_H = 1.5;
 const GAP = 0.75;
-const HOURS_H = 4.25;
-const HOUR_W = 3.25;
-const DAY_H = 1.75;
+/** Hour, icon, temperature and precipitation of the hourly strip; a wind row adds WIND_H. */
+const HOURS_H = 5.5;
+const WIND_H = 1.1;
+const HOUR_W = 3.5;
+const DAY_H = 2.1;
 const FOOT_H = 1.25;
 
 /** What fits into the tile box; decided from the box alone, so it does not change with the data. */
@@ -42,31 +45,44 @@ export interface WeatherPlan {
   scale: number;
   compact: boolean;
   hours: number;
+  /** A wind row under the hourly strip. */
+  hourWind: boolean;
   days: number;
   footer: boolean;
 }
 
+/**
+ * Cut order when the tile is short: the daily rows first, then the wind row of the hourly strip, then the
+ * strip itself. Daily rows never take the place of an hourly strip that did not fit.
+ */
 export function weatherPlan(box: TileBox, config: WeatherConfig): WeatherPlan {
   if (box.sizeClass === 'compact') {
-    // Icon and temperature side by side, about 7em × 3.5em.
-    const scale = clamp(Math.min(box.refWidth / (8 * EM), box.refHeight / (4 * EM)), 0.5, 2);
-    return { scale, compact: true, hours: 0, days: 0, footer: false };
+    // Icon and temperature side by side, about 9em × 5em.
+    const scale = clamp(Math.min(box.refWidth / (10 * EM), box.refHeight / (5.5 * EM)), 0.5, 2);
+    return { scale, compact: true, hours: 0, hourWind: false, days: 0, footer: false };
   }
   const scale = clamp(Math.min(box.refWidth / 400, box.refHeight / 360), 0.9, 1.75);
   const width = box.refWidth / (EM * scale) - 2 * PAD;
-  let free = box.refHeight / (EM * scale) - 2 * PAD - NOW_H - FOOT_H - (config.showLocation ? PLACE_H : 0);
+  const lines = 1 + (config.showPrecipitation || config.showWind ? 1 : 0);
+  let free = box.refHeight / (EM * scale) - 2 * PAD - TOP_H - FOOT_H - lines * LINE_H;
 
   let hours = 0;
-  if (config.showHourly && free >= GAP + HOURS_H) {
-    hours = Math.min(WEATHER_HOURS, Math.floor(width / HOUR_W));
-    free -= GAP + HOURS_H;
+  let hourWind = false;
+  if (config.showHourly) {
+    const strip = GAP + HOURS_H;
+    if (config.showWind && free >= strip + WIND_H) {
+      hourWind = true;
+    }
+    if (hourWind || free >= strip) {
+      hours = Math.min(WEATHER_HOURS, Math.floor(width / HOUR_W));
+      free -= strip + (hourWind ? WIND_H : 0);
+    }
   }
   let days = 0;
-  // Daily rows never take the place of an hourly strip that did not fit.
   if (config.dailyDays > 0 && !(config.showHourly && hours === 0) && free >= GAP + DAY_H) {
     days = Math.min(config.dailyDays, Math.floor((free - GAP) / DAY_H));
   }
-  return { scale, compact: false, hours, days, footer: true };
+  return { scale, compact: false, hours, hourWind, days, footer: true };
 }
 
 /** Rounded, with a real minus sign and without "-0". */
@@ -83,38 +99,43 @@ function formatPercent(value: number | null, locale: Locale): string {
 
 export interface WeatherTexts {
   temperature: string;
-  condition: string;
-  details: string;
-  hours: { time: string; temperature: string; precipitation: string }[];
+  /** Condition, feels-like temperature and today's minimum / maximum. */
+  line1: string;
+  /** Precipitation and wind; empty when both are switched off, then the line is left out. */
+  line2: string;
+  hours: { time: string; temperature: string; precipitation: string; wind: string }[];
   days: { weekday: string; min: string; max: string; precipitation: string }[];
 }
 
 export function weatherTexts(data: WeatherData, config: WeatherConfig, locale: Locale): WeatherTexts {
   const today = data.daily[0];
-  const details: string[] = [];
+  const line1 = [t(locale, `weather.${weatherCondition(data.current.code)}`)];
   if (config.showFeelsLike && data.current.feelsLike !== null) {
-    details.push(t(locale, 'weather.feelsLike', { t: formatTemperature(data.current.feelsLike) }));
+    line1.push(t(locale, 'weather.feelsLike', { t: formatTemperature(data.current.feelsLike) }));
   }
   if (today) {
-    details.push(`${formatTemperature(today.min)} / ${formatTemperature(today.max)}`);
+    line1.push(`${formatTemperature(today.min)} / ${formatTemperature(today.max)}`);
   }
+  const line2: string[] = [];
   if (config.showPrecipitation && today && today.precipitationProbability !== null) {
-    details.push(
+    line2.push(
       t(locale, 'weather.precipitation', { p: formatPercent(today.precipitationProbability, locale) }),
     );
   }
   if (config.showWind && data.current.windSpeed !== null) {
-    details.push(t(locale, 'weather.wind', { v: Math.round(data.current.windSpeed) }));
+    line2.push(t(locale, 'weather.wind', { v: Math.round(data.current.windSpeed) }));
   }
 
   return {
     temperature: formatTemperature(data.current.temperature),
-    condition: t(locale, `weather.${weatherCondition(data.current.code)}`),
-    details: details.join(' · '),
+    line1: line1.join(' · '),
+    line2: line2.join(' · '),
     hours: data.hourly.map((hour) => ({
       time: hour.time.slice(11, 16),
       temperature: formatTemperature(hour.temperature),
       precipitation: config.showPrecipitation ? formatPercent(hour.precipitationProbability, locale) : '',
+      // km/h without the unit: the second line already names it.
+      wind: config.showWind && hour.windSpeed != null ? String(Math.round(hour.windSpeed)) : '',
     })),
     // The header already shows today.
     days: data.daily.slice(1).map((day) => ({
@@ -133,13 +154,13 @@ export function createWeather(ctx: TileContext): TileInstance {
 
   const message = element('div', 'wx-message', ctx.el);
   const body = element('div', 'wx-body', ctx.el);
-  const place = element('div', 'wx-place', body);
-  const now = element('div', 'wx-now', body);
+  const top = element('div', 'wx-top', body);
+  const now = element('div', 'wx-now', top);
   const nowIcon = element('div', 'wx-now-icon', now);
-  const nowText = element('div', 'wx-now-text', now);
-  const temperature = element('div', 'wx-temp', nowText);
-  const condition = element('div', 'wx-cond', nowText);
-  const details = element('div', 'wx-details', nowText);
+  const temperature = element('div', 'wx-temp', now);
+  const place = element('div', 'wx-place', top);
+  const line1 = element('div', 'wx-line1', body);
+  const line2 = element('div', 'wx-line2', body);
   const hours = element('div', 'wx-hours', body);
   const days = element('div', 'wx-days', body);
   const footer = element('div', 'wx-foot', body);
@@ -168,11 +189,12 @@ export function createWeather(ctx: TileContext): TileInstance {
     setText(place, name);
     place.hidden = name === '';
     setText(temperature, texts.temperature);
-    setText(condition, texts.condition);
-    setText(details, texts.details);
-    condition.hidden = plan.compact;
-    details.hidden = plan.compact || texts.details === '';
+    setText(line1, texts.line1);
+    setText(line2, texts.line2);
+    line1.hidden = plan.compact;
+    line2.hidden = plan.compact || texts.line2 === '';
 
+    const hourWind = plan.hourWind;
     hours.hidden = plan.hours === 0;
     hours.replaceChildren();
     envelope.data.hourly.slice(0, plan.hours).forEach((hour, i) => {
@@ -182,6 +204,7 @@ export function createWeather(ctx: TileContext): TileInstance {
       cell.appendChild(createWeatherIcon(weatherIcon(hour.code, hour.isDay)));
       element('div', 'wx-hour-temp', cell).textContent = text.temperature;
       element('div', 'wx-precip', cell).textContent = text.precipitation;
+      if (hourWind) element('div', 'wx-wind', cell).textContent = text.wind;
     });
 
     days.hidden = plan.days === 0;

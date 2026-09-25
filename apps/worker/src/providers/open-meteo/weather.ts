@@ -16,7 +16,7 @@ export function weatherUrl({ lat, lon, timezone }: WeatherParams): string {
     latitude: String(lat),
     longitude: String(lon),
     current: 'temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m,precipitation',
-    hourly: 'temperature_2m,precipitation_probability,weather_code,is_day',
+    hourly: 'temperature_2m,precipitation_probability,weather_code,is_day,wind_speed_10m',
     daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max',
     timezone,
     forecast_days: String(WEATHER_DAYS),
@@ -51,6 +51,7 @@ const responseSchema = z.object({
       precipitation_probability: values,
       weather_code: z.array(code.nullable()),
       is_day: z.array(z.union([z.literal(0), z.literal(1)]).nullable()),
+      wind_speed_10m: values,
     })
     .refine(sameLength, 'hourly series differ in length'),
   daily: z
@@ -103,6 +104,7 @@ export function mapWeather(raw: unknown): WeatherData {
       temperature: hourly.temperature_2m[i] ?? null,
       precipitationProbability: hourly.precipitation_probability[i] ?? null,
       code: hourly.weather_code[i] ?? null,
+      windSpeed: hourly.wind_speed_10m[i] ?? null,
       // Unknown day/night: the day icon is the safer default.
       isDay: hourly.is_day[i] !== 0,
     })),
@@ -121,6 +123,6 @@ export const weatherProvider: Provider<WeatherParams, WeatherData> = {
   name: 'open-meteo-weather',
   ttlSeconds: 15 * 60,
   staleSeconds: 3 * 60 * 60,
-  cacheKey: ({ lat, lon, timezone }) => `weather:v1:${lat}:${lon}:${timezone}`,
+  cacheKey: ({ lat, lon, timezone }) => `weather:v2:${lat}:${lon}:${timezone}`,
   fetch: async (params) => mapWeather(await fetchJson(weatherUrl(params))),
 };

@@ -17,6 +17,8 @@ export interface WeatherHour {
   temperature: number | null;
   precipitationProbability: number | null;
   code: number | null;
+  /** km/h; missing in copies stored on a tablet before it existed. */
+  windSpeed?: number | null;
   isDay: boolean;
 }
 

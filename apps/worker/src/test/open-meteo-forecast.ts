@@ -25,6 +25,7 @@ export function forecastFixture(): OpenMeteoForecast {
       temperature_2m: hours.map((t) => hourOf(t) / 2),
       precipitation_probability: hours.map(() => 10),
       weather_code: hours.map(() => 61),
+      wind_speed_10m: hours.map((t) => 10 + hourOf(t) / 4),
       is_day: hours.map((t) => (hourOf(t) >= 8 && hourOf(t) < 16 ? 1 : 0)),
     },
     daily: {

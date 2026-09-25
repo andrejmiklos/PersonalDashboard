@@ -18,7 +18,14 @@ const DATA: WeatherData = {
     precipitation: 0,
   },
   hourly: [
-    { time: '2026-01-15T15:00', temperature: 2.6, precipitationProbability: 10, code: 61, isDay: true },
+    {
+      time: '2026-01-15T15:00',
+      temperature: 2.6,
+      precipitationProbability: 10,
+      code: 61,
+      windSpeed: 13.4,
+      isDay: true,
+    },
     { time: '2026-01-15T16:00', temperature: null, precipitationProbability: null, code: null, isDay: false },
   ],
   daily: [
@@ -32,32 +39,36 @@ function box(w: number, h: number) {
 }
 
 describe('weatherPlan', () => {
-  it('shows hours and the configured days in the default 4×4 tile', () => {
+  it('shows hours with wind and two days in the default 4×4 tile', () => {
     expect(weatherPlan(box(419, 392), defaults)).toMatchObject({
       compact: false,
-      hours: 7,
-      days: 3,
+      hours: 6,
+      hourWind: true,
+      days: 2,
       footer: true,
     });
   });
 
-  it('drops the daily rows before shrinking text in a short tile', () => {
-    const plan = weatherPlan(box(312, 192), { ...defaults, showLocation: false });
-    expect(plan.scale).toBe(0.9);
-    expect(plan).toMatchObject({ hours: 6, days: 0 });
+  it('gives up the daily rows first, then the wind row of the strip, then the strip', () => {
+    const at = (h: number) => weatherPlan(box(419, h), defaults);
+    expect(at(392)).toMatchObject({ hours: 6, hourWind: true, days: 2 });
+    expect(at(300)).toMatchObject({ hours: 7, hourWind: true, days: 0 });
+    expect(at(260)).toMatchObject({ hours: 7, hourWind: false, days: 0 });
+    expect(at(240)).toMatchObject({ hours: 0, hourWind: false, days: 0 });
   });
 
-  it('keeps the place name before the hourly strip, and daily rows never replace a strip that did not fit', () => {
-    const plan = weatherPlan(box(312, 192), defaults);
-    expect(plan).toMatchObject({ hours: 0, days: 0 });
-    expect(weatherPlan(box(312, 192), { ...defaults, showHourly: false })).toMatchObject({
+  it('never lets daily rows replace an hourly strip that did not fit', () => {
+    expect(weatherPlan(box(419, 240), defaults).days).toBe(0);
+    expect(weatherPlan(box(419, 240), { ...defaults, showHourly: false })).toMatchObject({
       hours: 0,
       days: 2,
     });
   });
 
-  it('has room for the place name and everything else in the default 4×4 tile', () => {
-    expect(weatherPlan(box(419, 392), defaults)).toMatchObject({ hours: 7, days: 3 });
+  it('needs less height when the second text line is not shown', () => {
+    const bare = { ...defaults, showWind: false, showPrecipitation: false };
+    expect(weatherPlan(box(419, 240), defaults).hours).toBe(0);
+    expect(weatherPlan(box(419, 240), bare).hours).toBe(7);
   });
 
   it('caps the hourly strip at 8 hours in a wide tile', () => {
@@ -74,6 +85,7 @@ describe('weatherPlan', () => {
     expect(weatherPlan(box(205, 92), defaults)).toMatchObject({
       compact: true,
       hours: 0,
+      hourWind: false,
       days: 0,
       footer: false,
     });
@@ -92,23 +104,27 @@ describe('formatTemperature', () => {
 });
 
 describe('weatherTexts', () => {
-  it('builds the header from current conditions and today', () => {
+  it('puts condition, feels-like and the range of today in line 1, precipitation and wind in line 2', () => {
     const texts = weatherTexts(DATA, defaults, 'sk');
     expect(texts.temperature).toBe('3°');
-    expect(texts.condition).toBe('Polojasno');
-    expect(texts.details).toBe('Pocitovo −1° · −2° / 4° · Zrážky 40 %');
+    expect(texts.line1).toBe('Polojasno · Pocitovo −1° · −2° / 4°');
+    expect(texts.line2).toBe('Zrážky 40 % · Vietor 12 km/h');
   });
 
-  it('adds wind and leaves out disabled details', () => {
-    const config = { ...defaults, showFeelsLike: false, showPrecipitation: false, showWind: true };
-    expect(weatherTexts(DATA, config, 'en').details).toBe('−2° / 4° · Wind 12 km/h');
+  it('leaves out disabled parts, and line 2 entirely when nothing is left', () => {
+    const noFeels = { ...defaults, showFeelsLike: false, showPrecipitation: false };
+    expect(weatherTexts(DATA, noFeels, 'en').line1).toBe('Partly cloudy · −2° / 4°');
+    expect(weatherTexts(DATA, noFeels, 'en').line2).toBe('Wind 12 km/h');
+    expect(weatherTexts(DATA, { ...noFeels, showWind: false }, 'en').line2).toBe('');
+    expect(weatherTexts(DATA, { ...defaults, showWind: false }, 'en').line2).toBe('Precip. 40%');
   });
 
-  it('formats hours and keeps missing values readable', () => {
+  it('formats hours with wind as a bare number and keeps missing values readable', () => {
     expect(weatherTexts(DATA, defaults, 'en').hours).toEqual([
-      { time: '15:00', temperature: '3°', precipitation: '10%' },
-      { time: '16:00', temperature: '–', precipitation: '' },
+      { time: '15:00', temperature: '3°', precipitation: '10%', wind: '13' },
+      { time: '16:00', temperature: '–', precipitation: '', wind: '' },
     ]);
+    expect(weatherTexts(DATA, { ...defaults, showWind: false }, 'en').hours[0]?.wind).toBe('');
   });
 
   it('lists the days after today', () => {

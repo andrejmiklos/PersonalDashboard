@@ -102,7 +102,7 @@ is used instead of KV. `invalid_grant` marks the account `reauth_required`.
 ## 3. Open-Meteo (weather, air quality)
 
 - No API key; free for non-commercial use; **attribution required** (CC BY 4.0) — see tile docs.
-- Forecast: `https://api.open-meteo.com/v1/forecast?latitude=…&longitude=…&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m,precipitation&hourly=temperature_2m,precipitation_probability,weather_code,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=<tz>&forecast_days=6`
+- Forecast: `https://api.open-meteo.com/v1/forecast?latitude=…&longitude=…&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m,precipitation&hourly=temperature_2m,precipitation_probability,weather_code,is_day,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=<tz>&forecast_days=6`
 - Air: `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=…&longitude=…&current=european_aqi,pm2_5,pm10&timezone=<tz>`
   (CAMS data; attribution must name CAMS and Open-Meteo). Normalised shape: `AirData` in `packages/shared/src/air.ts`.
 - The location (city label + latitude/longitude) is stored in `settings.location`

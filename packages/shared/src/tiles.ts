@@ -161,7 +161,7 @@ export const TILE_TYPES: { readonly [T in TileType]: TileTypeMeta<T> } = {
       dailyDays: 3,
       showFeelsLike: true,
       showPrecipitation: true,
-      showWind: false,
+      showWind: true,
       showLocation: true,
     },
   },

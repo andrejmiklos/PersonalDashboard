@@ -229,7 +229,7 @@ CREATE TABLE pairing_codes (
 
 -- 0003: last normalised provider payloads (§3.2, D-20); non-personal data only
 CREATE TABLE provider_cache (
-  key        TEXT PRIMARY KEY,      -- e.g. weather:v1:<lat>:<lon>:<tz>
+  key        TEXT PRIMARY KEY,      -- e.g. weather:v2:<lat>:<lon>:<tz>
   payload    TEXT NOT NULL,         -- JSON
   fetched_at TEXT NOT NULL
 );

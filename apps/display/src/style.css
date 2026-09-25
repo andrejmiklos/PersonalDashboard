@@ -159,33 +159,29 @@ body {
   height: 100%;
 }
 
-.wx-place {
+.wx-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 5.25em;
   flex-shrink: 0;
-  height: 1.5em;
-  color: #aaa;
-  line-height: 1.5em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .wx-now {
   display: flex;
   align-items: center;
-  height: 4.5em;
   flex-shrink: 0;
 }
 
 .wx-compact .wx-now {
-  justify-content: center;
-  height: auto;
+  margin: 0 auto;
 }
 
 .wx-now-icon {
-  width: 4.25em;
-  height: 4.25em;
+  width: 5em;
+  height: 5em;
   flex-shrink: 0;
-  margin-right: 0.5em;
+  margin-right: 0.4em;
 }
 
 .wx-now-icon .wi {
@@ -193,70 +189,90 @@ body {
   height: 100%;
 }
 
-.wx-now-text {
-  min-width: 0;
-}
-
 .wx-temp {
   color: #eee;
-  font-size: 2.5em;
+  font-size: 4em;
   font-weight: 300;
   line-height: 1;
 }
 
-.wx-cond,
-.wx-details {
-  color: #aaa;
-  font-size: 0.875em;
+/* The name of the place beside the temperature, right-aligned; long names are cut. */
+.wx-place {
+  flex: 1;
+  min-width: 0;
+  margin-left: 0.75em;
+  color: #ccc;
+  font-size: 1.5em;
+  text-align: right;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.wx-cond {
-  color: #ccc;
-  margin-top: 0.2em;
+.wx-line1,
+.wx-line2 {
+  flex-shrink: 0;
+  height: 1.5em;
+  font-size: 0.9375em;
+  line-height: 1.6em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.wx-details {
-  font-size: 0.75em;
+.wx-line1 {
+  color: #ccc;
+}
+
+.wx-line2 {
+  color: #aaa;
 }
 
 .wx-hours {
   display: flex;
   justify-content: space-between;
-  height: 4.25em;
   margin-top: 0.75em;
   flex-shrink: 0;
 }
 
 .wx-hour {
-  width: 3.25em;
+  width: 3.5em;
   text-align: center;
-  font-size: 0.8125em;
+  font-size: 0.9375em;
 }
 
 .wx-hour-time {
   color: #888;
+  line-height: 1.25;
 }
 
 .wx-hour .wi {
   display: block;
-  width: 1.75em;
-  height: 1.75em;
-  margin: 0.1em auto;
+  width: 2em;
+  height: 2em;
+  margin: 0 auto;
 }
 
 .wx-hour-temp {
   color: #ddd;
+  font-size: 1.1em;
+  line-height: 1.25;
 }
 
 .wx-precip {
   color: var(--accent);
   font-size: 0.85em;
   min-height: 1em;
+  line-height: 1.35;
 }
 
+.wx-wind {
+  color: #aaa;
+  font-size: 0.85em;
+  line-height: 1.35;
+}
+
+/* Daily rows: one block centred in the tile, columns of fixed width next to each other. */
 .wx-days {
   margin-top: 0.75em;
 }
@@ -264,30 +280,35 @@ body {
 .wx-day {
   display: flex;
   align-items: center;
-  height: 1.75em;
-  font-size: 0.875em;
+  justify-content: center;
+  height: 2.1em;
 }
 
 .wx-day-name {
-  flex: 1;
+  width: 3em;
   color: #aaa;
 }
 
 .wx-day .wi {
-  width: 1.5em;
-  height: 1.5em;
+  width: 1.75em;
+  height: 1.75em;
   margin-right: 0.5em;
 }
 
 .wx-day .wx-precip {
-  width: 3em;
+  width: 3.5em;
   min-height: 0;
+  font-size: 0.9em;
   text-align: right;
+}
+
+.wx-day .wx-precip:empty {
+  display: none;
 }
 
 .wx-day-min,
 .wx-day-max {
-  width: 2.5em;
+  width: 2.75em;
   text-align: right;
 }
 

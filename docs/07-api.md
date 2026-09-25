@@ -94,12 +94,12 @@ served neither fresh nor from its cache, the request fails (`503`) instead of re
 {
   "current": { "time": "2026-01-15T14:15", "temperature": 3.4, "feelsLike": 0.9, "code": 3, "isDay": true,
                "windSpeed": 12.5, "precipitation": 0 },
-  "hourly": [{ "time": "2026-01-15T15:00", "temperature": 3.1, "precipitationProbability": 10, "code": 61, "isDay": true }],
+  "hourly": [{ "time": "2026-01-15T15:00", "temperature": 3.1, "precipitationProbability": 10, "code": 61, "windSpeed": 13.8, "isDay": true }],
   "daily": [{ "date": "2026-01-15", "code": 71, "min": -2, "max": 4, "precipitationProbability": 40 }]
 }
 ```
 
-`hourly` holds the 8 hours after the current one, `daily` today + 5 days; missing model values are `null`. The Worker
+`hourly` holds the 8 hours after the current one (each with `windSpeed` in km/h), `daily` today + 5 days; missing model values are `null`. The Worker
 adds `place` (the label of `settings.location`) to every answer; it is not part of the cached payload, so a renamed
 location shows at once.
 

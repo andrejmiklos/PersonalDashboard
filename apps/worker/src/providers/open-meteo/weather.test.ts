@@ -58,6 +58,7 @@ describe('mapWeather', () => {
       temperature: 7.5,
       precipitationProbability: 10,
       code: 61,
+      windSpeed: 13.75,
       isDay: true,
     });
     expect(hourly[1]?.isDay).toBe(false);
@@ -84,10 +85,11 @@ describe('mapWeather', () => {
     raw.hourly.temperature_2m[15] = null;
     raw.hourly.weather_code[15] = null;
     raw.hourly.is_day[15] = null;
+    raw.hourly.wind_speed_10m[15] = null;
     raw.daily.temperature_2m_min[0] = null;
     const data = mapWeather(raw);
     expect(data.current.feelsLike).toBeNull();
-    expect(data.hourly[0]).toMatchObject({ temperature: null, code: null, isDay: true });
+    expect(data.hourly[0]).toMatchObject({ temperature: null, code: null, windSpeed: null, isDay: true });
     expect(data.daily[0]?.min).toBeNull();
   });
 
