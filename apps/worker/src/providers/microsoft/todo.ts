@@ -98,3 +98,21 @@ export async function fetchTasks(
   );
   return mapTasks(raw, sourceId);
 }
+
+/** Completes or reopens a task; only the `status` field is ever sent (docs/05-integrations.md §2.3). */
+export async function setTaskCompleted(
+  accessToken: string,
+  listId: string,
+  taskId: string,
+  sourceId: string,
+  completed: boolean,
+): Promise<TaskItem> {
+  const raw = await fetchJson(
+    `${GRAPH}/me/todo/lists/${encodeURIComponent(listId)}/tasks/${encodeURIComponent(taskId)}`,
+    authorization(accessToken),
+    { method: 'PATCH', body: { status: completed ? 'completed' : 'notStarted' } },
+  );
+  const task = mapTask(raw, sourceId);
+  if (task === null) throw new ProviderError('Unexpected task response shape');
+  return task;
+}

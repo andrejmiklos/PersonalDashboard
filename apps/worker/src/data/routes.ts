@@ -6,6 +6,7 @@ import { d1Store, loadCached } from '../cache/provider-cache';
 import type { AppEnv } from '../env';
 import { ApiError } from '../errors';
 import { loadCalendarData, type CalendarQuery } from './calendar';
+import { loadTaskData, type TaskQuery } from './tasks';
 import { airProvider } from '../providers/open-meteo/air';
 import { weatherProvider } from '../providers/open-meteo/weather';
 import { quoteOfDay } from '../quotes/select';
@@ -48,7 +49,8 @@ function integerParam<T extends number | null>(
   return n;
 }
 
-function parseCalendarQuery(query: Record<string, string>): CalendarQuery {
+/** `sources=id1,id2`: 1 to 20 distinct source ids. */
+function parseSourceIds(query: Record<string, string>): string[] {
   const sourceIds = [...new Set((query['sources'] ?? '').split(',').filter(Boolean))];
   if (
     sourceIds.length === 0 ||
@@ -61,11 +63,23 @@ function parseCalendarQuery(query: Record<string, string>): CalendarQuery {
       `sources: expected 1 to ${MAX_SOURCES} source ids, comma-separated`,
     );
   }
+  return sourceIds;
+}
+
+function parseCalendarQuery(query: Record<string, string>): CalendarQuery {
   return {
-    sourceIds,
+    sourceIds: parseSourceIds(query),
     days: integerParam('days', query['days'], 1, 365, 3),
     limit: integerParam('limit', query['limit'], 1, 250, null),
   };
+}
+
+function parseTaskQuery(query: Record<string, string>): TaskQuery {
+  const completed = query['completed'];
+  if (completed !== undefined && completed !== '0' && completed !== '1') {
+    throw new ApiError(400, 'validation_error', 'completed: expected 0 or 1');
+  }
+  return { sourceIds: parseSourceIds(query), includeCompleted: completed === '1' };
 }
 
 /** A real calendar date `YYYY-MM-DD` between 1900 and 2199. */
@@ -94,6 +108,8 @@ dataRoutes.get('/calendar', async (c) => {
   const settings = await readSettings(c.env.DB);
   return c.json(await loadCalendarData(c.env, settings.timezone, query));
 });
+
+dataRoutes.get('/tasks', async (c) => c.json(await loadTaskData(c.env, parseTaskQuery(c.req.query()))));
 
 dataRoutes.get('/astro', async (c) => {
   const date = c.req.query('date');

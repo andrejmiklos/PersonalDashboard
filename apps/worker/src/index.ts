@@ -8,6 +8,7 @@ import { layoutRoutes } from './layouts/routes';
 import { resolveOAuthProvider } from './oauth/registry';
 import { createOAuthRoutes } from './oauth/routes';
 import { settingsRoutes } from './settings/routes';
+import { taskRoutes } from './tasks/routes';
 
 const app = createApp();
 
@@ -29,5 +30,6 @@ app.route('/api/v1/layouts', layoutRoutes);
 app.route('/api/v1/display/pair', pairRoutes);
 app.route('/api/v1/display', displayRoutes);
 app.route('/api/v1/data', dataRoutes);
+app.route('/api/v1/tasks', taskRoutes);
 
 export default app;

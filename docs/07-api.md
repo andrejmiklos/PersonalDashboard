@@ -60,7 +60,7 @@ Response envelope: `{ "updatedAt": "ISO", "ttl": 180, "data": … }`.
 | Endpoint | Query | Notes |
 |---|---|---|
 | `GET /api/v1/data/calendar` | `sources=id1,id2&days=3&limit=` | Events, merged, sorted; see below |
-| `GET /api/v1/data/tasks` | `sources=id1,id2&completed=0` | Tasks by list |
+| `GET /api/v1/data/tasks` | `sources=id1,id2&completed=0` | Tasks, merged; see below |
 | `GET /api/v1/data/weather` | — | Location from settings |
 | `GET /api/v1/data/air` | — | European AQI, PM2.5, PM10 |
 | `GET /api/v1/data/astro` | `date=YYYY-MM-DD` (optional) | Sun/moon |
@@ -106,9 +106,18 @@ not a real `YYYY-MM-DD` between 1900 and 2199 → `400 validation_error`. `ttl` 
 `data/quote` returns `QuoteData` `{ id, date, lang, text, author }` for today in the configured zone; `lang`
 defaults to the settings locale, anything but `sk`/`en` → `400 validation_error`. No location needed.
 
-### `PATCH /api/v1/tasks/:listId/:taskId` — D, A
-Body `{ "completed": true | false }`. Only this field is accepted. `200` with the updated task; invalidates the
-tasks cache.
+`data/tasks` takes 1–20 source ids (`sources`) and `completed=0|1` (default 0: open tasks only). The payload
+(`TaskData`) lists the sources that were used, in the requested order, with label and colour, and the tasks
+`{ id, sourceId, title, due?, importance, completed, createdAt }` ordered by due date (tasks without one last),
+then by creation; the tile sorts as configured. `ttl` is 60 s. Like the calendar, a list that can be served
+neither fresh nor from its cache fails the request with `503`.
+
+### `PATCH /api/v1/tasks/:sourceId/:taskId` — D, A
+Body `{ "completed": true | false }`; any other field is `400`. `:sourceId` is the `src_…` id of an **enabled task
+list source** (anything else, and malformed ids, `404`), `:taskId` the id from the payload. Only `status` is sent
+to Microsoft (`completed` / `notStarted`). `200` with the updated task; the cached lists of that source are
+dropped so the next read is fresh. Microsoft answering `404` → `404 not_found`; other provider errors →
+`503 provider_unavailable`; an account that needs a new consent → `409 reauth_required`.
 
 ## 4. Admin: layouts
 

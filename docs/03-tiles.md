@@ -47,8 +47,8 @@ Common behaviour:
 | Interaction | **Tap the checkbox to complete** (44×44 px touch target minimum). Optimistic update; after success the item fades out (if `showCompleted=false`). Long-press is *not* used. Undo: a 5-second inline "Undo" chip after completing |
 | Display | Title, list colour dot, due date ("today"/"overdue" emphasised) when `showDueDate` |
 | Refresh | Client 60 s, server cache 60 s; invalidated after a successful PATCH |
-| Payload | `{ id, listId, title, due?: 'YYYY-MM-DD', importance: 'low'|'normal'|'high', completed: bool, createdAt }` |
-| Write API | `PATCH /api/v1/tasks/:listId/:taskId` — allowed for the `device` role (see doc 06) |
+| Payload | `TaskData` in `packages/shared/src/tasks.ts`: `sources: { id, label, color }[]` and `tasks: { id, sourceId, title, due?: 'YYYY-MM-DD', importance: 'low'|'normal'|'high', completed: bool, createdAt }[]` (`sourceId` is our `src_…` id of the list) |
+| Write API | `PATCH /api/v1/tasks/:sourceId/:taskId` — allowed for the `device` role, only for enabled task lists (see doc 06) |
 | Empty state | "All done" / "Všetko hotové" |
 
 The tile must never offer create/edit/delete — only complete/uncomplete.

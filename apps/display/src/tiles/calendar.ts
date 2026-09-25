@@ -3,7 +3,7 @@ import {
   TILE_TYPES,
   type CalendarConfig,
   type CalendarData,
-  type CalendarSourceInfo,
+  type SourceInfo,
   type DataEnvelope,
 } from '@dashboard/shared';
 import { isStale, startPoller, type DataResult } from '../data';
@@ -87,7 +87,7 @@ function fitToHeight(list: HTMLElement): void {
   }
 }
 
-function renderLegend(legend: HTMLElement, sources: CalendarSourceInfo[]): void {
+function renderLegend(legend: HTMLElement, sources: SourceInfo[]): void {
   const items = sources.map((source) => {
     const item = document.createElement('span');
     item.className = 'cal-legend-item';

@@ -95,7 +95,7 @@ respond `{ updatedAt, ttl, data }`. Provider failure: a row within the stale win
 
 ### 3.3 Task completion (only write path from the tablet)
 
-Tap checkbox → optimistic UI → `PATCH /api/v1/tasks/:listId/:taskId { completed: true }` →
+Tap checkbox → optimistic UI → `PATCH /api/v1/tasks/:sourceId/:taskId { completed: true }` →
 Worker calls Graph → on failure UI rolls back and shows a small error state.
 
 ### 3.4 Editor save

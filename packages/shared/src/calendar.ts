@@ -1,4 +1,5 @@
 // Normalised calendar event of `GET /api/v1/data/calendar` (docs/03-tiles.md §2).
+import type { SourceInfo } from './sources';
 
 export const EVENT_STATUSES = ['confirmed', 'tentative', 'declined'] as const;
 export type EventStatus = (typeof EVENT_STATUSES)[number];
@@ -19,18 +20,10 @@ export interface CalendarEvent {
   status: EventStatus;
 }
 
-/** A calendar of the payload: what the tile needs to colour and label its events. */
-export interface CalendarSourceInfo {
-  id: string;
-  label: string;
-  /** `#rrggbb` chosen by the owner. */
-  color: string | null;
-}
-
 /** Payload of `GET /api/v1/data/calendar`. */
 export interface CalendarData {
   /** The requested sources that exist and are enabled, in the requested order. */
-  sources: CalendarSourceInfo[];
+  sources: SourceInfo[];
   /** Merged and sorted by start; all-day events come before the timed events of their first day. */
   events: CalendarEvent[];
 }

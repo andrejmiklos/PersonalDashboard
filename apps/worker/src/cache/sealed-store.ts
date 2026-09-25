@@ -36,3 +36,12 @@ export function sealedStore(db: D1Database, box: SecretBox): CacheStore {
     },
   };
 }
+
+/** Drops the cached payloads whose key starts with `prefix`, e.g. after a change made through the API. */
+export async function dropSealed(db: D1Database, prefix: string): Promise<void> {
+  // substr instead of LIKE: source ids contain `_`, which LIKE treats as a wildcard.
+  await db
+    .prepare('DELETE FROM personal_cache WHERE substr(key, 1, ?) = ?')
+    .bind(prefix.length, prefix)
+    .run();
+}

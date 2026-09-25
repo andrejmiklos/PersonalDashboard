@@ -35,10 +35,23 @@ function parseRetryAfter(value: string | null): number | undefined {
   return Number.isFinite(seconds) && seconds >= 0 ? seconds : undefined;
 }
 
-/** GETs JSON from a provider with a timeout; non-2xx and non-JSON bodies are a ProviderError. */
-export async function fetchJson(url: string, headers: Record<string, string> = {}): Promise<unknown> {
+/**
+ * Calls a provider for JSON with a timeout (GET, or the given method with a JSON body); non-2xx and
+ * non-JSON answers are a ProviderError.
+ */
+export async function fetchJson(
+  url: string,
+  headers: Record<string, string> = {},
+  request: { method: string; body: unknown } | null = null,
+): Promise<unknown> {
   const res = await fetch(url, {
-    headers: { Accept: 'application/json', ...headers },
+    method: request?.method ?? 'GET',
+    headers: {
+      Accept: 'application/json',
+      ...(request && { 'Content-Type': 'application/json' }),
+      ...headers,
+    },
+    ...(request && { body: JSON.stringify(request.body) }),
     signal: AbortSignal.timeout(TIMEOUT_MS),
   });
   if (!res.ok) {
