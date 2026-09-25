@@ -10,6 +10,13 @@ export function toBase64Url(bytes: Uint8Array): string {
     .replace(/=+$/, '');
 }
 
+/** Throws on characters outside the base64url alphabet. */
+export function fromBase64Url(text: string): Uint8Array {
+  const base64 = text.replace(/-/g, '+').replace(/_/g, '/');
+  const binary = atob(base64 + '='.repeat((4 - (base64.length % 4)) % 4));
+  return Uint8Array.from(binary, (ch) => ch.charCodeAt(0));
+}
+
 /** PKCE `code_challenge` for method S256 (RFC 7636 §4.2). */
 export async function codeChallenge(verifier: string): Promise<string> {
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));

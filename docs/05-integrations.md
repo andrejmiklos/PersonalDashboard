@@ -11,6 +11,7 @@ All provider credentials live in Cloudflare secrets / D1 (encrypted) — never i
 2. **APIs & Services → Library → Google Calendar API → Enable.**
 3. **OAuth consent screen**: User type *External*. App name, support email (owner's).
    Scopes to add:
+   - `openid` (only the stable subject id of the account; no e-mail or profile scope)
    - `https://www.googleapis.com/auth/calendar.calendarlist.readonly`
    - `https://www.googleapis.com/auth/calendar.events.readonly`
 4. **Publish app** → status **In production**. Why: in *Testing* status refresh tokens expire after
@@ -33,8 +34,10 @@ Runs in the admin UI on the phone/PC (never on the tablet).
    `code_challenge`). The redirect URI is the Worker's own origin + `/oauth/google/callback`.
 2. Browser navigates to Google → user consents → redirect to `/oauth/google/callback?code&state`.
 3. Callback (no bearer; authenticated by the single-use `state`): exchange code (+ verifier), read the
-   subject id (`sub` from ID token if `openid` requested, or from calendarList primary), encrypt the
-   refresh token (AES-GCM, key = `TOKEN_ENC_KEY` secret), upsert `accounts`.
+   subject id (`sub` of the ID token, which comes straight from Google's token endpoint, so its signature is
+   not checked), label the account with the id of its primary calendar (its e-mail address; only shown in
+   admin, and skipped if that request fails), encrypt the refresh token (AES-GCM, key = `TOKEN_ENC_KEY`
+   secret), upsert `accounts`. Reconnecting the same account replaces its token in place.
 4. Redirect (`303`) to `/admin/#/accounts?connected=google`, or `?error=denied|invalid_state|failed` (a
    fragment, so it never reaches a server), where the user selects which calendars to enable and assigns
    colours. The state is consumed by the same statement that reads it, so a callback works once. The admin
