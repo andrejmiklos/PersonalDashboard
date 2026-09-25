@@ -159,6 +159,16 @@ body {
   height: 100%;
 }
 
+.wx-place {
+  flex-shrink: 0;
+  height: 1.5em;
+  color: #aaa;
+  line-height: 1.5em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .wx-now {
   display: flex;
   align-items: center;

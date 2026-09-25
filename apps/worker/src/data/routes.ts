@@ -92,9 +92,13 @@ function isCalendarDate(value: string): boolean {
 dataRoutes.get('/weather', async (c) => {
   const settings = await readSettings(c.env.DB);
   const { lat, lon } = requireLocation(settings);
-  return c.json(
-    await loadCached(d1Store(c.env.DB), weatherProvider, { lat, lon, timezone: settings.timezone }),
-  );
+  const weather = await loadCached(d1Store(c.env.DB), weatherProvider, {
+    lat,
+    lon,
+    timezone: settings.timezone,
+  });
+  // The name comes from the settings on every request; the cache holds only what Open-Meteo answered.
+  return c.json({ ...weather, data: { ...weather.data, place: settings.location?.label } });
 });
 
 dataRoutes.get('/air', async (c) => {

@@ -99,7 +99,9 @@ served neither fresh nor from its cache, the request fails (`503`) instead of re
 }
 ```
 
-`hourly` holds the 8 hours after the current one, `daily` today + 5 days; missing model values are `null`.
+`hourly` holds the 8 hours after the current one, `daily` today + 5 days; missing model values are `null`. The Worker
+adds `place` (the label of `settings.location`) to every answer; it is not part of the cached payload, so a renamed
+location shows at once.
 
 `data/astro` computes `AstroData` (doc 03 §6) for `date` (default: today in the configured zone); a `date` that is
 not a real `YYYY-MM-DD` between 1900 and 2199 → `400 validation_error`. `ttl` is 6 h.

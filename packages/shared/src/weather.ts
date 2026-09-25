@@ -34,6 +34,11 @@ export interface WeatherData {
   hourly: WeatherHour[];
   /** Today first. */
   daily: WeatherDay[];
+  /**
+   * Name of the place from the settings, added by the Worker to every answer (never cached, so a renamed
+   * location shows at once). Missing in copies stored on a tablet before it existed.
+   */
+  place?: string;
 }
 
 export type WeatherCondition =

@@ -77,6 +77,7 @@ export const tileConfigSchemas = {
     showFeelsLike: bool,
     showPrecipitation: bool,
     showWind: bool,
+    showLocation: bool,
   }),
   astro: z.strictObject({
     showDayLength: bool,

@@ -72,9 +72,9 @@ The tile must never offer create/edit/delete — only complete/uncomplete.
 |---|---|
 | Min / default size | 3×2 / 4×4 |
 | Data source | Open-Meteo Forecast API (`api.open-meteo.com`), lat/lon from server setting `location` |
-| Config | `showHourly: bool` (true, next 8 hours), `dailyDays: 0–5` (3), `showFeelsLike: bool` (true), `showPrecipitation: bool` (true), `showWind: bool` (false) |
-| Display | Current temperature + icon + condition text; details line (feels like, min/max today, precipitation probability, wind); optional hourly strip (temp + precip probability); daily rows from tomorrow |
-| Sizing | Text scales with the box (0.9×–1.75×); what does not fit is dropped instead of shrinking further: first the daily rows, then the hourly strip, then hours from the right. `compact`: icon + temperature only |
+| Config | `showHourly: bool` (true, next 8 hours), `dailyDays: 0–5` (3), `showFeelsLike: bool` (true), `showPrecipitation: bool` (true), `showWind: bool` (false), `showLocation: bool` (true, the name of the place above the current weather) |
+| Display | Name of the place (`settings.location.label`) above everything else; current temperature + icon + condition text; details line (feels like, min/max today, precipitation probability, wind); optional hourly strip (temp + precip probability); daily rows from tomorrow |
+| Sizing | Text scales with the box (0.9×–1.75×); what does not fit is dropped instead of shrinking further: first the daily rows, then the hourly strip (daily rows never replace a strip that did not fit), then hours from the right; the place name goes last of all and is hidden in `compact` size. `compact`: icon + temperature only |
 | Icons | Own line SVGs (`apps/display/src/tiles/weather-icons.ts`) mapped from WMO codes; clear and partly cloudy have night variants; colours from CSS |
 | States | Loading text; missing location → "set a location in admin"; provider down without data → error; failed refresh keeps the last payload and marks it stale (dimmed + "Updated hh:mm") when the server says `stale` or it is older than 2 × TTL |
 | Refresh | 15 min; after a failure retry after 1 min, doubling up to 15 min |

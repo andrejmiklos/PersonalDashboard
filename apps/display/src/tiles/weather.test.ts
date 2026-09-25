@@ -42,9 +42,22 @@ describe('weatherPlan', () => {
   });
 
   it('drops the daily rows before shrinking text in a short tile', () => {
-    const plan = weatherPlan(box(312, 192), defaults);
+    const plan = weatherPlan(box(312, 192), { ...defaults, showLocation: false });
     expect(plan.scale).toBe(0.9);
     expect(plan).toMatchObject({ hours: 6, days: 0 });
+  });
+
+  it('keeps the place name before the hourly strip, and daily rows never replace a strip that did not fit', () => {
+    const plan = weatherPlan(box(312, 192), defaults);
+    expect(plan).toMatchObject({ hours: 0, days: 0 });
+    expect(weatherPlan(box(312, 192), { ...defaults, showHourly: false })).toMatchObject({
+      hours: 0,
+      days: 2,
+    });
+  });
+
+  it('has room for the place name and everything else in the default 4×4 tile', () => {
+    expect(weatherPlan(box(419, 392), defaults)).toMatchObject({ hours: 7, days: 3 });
   });
 
   it('caps the hourly strip at 8 hours in a wide tile', () => {

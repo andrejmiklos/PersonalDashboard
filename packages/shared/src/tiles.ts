@@ -41,6 +41,7 @@ export interface WeatherConfig {
   showFeelsLike: boolean;
   showPrecipitation: boolean;
   showWind: boolean;
+  showLocation: boolean;
 }
 
 export interface AstroConfig {
@@ -161,6 +162,7 @@ export const TILE_TYPES: { readonly [T in TileType]: TileTypeMeta<T> } = {
       showFeelsLike: true,
       showPrecipitation: true,
       showWind: false,
+      showLocation: true,
     },
   },
   astro: {

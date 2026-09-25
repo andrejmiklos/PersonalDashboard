@@ -79,6 +79,7 @@ describe('GET /api/v1/data/weather', () => {
     expect(body).toMatchObject({ updatedAt: T0.toISOString(), ttl: 900 });
     expect(body.stale).toBeUndefined();
     expect(body.data.current.temperature).toBe(3.4);
+    expect(body.data.place).toBe('Testville');
 
     const url = new URL(String(upstream.mock.calls[0]?.[0]));
     expect(url.searchParams.get('latitude')).toBe('50');
@@ -93,6 +94,19 @@ describe('GET /api/v1/data/weather', () => {
     const body = (await (await getWeather()).json()) as DataEnvelope<WeatherData>;
     expect(body.updatedAt).toBe(T0.toISOString());
     expect(upstream).toHaveBeenCalledTimes(1);
+  });
+
+  it('takes the place name from the settings on every request, not from the cache', async () => {
+    await setLocation(LOCATION);
+    expect(((await (await getWeather()).json()) as DataEnvelope<WeatherData>).data.place).toBe('Testville');
+
+    await setLocation({ ...LOCATION, label: 'Renamed Town' });
+    const body = (await (await getWeather()).json()) as DataEnvelope<WeatherData>;
+    expect(body.data.place).toBe('Renamed Town');
+    expect(upstream).toHaveBeenCalledTimes(1);
+    expect(JSON.stringify(db.prepare('SELECT payload FROM provider_cache').all())).not.toMatch(
+      /Testville|Renamed/,
+    );
   });
 
   it('calls the provider again after the TTL', async () => {

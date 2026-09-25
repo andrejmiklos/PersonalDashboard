@@ -29,6 +29,7 @@ const RETRY_MS = 60_000;
 // Block heights in em; the tile's font size is 1rem × scale, so these match style.css.
 const EM = 16;
 const PAD = 0.75;
+const PLACE_H = 1.5;
 const NOW_H = 4.5;
 const GAP = 0.75;
 const HOURS_H = 4.25;
@@ -53,7 +54,7 @@ export function weatherPlan(box: TileBox, config: WeatherConfig): WeatherPlan {
   }
   const scale = clamp(Math.min(box.refWidth / 400, box.refHeight / 360), 0.9, 1.75);
   const width = box.refWidth / (EM * scale) - 2 * PAD;
-  let free = box.refHeight / (EM * scale) - 2 * PAD - NOW_H - FOOT_H;
+  let free = box.refHeight / (EM * scale) - 2 * PAD - NOW_H - FOOT_H - (config.showLocation ? PLACE_H : 0);
 
   let hours = 0;
   if (config.showHourly && free >= GAP + HOURS_H) {
@@ -61,7 +62,8 @@ export function weatherPlan(box: TileBox, config: WeatherConfig): WeatherPlan {
     free -= GAP + HOURS_H;
   }
   let days = 0;
-  if (config.dailyDays > 0 && free >= GAP + DAY_H) {
+  // Daily rows never take the place of an hourly strip that did not fit.
+  if (config.dailyDays > 0 && !(config.showHourly && hours === 0) && free >= GAP + DAY_H) {
     days = Math.min(config.dailyDays, Math.floor((free - GAP) / DAY_H));
   }
   return { scale, compact: false, hours, days, footer: true };
@@ -131,6 +133,7 @@ export function createWeather(ctx: TileContext): TileInstance {
 
   const message = element('div', 'wx-message', ctx.el);
   const body = element('div', 'wx-body', ctx.el);
+  const place = element('div', 'wx-place', body);
   const now = element('div', 'wx-now', body);
   const nowIcon = element('div', 'wx-now-icon', now);
   const nowText = element('div', 'wx-now-text', now);
@@ -161,6 +164,9 @@ export function createWeather(ctx: TileContext): TileInstance {
       nowIcon.replaceChildren(createWeatherIcon(icon));
       lastIcon = icon;
     }
+    const name = config.showLocation && !plan.compact ? (envelope.data.place ?? '') : '';
+    setText(place, name);
+    place.hidden = name === '';
     setText(temperature, texts.temperature);
     setText(condition, texts.condition);
     setText(details, texts.details);
