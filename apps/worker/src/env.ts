@@ -9,6 +9,9 @@ export interface Env {
   /** Worker secrets of the Google OAuth client (docs/05-integrations.md §1.1). */
   GOOGLE_CLIENT_ID?: string;
   GOOGLE_CLIENT_SECRET?: string;
+  /** Worker secrets of the Microsoft app registration (docs/05-integrations.md §2.1). */
+  MS_CLIENT_ID?: string;
+  MS_CLIENT_SECRET?: string;
   /** Optional Workers Rate Limiting bindings (wrangler.example.jsonc); skipped when missing. */
   API_LIMITER?: RateLimit;
   PAIR_LIMITER?: RateLimit;

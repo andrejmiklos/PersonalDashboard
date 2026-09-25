@@ -8,5 +8,6 @@ export * from './i18n';
 export * from './layout';
 export * from './locale';
 export * from './quote';
+export * from './tasks';
 export * from './tiles';
 export * from './weather';

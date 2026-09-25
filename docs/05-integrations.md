@@ -78,16 +78,21 @@ Endpoints: `https://login.microsoftonline.com/consumers/oauth2/v2.0/{authorize,t
 
 ### 2.2 Connect flow
 
-Same as Google (state + PKCE, admin-initiated, encrypted refresh token). Microsoft **rotates refresh
-tokens** on use — the new token must be written to D1 immediately after each refresh (single-writer:
-serialise refreshes per account with a short D1 lock row or in-memory promise + retry on `invalid_grant`
-by re-reading the DB). This is why D1 (strong consistency) is used instead of KV.
+Same as Google (state + PKCE, admin-initiated, encrypted refresh token), on the `consumers` authority with
+`prompt=select_account` so the owner can pick the account when several are signed in. The account is identified
+by `GET /me` (object id as `external_id`, the mail address as label), which is why `User.Read` is requested.
+Microsoft **rotates refresh tokens** on use — the new token is written to D1 (sealed) before the refresh lock is
+released. Refreshes of one account are serialised by a lock column on `accounts` (`refresh_lock_until`, taken
+with one conditional `UPDATE`, expires by itself after 15 s); a request that loses the lock waits up to 5 s for
+the winner's access token instead of spending the same refresh token again. This is why D1 (strong consistency)
+is used instead of KV. `invalid_grant` marks the account `reauth_required`.
 
 ### 2.3 Data access
 
 - Lists: `GET /v1.0/me/todo/lists` → sources of kind `task_list` (admin picks which to show).
 - Tasks: `GET /v1.0/me/todo/lists/{id}/tasks?$filter=status ne 'completed'&$orderby=…&$top=100`
   (`$orderby` support is limited — sort on the server after fetch).
+- Discovery lists `GET /v1.0/me/todo/lists?$top=100` (first page only).
 - Complete: `PATCH /v1.0/me/todo/lists/{listId}/tasks/{taskId}` with `{ "status": "completed" }`;
   uncomplete: `{ "status": "notStarted" }`.
 - Only these two mutations are exposed by our API.

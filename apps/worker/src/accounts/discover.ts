@@ -1,9 +1,9 @@
 import type { SecretBox } from '../crypto/secret-box';
 import type { Env } from '../env';
-import { ApiError } from '../errors';
 import { getAccessToken } from '../oauth/access-token';
 import { resolveOAuthProvider } from '../oauth/registry';
 import { listCalendars } from '../providers/google/calendar';
+import { listTaskLists } from '../providers/microsoft/todo';
 import type { Account, SourceKind } from './repository';
 
 /** A calendar or task list that exists at the provider and can be added as a source. */
@@ -32,6 +32,11 @@ export async function discoverSources(
         color: calendar.color,
       }));
     case 'microsoft':
-      throw new ApiError(501, 'not_implemented', 'Microsoft task lists are not available yet');
+      return (await listTaskLists(accessToken)).map((list) => ({
+        kind: 'task_list',
+        remoteId: list.id,
+        label: list.label,
+        color: null,
+      }));
   }
 }

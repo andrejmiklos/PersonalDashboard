@@ -7,7 +7,7 @@ All `/api/*` responses carry `Cache-Control: no-store`.
 Roles: **A** = admin, **D** = device (admin may call everything the device can).
 
 **Implemented:** `/healthz`, `/display/`, `GET /display/state`, `POST /display/pair`,
-`GET /data/weather|air|astro|quote|calendar`, all of §4 (layouts), `GET/PUT /settings` and, for Google, all of §6 (accounts,
+`GET /data/weather|air|astro|quote|calendar`, all of §4 (layouts), `GET/PUT /settings` and, for Google and Microsoft, all of §6 (accounts,
 sources, connect flow; Phase 3). Tokens are managed with the CLI (§7). Everything else below is planned; the phase
 is in doc 08.
 
