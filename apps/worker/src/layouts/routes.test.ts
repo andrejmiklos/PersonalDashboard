@@ -153,6 +153,16 @@ describe('layout validation', () => {
     config: { sourceIds },
   });
 
+  const calendarCountdown = (config: Record<string, unknown> = {}) => ({
+    id: 'cd',
+    type: 'countdown',
+    x: 0,
+    y: 4,
+    w: 3,
+    h: 2,
+    config: { source: 'calendar', sourceIds: [CAL_SOURCE], ...config },
+  });
+
   it('accepts sources of the right kind', async () => {
     const doc = await create(layout([clock(), calendar([CAL_SOURCE])]));
     expect(doc.tiles[1]?.config['sourceIds']).toEqual([CAL_SOURCE]);
@@ -183,6 +193,30 @@ describe('layout validation', () => {
       layout([{ ...clock(), type: 'countdown', config: { label: 'x', target: '2027-02-30' } }]),
     ],
     ['calendar without sources', layout([calendar([])])],
+    ['calendar countdown without sources', layout([calendarCountdown({ sourceIds: [] })])],
+    [
+      'calendar countdown with an unknown source',
+      layout([calendarCountdown({ sourceIds: ['src_zzzzzzzzzzzzzzzz'] })]),
+    ],
+    ['calendar countdown with a task list', layout([calendarCountdown({ sourceIds: [LIST_SOURCE] })])],
+    ['calendar countdown with manual keys', layout([calendarCountdown({ label: 'x' })])],
+    ['calendar countdown with too many events', layout([calendarCountdown({ maxEvents: 11 })])],
+    [
+      'manual countdown with sources',
+      layout([
+        {
+          ...clock(),
+          type: 'countdown',
+          config: { label: 'x', target: '2027-07-01', sourceIds: [CAL_SOURCE] },
+        },
+      ]),
+    ],
+    [
+      'unknown countdown source',
+      layout([
+        { ...clock(), type: 'countdown', config: { source: 'tasks', label: 'x', target: '2027-07-01' } },
+      ]),
+    ],
     ['unknown source', layout([calendar(['src_zzzzzzzzzzzzzzzz'])])],
     ['disabled source', layout([calendar([DISABLED_SOURCE])])],
     ['source of the wrong kind', layout([calendar([LIST_SOURCE])])],
@@ -199,6 +233,28 @@ describe('layout validation', () => {
     for (const target of ['2027-07-01', '2027-07-01T18:30']) {
       await create(layout([{ ...clock(), type: 'countdown', config: { label: 'Trip', target } }]));
     }
+  });
+
+  it('fills the defaults of a countdown that reads the calendar and keeps them on save', async () => {
+    const doc = await create(layout([calendarCountdown()]));
+    expect(doc.tiles[0]?.config).toEqual({
+      source: 'calendar',
+      sourceIds: [CAL_SOURCE],
+      showTime: false,
+      maxEvents: null,
+    });
+    // Saving what the server returned again must work (editor round trip, export and import).
+    const { id, version, ...body } = doc;
+    const res = await call('PUT', `/${id}`, { ...body, ifVersion: version });
+    expect(res.status).toBe(200);
+    expect(((await res.json()) as LayoutDocument).tiles[0]?.config).toEqual(doc.tiles[0]?.config);
+  });
+
+  it('gives a manual countdown the manual source', async () => {
+    const doc = await create(
+      layout([{ ...clock(), type: 'countdown', config: { label: 'Trip', target: '2027-07-01' } }]),
+    );
+    expect(doc.tiles[0]?.config).toMatchObject({ source: 'manual', afterBehaviour: 'zero', showTime: false });
   });
 
   it('rejects bodies over 64 KB', async () => {

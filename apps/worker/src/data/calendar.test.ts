@@ -1,6 +1,6 @@
 import type { CalendarData, DataEnvelope } from '@dashboard/shared';
 import type { DatabaseSync } from 'node:sqlite';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { getAccount, updateSource, upsertAccount, upsertSource, type Source } from '../accounts/repository';
 import { createSecretBox, toBase64 } from '../crypto/secret-box';
 import type { Env } from '../env';
@@ -261,9 +261,9 @@ describe('GET /api/v1/data/calendar', () => {
     expect(upstream).not.toHaveBeenCalled();
   });
 
-  it('returns only the next events that have not ended when a limit is given', async () => {
+  it('returns only the next events that have not started yet when a limit is given', async () => {
     const { data } = await load(`${both()}&days=365&limit=2`);
-    // b2 ended at the start of today, a1 at 09:00Z; the all-day event of today is still on.
+    // b2 began yesterday and a1 at 08:00Z; the all-day event of today counts as not started.
     expect(data.events.map((e) => e.id)).toEqual(['a3', 'b1']);
     expect((await load(`${both()}&limit=250`)).data.events.map((e) => e.id)).toEqual([
       'a3',
@@ -272,6 +272,21 @@ describe('GET /api/v1/data/calendar', () => {
       'b3',
     ]);
     expect(eventCalls().map((u) => u.searchParams.get('timeMax'))[0]).toBe('2027-01-14T23:00:00.000Z');
+  });
+
+  it('leaves out events in progress when a limit is given', async () => {
+    const original = EVENTS['cal-a'];
+    onTestFinished(() => {
+      EVENTS['cal-a'] = original ?? [];
+    });
+    EVENTS['cal-a'] = [
+      timed('run', 'Running', '2026-01-15T09:30:00Z', '2026-01-15T10:30:00Z'),
+      allDay('long', 'Long trip', '2026-01-14', '2026-01-20'),
+      timed('soon', 'Soon', '2026-01-15T10:30:00Z', '2026-01-15T11:00:00Z'),
+    ];
+    const { data } = await load(`?sources=${sourceA.id}&limit=5`);
+    expect(data.events.map((e) => e.id)).toEqual(['soon']);
+    expect((await load(`?sources=${sourceA.id}`)).data.events.map((e) => e.id)).toContain('run');
   });
 
   it('reports a missing encryption key instead of hiding it behind old data', async () => {

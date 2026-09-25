@@ -883,3 +883,75 @@ body {
   font-size: 0.625em;
   text-align: right;
 }
+
+/* Countdown to calendar events (tiles/countdown-calendar.ts): the first event large, the next ones as a list. */
+.tile-content.countdown-cal {
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 0.75rem;
+}
+
+.tile-content.countdown-cal.is-stale .cd-body {
+  opacity: 0.55;
+}
+
+.cd-message {
+  margin: auto;
+  color: #888;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.cd-body {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.cd-main {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.cd-list {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  padding-top: 0.4em;
+  border-top: 1px solid #222;
+}
+
+.cd-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75em;
+  padding: 0.2em 0;
+}
+
+.cd-row-title {
+  min-width: 0;
+  color: #ddd;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cd-row-when {
+  flex: none;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.cd-updated {
+  padding-top: 0.3rem;
+  color: #666;
+  font-size: 0.625rem;
+  text-align: right;
+}

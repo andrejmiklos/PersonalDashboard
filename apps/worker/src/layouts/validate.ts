@@ -1,13 +1,15 @@
 import {
+  configDefaultsFor,
   findOverlaps,
   isInsideGrid,
   MAX_LAYOUT_BYTES,
+  sourceKindFor,
   TILE_TYPES,
   type LayoutDocument,
   type Tile,
 } from '@dashboard/shared';
 import { ApiError } from '../errors';
-import { tileConfigSchemas, type LayoutInput } from './schema';
+import { configSchemaFor, type LayoutInput } from './schema';
 
 /** The stored part of a layout; id and version live in their own columns. */
 export type LayoutBody = Omit<LayoutDocument, 'id' | 'version'>;
@@ -50,15 +52,16 @@ export async function validateLayout(db: D1Database, input: LayoutInput): Promis
       throw invalid(`${where}: ${tile.type} needs at least ${meta.minW}×${meta.minH} cells`);
     }
 
-    const parsed = tileConfigSchemas[tile.type].safeParse(tile.config);
+    const parsed = configSchemaFor(tile.type, tile.config).safeParse(tile.config);
     if (!parsed.success) {
       const issue = parsed.error.issues[0];
       const path = issue && issue.path.length > 0 ? `.${issue.path.join('.')}` : '';
       throw invalid(`${where}.config${path}: ${issue?.message ?? 'invalid'}`);
     }
-    const config: Record<string, unknown> = { ...meta.configDefaults, ...parsed.data };
-    if (meta.needsSources) {
-      await checkSources(db, meta.needsSources, config['sourceIds'] as string[], where);
+    const config: Record<string, unknown> = { ...configDefaultsFor(tile.type, tile.config), ...parsed.data };
+    const sourceKind = sourceKindFor(tile.type, config);
+    if (sourceKind) {
+      await checkSources(db, sourceKind, config['sourceIds'] as string[], where);
     }
     tiles.push({ id: tile.id, type: tile.type, x: tile.x, y: tile.y, w: tile.w, h: tile.h, config });
   }

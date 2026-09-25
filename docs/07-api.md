@@ -71,8 +71,8 @@ account needs re-auth → `409` `reauth_required` with `{ "accountId": "…" }`;
 location in settings → `409` `location_not_set`.
 
 `data/calendar` takes 1–20 source ids (`sources`), `days` 1–365 (default 3; whole local days from the start of
-today) and an optional `limit` 1–250: with it only events that have not ended yet are returned, at most `limit`
-(the countdown tile, D-21). Unknown or disabled sources are skipped. The payload (`CalendarData`) lists the
+today) and an optional `limit` 1–250: with it only events that have not started yet are returned (all-day events of
+today count as not started), at most `limit` (the countdown tile, D-21). Unknown or disabled sources are skipped. The payload (`CalendarData`) lists the
 sources that were used, in the requested order, with label and colour, and the events sorted by start; all-day
 events (dates, exclusive end) come before the timed ones of their day. `ttl` is 180 s. If one calendar can be
 served neither fresh nor from its cache, the request fails (`503`) instead of returning an incomplete agenda.

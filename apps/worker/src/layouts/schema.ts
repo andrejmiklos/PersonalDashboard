@@ -87,12 +87,31 @@ export const tileConfigSchemas = {
     showParticles: bool,
   }),
   countdown: z.strictObject({
+    source: z.literal('manual').optional(),
     label: z.string().trim().min(1).max(40),
     target: z.string().refine(isValidLocalTarget, 'Expected YYYY-MM-DD or YYYY-MM-DDTHH:mm'),
     showTime: bool,
     afterBehaviour: z.enum(['hide', 'zero', 'since']).optional(),
   }),
 } satisfies { [T in TileType]: z.ZodType<ConfigInput<T>> };
+
+/** The countdown that reads the calendar (docs/03-tiles.md §8) has its own set of keys. */
+const countdownCalendarSchema = z.strictObject({
+  source: z.literal('calendar'),
+  sourceIds,
+  maxEvents: z.int().min(1).max(10).nullable().optional(),
+  showTime: bool,
+});
+
+/** The config schema of a tile; for a countdown it depends on where the countdown gets its event from. */
+export function configSchemaFor(
+  type: TileType,
+  config: Record<string, unknown>,
+): z.ZodType<Record<string, unknown>> {
+  return type === 'countdown' && config['source'] === 'calendar'
+    ? countdownCalendarSchema
+    : tileConfigSchemas[type];
+}
 
 const tileSchema = z.strictObject({
   id: z.string().regex(/^[A-Za-z0-9_-]{1,32}$/, 'Tile id must be 1-32 letters, digits, _ or -'),

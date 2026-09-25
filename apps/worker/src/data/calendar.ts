@@ -26,7 +26,7 @@ export interface CalendarQuery {
   sourceIds: string[];
   /** Days from the start of today (local) to look ahead. */
   days: number;
-  /** Only the first `limit` events that have not ended yet; null = everything in the range. */
+  /** Only the first `limit` events that have not started yet (all-day events of today count); null = everything in the range. */
   limit: number | null;
 }
 
@@ -129,8 +129,7 @@ export async function loadCalendarData(
 
   let events = results.flatMap((r) => r.data).sort(sorter(timeZone));
   if (query.limit !== null) {
-    // All-day ends are exclusive dates, so an event ending today is over.
-    events = events.filter((e) => (e.allDay ? e.end > today : Date.parse(e.end) > now.getTime()));
+    events = events.filter((e) => (e.allDay ? e.start >= today : Date.parse(e.start) > now.getTime()));
     events = events.slice(0, query.limit);
   }
 

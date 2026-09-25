@@ -1,6 +1,6 @@
 import { TILE_TYPES, type CountdownConfig } from '@dashboard/shared';
 import { describe, expect, it } from 'vitest';
-import { countdownView } from './countdown';
+import { countdownView } from './countdown-view';
 
 const TZ = 'Europe/Bratislava';
 const base = { ...TILE_TYPES.countdown.configDefaults, label: 'Holiday' } as CountdownConfig;

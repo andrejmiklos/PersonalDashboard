@@ -5,6 +5,7 @@ import { createAstro } from '../tiles/astro';
 import { createCalendar } from '../tiles/calendar';
 import { createClock } from '../tiles/clock';
 import { createCountdown } from '../tiles/countdown';
+import { createCalendarCountdown } from '../tiles/countdown-calendar';
 import { createPlaceholder } from '../tiles/placeholder';
 import { createQuote } from '../tiles/quote';
 import type { TileFactory, TileInstance } from '../tiles/types';
@@ -17,7 +18,8 @@ const factories: Partial<Record<TileType, TileFactory>> = {
   astro: createAstro,
   calendar: createCalendar,
   clock: createClock,
-  countdown: createCountdown,
+  countdown: (ctx) =>
+    ctx.config['source'] === 'calendar' ? createCalendarCountdown(ctx) : createCountdown(ctx),
   quote: createQuote,
   weather: createWeather,
 };

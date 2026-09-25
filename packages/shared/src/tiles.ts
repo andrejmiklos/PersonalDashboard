@@ -53,12 +53,20 @@ export interface AirConfig {
   showParticles: boolean;
 }
 
+/**
+ * `manual`: one event given by `label` and `target`. `calendar`: the nearest events of the calendars in
+ * `sourceIds`; `label`, `target` and `afterBehaviour` are not used then (docs/03-tiles.md §8).
+ */
 export interface CountdownConfig {
+  source: 'manual' | 'calendar';
   label: string;
   /** Local `YYYY-MM-DD` or `YYYY-MM-DDTHH:mm`. */
   target: string;
   showTime: boolean;
   afterBehaviour: 'hide' | 'zero' | 'since';
+  sourceIds: string[];
+  /** Calendar source: how many events at most; null = as many as fit. */
+  maxEvents: number | null;
 }
 
 export interface TileConfigs {
@@ -179,9 +187,31 @@ export const TILE_TYPES: { readonly [T in TileType]: TileTypeMeta<T> } = {
     minH: 1,
     defaultW: 3,
     defaultH: 2,
-    configDefaults: { showTime: false, afterBehaviour: 'zero' },
+    configDefaults: { source: 'manual', showTime: false, afterBehaviour: 'zero' },
   },
 };
+
+const COUNTDOWN_CALENDAR_DEFAULTS: Partial<CountdownConfig> = {
+  source: 'calendar',
+  showTime: false,
+  maxEvents: null,
+};
+
+/** Defaults of a tile's config; a countdown that reads the calendar has its own set. */
+export function configDefaultsFor(type: TileType, config: Record<string, unknown>): Record<string, unknown> {
+  return type === 'countdown' && config['source'] === 'calendar'
+    ? COUNTDOWN_CALENDAR_DEFAULTS
+    : TILE_TYPES[type].configDefaults;
+}
+
+/** The kind of sources a tile's `sourceIds` must name, or null when it needs none. */
+export function sourceKindFor(
+  type: TileType,
+  config: Record<string, unknown>,
+): 'calendar' | 'task_list' | null {
+  if (type === 'countdown') return config['source'] === 'calendar' ? 'calendar' : null;
+  return TILE_TYPES[type].needsSources ?? null;
+}
 
 export function isTileType(value: unknown): value is TileType {
   return typeof value === 'string' && Object.prototype.hasOwnProperty.call(TILE_TYPES, value);
