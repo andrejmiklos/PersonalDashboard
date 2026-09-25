@@ -6,8 +6,8 @@ Pick tiles, arrange them in a web editor, save layouts, and let the tablet show 
 > Slovak version: [README.sk.md](README.sk.md)
 
 **Status:** Phases 0–2 done (backend core, display runtime, first tiles, offline handling); Phase 3 (Google
-Calendar and Microsoft To Do) is implemented; connecting the owner's real accounts and checking it on the tablet is
-the remaining acceptance step. See [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
+Calendar and Microsoft To Do) is implemented; the Google calendar and the countdown are verified on the real tablet,
+connecting Microsoft To Do and checking task completion is the remaining acceptance step. See [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
 
 ## Working now
 

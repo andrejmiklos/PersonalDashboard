@@ -6,7 +6,8 @@ Vyberieš si dlaždice, rozložíš ich vo webovom editore, uložíš layouty a 
 > English version: [README.md](README.md)
 
 **Stav:** fázy 0–2 hotové (jadro backendu, runtime displeja, prvé dlaždice, správanie offline); fáza 3 (Google
-Kalendár a Microsoft To Do) je implementovaná; zostáva pripojiť skutočné účty vlastníka a overiť to na tablete. Pozri [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
+Kalendár a Microsoft To Do) je implementovaná; Google kalendár a odpočet sú overené na reálnom tablete, zostáva pripojiť
+Microsoft To Do a overiť odškrtávanie úloh. Pozri [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
 
 ## Čo už funguje
 

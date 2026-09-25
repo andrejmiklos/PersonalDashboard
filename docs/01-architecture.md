@@ -37,8 +37,8 @@ Key properties:
 - Modules (`apps/worker/src/`): `auth` (token middleware, roles), `display` (state, pairing), `layouts`,
   `settings`, `data` (tile data routes), `providers/*` (Open-Meteo weather and air), `astro` (suncalc),
   `quotes`, `cache` (D1 provider cache, D-20), `http` (JSON bodies), `crypto` (AES-GCM secret box), `accounts`
-  (accounts, sources, sealed provider credentials). Planned: `oauth` and the Google / Microsoft providers
-  (Phase 3), `schedule` (Phase 5).
+  (accounts, sources, sealed provider credentials), `oauth` (connect flow, token client), `tasks` (complete /
+  reopen), Google and Microsoft providers under `providers/*`. Planned: `schedule` (Phase 5).
 - Validation of all request bodies (zod) — layouts validated with the shared schema.
 - Cron Trigger (optional, Phase 7): warm caches, prune expired OAuth states.
 

@@ -51,7 +51,7 @@ Repeat for each Google account.
 - Access token: cached sealed in `accounts` until 60 s before `expires_in`; refreshed from the stored refresh
   token under a per-account lock (D-22). Calendar and task payloads are cached sealed in `personal_cache`
   (the Cache API does not reliably persist on `*.workers.dev`, D-20; plain D1 would leave event content readable).
-- `GET calendarList` → sources discovery (admin only, cached 10 min).
+- `GET calendarList` → sources discovery (admin only, live on every call, not cached).
 - Events: `GET /calendar/v3/calendars/{id}/events` with `singleEvents=true`, `orderBy=startTime`,
   `timeMin`, `timeMax`, `maxResults=250`, `fields` limited to id/summary/start/end/location/status/attendees(self,responseStatus).
   One request per enabled calendar, in parallel, merged & sorted server-side; each calendar is cached on its own
@@ -140,7 +140,19 @@ principal phase is found by stepping days and bisecting to under a second.
 4. `--discover` and `--add` the calendars and lists to show; give each a colour (doc 10 §4.2).
 5. Put the source ids into the tiles of your layout and import it.
 
-What the providers document, not yet confirmed on the owner's own accounts:
+Confirmed on the owner's setup (Google):
+
+- The OAuth client type is **Web application** (the flow runs on the Worker), with the redirect URI of the Worker
+  and no JavaScript origins.
+- Switching the consent screen to *In production* requires an application home page and a privacy policy URL, and
+  Google checks that their domain is registered to the owner. `github.com` is not accepted. A GitHub Pages user
+  site (`<user>.github.io`, its own repository) with the Search Console HTML-file verification was set up for
+  this (`PRIVACY.md` is the policy text); Cloud Console still did not accept the domain, so the app stays in
+  *Testing*: add the Google accounts as test users and reconnect them every 7 days.
+- The calendar and countdown tiles worked on the real tablet with two calendars; an event that is in two chosen
+  calendars was shown twice until the server de-duplicated it.
+
+What the providers document, not yet confirmed on the owner's own accounts (Microsoft To Do not yet connected):
 
 - Google shows "Google hasn't verified this app" once per account for an unverified production app: *Advanced →
   Go to <app> (unsafe)*.
