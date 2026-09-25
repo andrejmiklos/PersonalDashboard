@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacy policy – Personal Dashboard</title>
+  </head>
+  <body
+    style="font-family: sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5"
+  >
+    <p><a href="./">Personal Dashboard</a></p>
+    <h1>Privacy policy</h1>
+    <p>
+      Personal Dashboard is a self-hosted wall dashboard for personal, non-commercial use by its owner. It is
+      not a service offered to the public: every installation is run by one person for their own accounts.
+    </p>
+
+    <h2>What the app accesses</h2>
+    <p>When the owner connects an account, the app asks for read access to:</p>
+    <ul>
+      <li>
+        <strong>Google Calendar:</strong> the list of calendars and their events
+        (<code>calendar.calendarlist.readonly</code>, <code>calendar.events.readonly</code>), plus the stable
+        account identifier (<code>openid</code>). The app cannot create, change or delete events.
+      </li>
+      <li>
+        <strong>Microsoft To Do:</strong> the task lists and tasks of a personal Microsoft account
+        (<code>Tasks.ReadWrite</code>, <code>User.Read</code>, <code>offline_access</code>). The only change
+        the app ever makes is marking a task completed or not completed.
+      </li>
+    </ul>
+
+    <h2>How the data is used and stored</h2>
+    <ul>
+      <li>
+        The data is shown on the owner's own display and nowhere else. It is not sold, shared, used for
+        advertising or used to train models, and no human reads it.
+      </li>
+      <li>
+        Access and refresh tokens are stored encrypted (AES-GCM) in the owner's own Cloudflare account. Cached
+        events and tasks are stored there encrypted as well, for at most six hours.
+      </li>
+      <li>
+        The tablet keeps the last received events and tasks in its browser storage so they stay visible while
+        offline.
+      </li>
+      <li>
+        Nothing is sent to any third party except the provider the data comes from (Google or Microsoft) and
+        the hosting provider (Cloudflare) that runs the owner's installation.
+      </li>
+    </ul>
+
+    <h2>Google API Services User Data Policy</h2>
+    <p>
+      The use and transfer of information received from Google APIs to any other app adheres to the
+      <a href="https://developers.google.com/terms/api-services-user-data-policy"
+        >Google API Services User Data Policy</a
+      >, including the Limited Use requirements.
+    </p>
+
+    <h2>Deleting data</h2>
+    <p>
+      The owner can delete a connected account with
+      <code>npm run accounts</code> (<code>--delete-account</code>), which removes its tokens and cached data,
+      and can revoke the app's access in the Google or Microsoft account security settings at any time.
+    </p>
+
+    <h2>Contact</h2>
+    <p>
+      Questions: open an issue in the
+      <a href="https://github.com/andrejmiklos/PersonalDashboard">GitHub repository</a>.
+    </p>
+  </body>
+</html>
