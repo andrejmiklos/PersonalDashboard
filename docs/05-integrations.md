@@ -28,13 +28,18 @@ All provider credentials live in Cloudflare secrets / D1 (encrypted) — never i
 Runs in the admin UI on the phone/PC (never on the tablet).
 
 1. Admin UI: `POST /api/v1/admin/oauth/google/start` (admin token) → server creates `oauth_states`
-   row (random `state`, PKCE `verifier`, 10 min TTL) → returns Google auth URL
-   (`access_type=offline`, `prompt=consent`, scopes above, `code_challenge`).
+   row (random `state` stored as its SHA-256, PKCE `verifier`, 10 min TTL; expired rows are dropped on the
+   next start) → returns Google auth URL (`access_type=offline`, `prompt=consent`, scopes above,
+   `code_challenge`). The redirect URI is the Worker's own origin + `/oauth/google/callback`.
 2. Browser navigates to Google → user consents → redirect to `/oauth/google/callback?code&state`.
 3. Callback (no bearer; authenticated by the single-use `state`): exchange code (+ verifier), read the
    subject id (`sub` from ID token if `openid` requested, or from calendarList primary), encrypt the
    refresh token (AES-GCM, key = `TOKEN_ENC_KEY` secret), upsert `accounts`.
-4. Redirect to `/admin/#/accounts` where the user selects which calendars to enable and assigns colours.
+4. Redirect (`303`) to `/admin/#/accounts?connected=google`, or `?error=denied|invalid_state|failed` (a
+   fragment, so it never reaches a server), where the user selects which calendars to enable and assigns
+   colours. The state is consumed by the same statement that reads it, so a callback works once. The admin
+   app arrives in Phase 4; until then the redirect lands on a missing page and the result is checked with
+   `GET /api/v1/accounts`.
 
 Repeat for each Google account.
 

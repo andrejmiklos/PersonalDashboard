@@ -203,7 +203,7 @@ CREATE TABLE overrides (            -- manual admin override, at most one active
 );
 
 CREATE TABLE oauth_states (
-  state       TEXT PRIMARY KEY,
+  state       TEXT PRIMARY KEY,     -- SHA-256 of the state sent to the provider
   provider    TEXT NOT NULL,
   verifier    TEXT NOT NULL,        -- PKCE
   expires_at  TEXT NOT NULL

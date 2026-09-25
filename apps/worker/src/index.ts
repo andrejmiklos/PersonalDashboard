@@ -4,6 +4,8 @@ import { pairRoutes } from './display/pair';
 import { displayRoutes } from './display/state';
 import { rateLimit } from './http/rate-limit';
 import { layoutRoutes } from './layouts/routes';
+import { resolveOAuthProvider } from './oauth/registry';
+import { createOAuthRoutes } from './oauth/routes';
 import { settingsRoutes } from './settings/routes';
 
 const app = createApp();
@@ -14,6 +16,11 @@ app.use(
   '/api/*',
   rateLimit((env) => env.API_LIMITER),
 );
+app.use(
+  '/oauth/*',
+  rateLimit((env) => env.API_LIMITER),
+);
+app.route('/', createOAuthRoutes(resolveOAuthProvider));
 app.route('/api/v1/settings', settingsRoutes);
 app.route('/api/v1/layouts', layoutRoutes);
 app.route('/api/v1/display/pair', pairRoutes);
