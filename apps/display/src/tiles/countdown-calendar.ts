@@ -30,6 +30,8 @@ const DAYS_AHEAD = 365;
 const DEFAULT_EVENTS = 10;
 /** Asked for on top of `maxEvents`, for events that are dropped (declined). */
 const EXTRA_EVENTS = 4;
+/** Smallest text on the tile in px: the wall tablet is read from a distance. */
+const MIN_TEXT_PX = 15;
 /** Share of the tile height taken by the first event when more follow. */
 const MAIN_SHARE = 0.5;
 
@@ -156,9 +158,9 @@ export function createCalendarCountdown(ctx: TileContext): TileInstance {
     );
     value.style.fontSize = `${sizes.valuePx / 16}rem`;
     unit.style.fontSize = `${(sizes.valuePx * 0.45) / 16}rem`;
-    label.style.fontSize = `${sizes.labelPx / 16}rem`;
+    label.style.fontSize = `${Math.max(sizes.labelPx, MIN_TEXT_PX) / 16}rem`;
 
-    const rowPx = clamp(box.refHeight * 0.055, 12, 20);
+    const rowPx = clamp(box.refHeight * 0.075, MIN_TEXT_PX, 22);
     list.style.fontSize = `${rowPx / 16}rem`;
     list.hidden = rest.length === 0;
     list.replaceChildren(
