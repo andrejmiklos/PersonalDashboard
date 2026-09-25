@@ -30,12 +30,12 @@ Common behaviour:
 |---|---|
 | Min / default size | 3×3 / 5×6 |
 | Data source | Google Calendar API via server (multiple accounts) |
-| Config | `sourceIds: string[]` (required, calendar sources), `daysAhead: 1–14` (3), `maxEvents: 3–30` (auto by height), `showLocation: bool` (false), `showLegend: bool` (false), `hideDeclined: bool` (false), `timeFormat` inherits from clock setting |
+| Config | `sourceIds: string[]` (required, calendar sources), `daysAhead: 1–14` (3), `maxEvents: 3–30` (null = as many as fit), `showLocation: bool` (false), `showLegend: bool` (false), `hideDeclined: bool` (false), `hidePast: bool` (true). Times are 24 h in the settings time zone |
 | Display | Agenda list grouped by day ("Today", "Tomorrow", weekday). Colour dot/bar **per calendar** (colour from `sources.color`). **All-day events are rendered separately** in a strip at the top of each day group (or at the top of the tile for today), not in the timed list |
-| Behaviour | Events currently in progress are highlighted; past events of today are dimmed or hidden (`hidePast` default true); multi-day all-day events show "day 2/3" |
-| Refresh | Client 120 s, server cache 180 s |
-| Normalised payload | `{ id, sourceId, title, start, end, allDay, location?, status: 'confirmed'|'tentative'|'declined' }`. Timed events: ISO UTC; all-day: `YYYY-MM-DD` (end exclusive, as Google) |
-| Empty state | "Nothing planned" / "Nič v pláne" |
+| Behaviour | Events currently in progress are highlighted; past events of today are hidden (`hidePast`) or dimmed; declined events are dimmed and struck through (or hidden), tentative ones italic; multi-day all-day events appear on each day with "day 2/3"; a timed event that started earlier and still runs belongs to today ("–12:00"); days without events are left out. What does not fit the height is cut off after the last complete event |
+| Refresh | Client 120 s, server cache 180 s; the list is redrawn each minute so events move to "now" and "past" |
+| Normalised payload | `CalendarData` in `packages/shared/src/calendar.ts`: `sources: { id, label, color }[]` and `events: { id, sourceId, title, start, end, allDay, location?, status: 'confirmed'|'tentative'|'declined' }[]`. Timed events: ISO UTC; all-day: `YYYY-MM-DD` (end exclusive, as Google) |
+| States | No `sourceIds`: "Choose calendars for this tile in the editor"; empty: "Nothing planned" / "Nič v pláne"; `409 reauth_required`: "Reconnect the account in the admin app" (shown instead of old data); failed refresh keeps the last payload, dimmed with "Updated hh:mm" |
 
 ## 3. `tasks` — Microsoft To Do
 

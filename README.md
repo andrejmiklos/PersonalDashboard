@@ -5,8 +5,8 @@ Pick tiles, arrange them in a web editor, save layouts, and let the tablet show 
 
 > Slovak version: [README.sk.md](README.sk.md)
 
-**Status:** Phases 0–2 done (backend core, display runtime, first tiles, offline handling); next is Phase 3
-(Google Calendar and Microsoft To Do). See [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
+**Status:** Phases 0–2 done (backend core, display runtime, first tiles, offline handling); Phase 3 (Google
+Calendar and Microsoft To Do) is in progress: the Google side (connect, sealed cache, calendar tile) is built. See [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
 
 ## Working now
 

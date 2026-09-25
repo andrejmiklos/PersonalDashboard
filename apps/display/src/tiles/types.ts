@@ -50,9 +50,11 @@ export function showMessage(message: HTMLElement, body: HTMLElement, text: strin
   body.hidden = true;
 }
 
-/** Message for a failed first load; the location is the only error the owner can fix from here. */
+/** Message for a failed first load; a missing location or a lost account connection are what the owner can fix. */
 export function errorText(locale: Locale, code: string | null): string {
-  return t(locale, code === 'location_not_set' ? 'data.noLocation' : 'state.error');
+  if (code === 'location_not_set') return t(locale, 'data.noLocation');
+  if (code === 'reauth_required') return t(locale, 'data.reauth');
+  return t(locale, 'state.error');
 }
 
 /** "Updated hh:mm" for a stale payload, empty otherwise. */

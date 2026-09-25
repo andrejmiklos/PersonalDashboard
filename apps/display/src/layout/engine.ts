@@ -2,6 +2,7 @@ import type { LayoutDocument, Locale, TileType } from '@dashboard/shared';
 import type { DataClient } from '../data';
 import { createAir } from '../tiles/air';
 import { createAstro } from '../tiles/astro';
+import { createCalendar } from '../tiles/calendar';
 import { createClock } from '../tiles/clock';
 import { createCountdown } from '../tiles/countdown';
 import { createPlaceholder } from '../tiles/placeholder';
@@ -14,6 +15,7 @@ import { tileRect } from './geometry';
 const factories: Partial<Record<TileType, TileFactory>> = {
   air: createAir,
   astro: createAstro,
+  calendar: createCalendar,
   clock: createClock,
   countdown: createCountdown,
   quote: createQuote,
