@@ -13,9 +13,10 @@ connecting Microsoft To Do and checking task completion is the remaining accepta
 
 - Worker on Cloudflare Workers + D1: token auth (admin / device), settings, layouts API with validation
 - Tablet display: pairing with a one-time code, state polling, layout rendering, screen wake lock
-- Tiles: clock & date, weather (Open-Meteo, cached on the Worker, stale fallback), sun & moon (suncalc), air quality, quote of the day (70 public-domain quotes, SK + EN), countdown
-- Google Calendar (several accounts) and Microsoft To Do connected by OAuth; tokens and cached events/tasks are sealed in D1 with AES-GCM; accounts, calendars and lists are chosen with `npm run accounts`
-- Tiles: calendar (colour per calendar, all-day strip), tasks (tap to complete, undo), countdown to the nearest calendar events
+- Tiles: clock & date, weather (Open-Meteo, with the name of your place, hourly strip with wind, cached on the Worker, stale fallback), sun & moon (suncalc), air quality, quote of the day (70 public-domain quotes, SK + EN), countdown
+- Google Calendar (several accounts) connected by OAuth and verified on the tablet: calendar tile (colour per calendar, all-day strip, an event in two calendars shown once) and a countdown to the nearest calendar events
+- Tokens and cached events/tasks are sealed in D1 with AES-GCM; accounts, calendars and lists are chosen with `npm run accounts`
+- Microsoft To Do connection and the tasks tile (tap to complete, undo) are implemented and tested, but not yet checked against a real account
 - Slovak and English UI, dark theme, landscape fullscreen kiosk
 - Offline resilience: last layout and tile data from `localStorage`, stale indicators, offline badge, nightly
   reload only when the server answers
@@ -42,6 +43,8 @@ Phone/PC (admin editor)       ──▶ (same Worker, admin token)
 Prerequisites, first deployment, pairing the tablet, settings, layouts and troubleshooting are in the
 [operations runbook](docs/10-operations.md). The tablet itself is prepared as described in
 [docs/02-tablet-and-kiosk.md](docs/02-tablet-and-kiosk.md) §3.
+
+What the app does with your calendar and task data: [PRIVACY.md](PRIVACY.md).
 
 ## Documentation
 

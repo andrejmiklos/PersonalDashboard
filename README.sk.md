@@ -14,9 +14,10 @@ Microsoft To Do a overiť odškrtávanie úloh. Pozri [docs/08-implementation-pl
 - Worker na Cloudflare Workers + D1: autentifikácia tokenmi (admin / zariadenie), nastavenia, API layoutov s validáciou
 - Displej na tablete: párovanie jednorazovým kódom, pollovanie stavu, vykresľovanie layoutu, Screen Wake Lock
   (obrazovka nezhasne)
-- Dlaždice: hodiny a dátum, počasie (Open-Meteo, cache na Workeri, záložné staršie dáta), slnko a mesiac (suncalc), kvalita ovzdušia, citát dňa (70 voľných citátov, SK + EN), odpočet
-- Google Kalendár (viac účtov) a Microsoft To Do pripojené cez OAuth; tokeny a cache udalostí/úloh sú v D1 zašifrované (AES-GCM); účty, kalendáre a zoznamy sa vyberajú príkazom `npm run accounts`
-- Dlaždice: kalendár (farba podľa kalendára, pásik celodenných udalostí), úlohy (odškrtnutie dotykom, Späť), odpočet do najbližších udalostí z kalendára
+- Dlaždice: hodiny a dátum, počasie (Open-Meteo, s názvom tvojho miesta, hodinový pás s vetrom, cache na Workeri, záložné staršie dáta), slnko a mesiac (suncalc), kvalita ovzdušia, citát dňa (70 voľných citátov, SK + EN), odpočet
+- Google Kalendár (viac účtov) pripojený cez OAuth a overený na tablete: dlaždica kalendára (farba podľa kalendára, pásik celodenných udalostí, udalosť v dvoch kalendároch sa ukáže raz) a odpočet do najbližších udalostí z kalendára
+- Tokeny a cache udalostí/úloh sú v D1 zašifrované (AES-GCM); účty, kalendáre a zoznamy sa vyberajú príkazom `npm run accounts`
+- Pripojenie Microsoft To Do a dlaždica úloh (odškrtnutie dotykom, Späť) sú implementované a otestované, na skutočnom účte ešte neoverené
 - Slovenské a anglické rozhranie, tmavá téma, kiosk na celú obrazovku v orientácii na šírku
 - Odolnosť voči výpadkom: posledný layout a dáta dlaždíc z `localStorage`, označenie starých dát, odznak
   offline, nočný reload len keď server odpovedá
@@ -43,6 +44,8 @@ Telefón/PC (admin editor)           ──▶ (ten istý Worker, admin token)
 Predpoklady, prvé nasadenie, spárovanie tabletu, nastavenia, layouty a riešenie problémov sú v
 [prevádzkovom runbooku](docs/10-operations.md) (po anglicky). Príprava samotného tabletu je v
 [docs/02-tablet-and-kiosk.md](docs/02-tablet-and-kiosk.md) §3.
+
+Čo appka robí s tvojimi kalendárovými a úlohovými dátami: [PRIVACY.md](PRIVACY.md) (po anglicky).
 
 ## Dokumentácia
 
