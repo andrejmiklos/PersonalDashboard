@@ -16,7 +16,7 @@ calendar and task data. Both facts drive this document.
 | Provider refresh tokens leak from DB | Encrypted (AES-GCM) with a key that lives only in Worker secrets |
 | OAuth CSRF / code injection | Single-use `state` + PKCE, 10-minute TTL, admin-initiated |
 | XSS in admin/display (calendar titles, task names, quotes) | All external text inserted via `textContent`; no `innerHTML` with data; strict CSP |
-| Personal data in logs/caches | Never log event/task content; data endpoints `Cache-Control: no-store`; the D1 provider cache holds only non-personal normalised payloads (weather, air), pruned after 3 h |
+| Personal data in logs/caches | Never log event/task content; data endpoints `Cache-Control: no-store`; the D1 `provider_cache` holds only non-personal payloads (weather, air), pruned after 3 h; calendar and task payloads live sealed (AES-GCM) in `personal_cache`, pruned after 6 h and emptied when an account is deleted |
 | Supply chain | Lockfile committed (`npm ci`), few dependencies, weekly Dependabot PRs for npm and GitHub Actions (`.github/dependabot.yml`), `npm audit --audit-level=high` in CI, actions pinned to commit SHAs |
 
 ## 2. Roles and permissions
@@ -144,7 +144,9 @@ Real `wrangler.jsonc` (account id, D1 database id, route) is **git-ignored**.
 - Data flows: Google/Microsoft → Worker → tablet. Nothing else receives it. Open-Meteo receives only
   rounded coordinates.
 - Cloudflare processes the traffic as the host; use of Cloudflare is an accepted trade-off (D-01).
-- D1 stores no event/task content (only config, encrypted tokens and the weather/air provider cache, D-20).
+- D1 stores no readable event/task content: only config, sealed provider tokens, the weather/air provider cache
+  (D-20) and the sealed calendar/task cache (D-22). Sealed values are bound to their row and purpose, so they
+  cannot be swapped between rows; a leak of D1 alone reveals nothing without the `TOKEN_ENC_KEY` secret.
 - The tablet keeps the last display state (layouts, e.g. countdown labels) and tile payloads in its
   `localStorage` for offline use (doc 01 §5). A `401` on the state poll clears them, so a revoked display does
   not show the owner's data after a restart.

@@ -18,3 +18,19 @@ export interface CalendarEvent {
   location?: string;
   status: EventStatus;
 }
+
+/** A calendar of the payload: what the tile needs to colour and label its events. */
+export interface CalendarSourceInfo {
+  id: string;
+  label: string;
+  /** `#rrggbb` chosen by the owner. */
+  color: string | null;
+}
+
+/** Payload of `GET /api/v1/data/calendar`. */
+export interface CalendarData {
+  /** The requested sources that exist and are enabled, in the requested order. */
+  sources: CalendarSourceInfo[];
+  /** Merged and sorted by start; all-day events come before the timed events of their first day. */
+  events: CalendarEvent[];
+}

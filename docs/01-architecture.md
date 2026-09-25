@@ -88,7 +88,8 @@ tablet bundle small.)
 ### 3.2 Tile data
 
 Tile → `GET /api/v1/data/<type>?…` → Worker reads `provider_cache` in D1 (key = type + shape version +
-normalised params) → younger than the TTL: respond with it; otherwise call provider → normalise → store →
+normalised params; calendar and task data use `personal_cache`, whose payloads are sealed with AES-GCM, one
+entry per source and range) → younger than the TTL: respond with it; otherwise call provider → normalise → store →
 respond `{ updatedAt, ttl, data }`. Provider failure: a row within the stale window is served with
 `"stale": true`, otherwise `503`. Each write prunes rows older than the stale window (D-20).
 
@@ -231,6 +232,13 @@ CREATE TABLE provider_cache (
   key        TEXT PRIMARY KEY,      -- e.g. weather:v1:<lat>:<lon>:<tz>
   payload    TEXT NOT NULL,         -- JSON
   fetched_at TEXT NOT NULL
+);
+
+-- 0005: last normalised payloads with personal data, sealed (calendar, tasks; D-22)
+CREATE TABLE personal_cache (
+  key         TEXT PRIMARY KEY,     -- e.g. calendar:v1:<source id>:<local date>:<days>
+  payload_enc TEXT NOT NULL,        -- AES-GCM(base64) of the JSON, bound to the key
+  fetched_at  TEXT NOT NULL
 );
 
 -- 0004: short-lived credentials per account (sealed like the refresh token, doc 06 §8)

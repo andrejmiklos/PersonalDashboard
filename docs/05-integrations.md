@@ -48,15 +48,17 @@ Repeat for each Google account.
 
 ### 1.3 Data access
 
-- Access token: cached for `expires_in − 60 s`; refreshed from the stored refresh token.
-  **Open for Phase 3:** where access tokens and the last calendar/task data are cached. The Cache API does
-  not reliably persist on `*.workers.dev` (D-20), and D1 holds no event/task content so far (doc 06 §8).
+- Access token: cached sealed in `accounts` until 60 s before `expires_in`; refreshed from the stored refresh
+  token under a per-account lock (D-22). Calendar and task payloads are cached sealed in `personal_cache`
+  (the Cache API does not reliably persist on `*.workers.dev`, D-20; plain D1 would leave event content readable).
 - `GET calendarList` → sources discovery (admin only, cached 10 min).
 - Events: `GET /calendar/v3/calendars/{id}/events` with `singleEvents=true`, `orderBy=startTime`,
   `timeMin`, `timeMax`, `maxResults=250`, `fields` limited to id/summary/start/end/location/status/attendees(self,responseStatus).
-  One request per enabled calendar, in parallel, merged & sorted server-side.
+  One request per enabled calendar, in parallel, merged & sorted server-side; each calendar is cached on its own
+  (180 s fresh, served stale for up to 6 h while Google fails).
 - Colour: from `sources.color` (owner-chosen), not Google's.
-- Errors: `invalid_grant` → `accounts.status = 'reauth_required'`; 403/429 → serve stale cache, back off.
+- Errors: `invalid_grant` → `accounts.status = 'reauth_required'` and `409 reauth_required` from then on, even
+  while a cache would still answer; other failures (403/429/5xx) → serve the sealed stale copy, else `503`.
 
 ## 2. Microsoft To Do (Microsoft Graph, personal account)
 

@@ -73,6 +73,7 @@ All decisions below were made with the owner during requirements gathering (2026
 | D-18 | Storage | D1 (SQLite) rather than KV | Strong consistency for rotating refresh tokens; SQL-friendly |
 | D-19 | Layout engine | Absolute positioning in %, 12×8 grid | Chosen before Phase 0; kept because it maps 1:1 to editor coordinates |
 | D-20 | Provider cache | D1 table `provider_cache` rather than the Cache API | The Worker runs on `*.workers.dev`, where the Cache API is not reliably persistent; the 3 h stale fallback must work. Non-personal data only (weather, air) |
+| D-22 | Personal data in D1 | Access tokens and the last calendar/task payloads are cached in D1 **sealed** (AES-GCM, `TOKEN_ENC_KEY`), in `accounts` and `personal_cache` | Decided 2026-09-25 in Phase 3. Keeps the stale fallback and the serialised token refresh; D1 never holds readable event or task content. Alternatives rejected: isolate memory only (cache lost on every restart), plaintext in D1 |
 | D-21 | Countdown source | Manual (one event in the tile config) **or** calendar: the nearest events of the chosen calendars, the first one large and the next ones as a list | Decided 2026-09-24 in Phase 2; the calendar source is built in Phase 3 once calendar data exists |
 
 ## 6. Accounts & external prerequisites (owner action)

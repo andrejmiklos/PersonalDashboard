@@ -152,10 +152,16 @@ export async function upsertAccount(
   return getAccount(db, id);
 }
 
-/** Deletes an account; its sources go with it (foreign key cascade). */
+/**
+ * Deletes an account; its sources go with it (foreign key cascade). The personal cache is emptied too,
+ * so no event or task content of the account stays behind; it refills from the other accounts.
+ */
 export async function deleteAccount(db: D1Database, id: string): Promise<void> {
-  const deleted = await db.prepare('DELETE FROM accounts WHERE id = ? RETURNING id').bind(id).first();
-  if (!deleted) throw new ApiError(404, 'not_found', 'Account not found');
+  const [deleted] = await db.batch([
+    db.prepare('DELETE FROM accounts WHERE id = ? RETURNING id').bind(id),
+    db.prepare('DELETE FROM personal_cache'),
+  ]);
+  if (!deleted?.results.length) throw new ApiError(404, 'not_found', 'Account not found');
 }
 
 export interface SourceFilter {

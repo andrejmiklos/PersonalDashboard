@@ -24,6 +24,7 @@ describe('migrations', () => {
       'oauth_states',
       'overrides',
       'pairing_codes',
+      'personal_cache',
       'provider_cache',
       'schedule_rules',
       'settings',

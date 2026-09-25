@@ -7,7 +7,7 @@ All `/api/*` responses carry `Cache-Control: no-store`.
 Roles: **A** = admin, **D** = device (admin may call everything the device can).
 
 **Implemented:** `/healthz`, `/display/`, `GET /display/state`, `POST /display/pair`,
-`GET /data/weather|air|astro|quote`, all of §4 (layouts), `GET/PUT /settings` and, for Google, all of §6 (accounts,
+`GET /data/weather|air|astro|quote|calendar`, all of §4 (layouts), `GET/PUT /settings` and, for Google, all of §6 (accounts,
 sources, connect flow; Phase 3). Tokens are managed with the CLI (§7). Everything else below is planned; the phase
 is in doc 08.
 
@@ -59,7 +59,7 @@ Response envelope: `{ "updatedAt": "ISO", "ttl": 180, "data": … }`.
 
 | Endpoint | Query | Notes |
 |---|---|---|
-| `GET /api/v1/data/calendar` | `sources=id1,id2&days=3` | Events, merged, sorted |
+| `GET /api/v1/data/calendar` | `sources=id1,id2&days=3&limit=` | Events, merged, sorted; see below |
 | `GET /api/v1/data/tasks` | `sources=id1,id2&completed=0` | Tasks by list |
 | `GET /api/v1/data/weather` | — | Location from settings |
 | `GET /api/v1/data/air` | — | European AQI, PM2.5, PM10 |
@@ -69,6 +69,23 @@ Response envelope: `{ "updatedAt": "ISO", "ttl": 180, "data": … }`.
 Provider failure with usable cache → `200` with `"stale": true`; without → `503` `provider_unavailable`;
 account needs re-auth → `409` `reauth_required` with `{ "accountId": "…" }`; weather/air/astro without a
 location in settings → `409` `location_not_set`.
+
+`data/calendar` takes 1–20 source ids (`sources`), `days` 1–365 (default 3; whole local days from the start of
+today) and an optional `limit` 1–250: with it only events that have not ended yet are returned, at most `limit`
+(the countdown tile, D-21). Unknown or disabled sources are skipped. The payload (`CalendarData`) lists the
+sources that were used, in the requested order, with label and colour, and the events sorted by start; all-day
+events (dates, exclusive end) come before the timed ones of their day. `ttl` is 180 s. If one calendar can be
+served neither fresh nor from its cache, the request fails (`503`) instead of returning an incomplete agenda.
+
+```json
+{
+  "sources": [{ "id": "src_…", "label": "Family", "color": "#4f9dff" }],
+  "events": [
+    { "id": "e1", "sourceId": "src_…", "title": "Holiday", "start": "2026-01-15", "end": "2026-01-16", "allDay": true, "status": "confirmed" },
+    { "id": "e2", "sourceId": "src_…", "title": "Lunch", "start": "2026-01-15T12:00:00.000Z", "end": "2026-01-15T13:00:00.000Z", "allDay": false, "location": "Room 4", "status": "tentative" }
+  ]
+}
+```
 
 `data/weather` payload (`WeatherData`, times local to the configured zone):
 
