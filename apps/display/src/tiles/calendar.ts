@@ -10,6 +10,7 @@ import { isStale, startPoller, type DataResult } from '../data';
 import { buildAgenda, limitAgenda, type AgendaDay, type AgendaEvent } from './calendar-model';
 import {
   clamp,
+  cutOverflow,
   element,
   errorText,
   setText,
@@ -67,24 +68,6 @@ function renderDay(day: AgendaDay, showLocation: boolean, parent: DocumentFragme
     renderEvent(showLocation ? event : { ...event, location: '' }, dayEl);
   }
   parent.appendChild(dayEl);
-}
-
-/** Removes what does not fit below the tile's height, then any day left without content. */
-function fitToHeight(list: HTMLElement): void {
-  const limit = list.getBoundingClientRect().bottom + 1;
-  const items = Array.from(list.querySelectorAll<HTMLElement>('.cal-day-head, .cal-strip, .cal-row'));
-  const cutAt = items.findIndex((item) => item.getBoundingClientRect().bottom > limit);
-  if (cutAt < 0) return;
-  for (let i = items.length - 1; i >= cutAt; i--) items[i]!.remove();
-  let last = list.lastElementChild;
-  while (
-    last &&
-    (last.childElementCount === 0 ||
-      (last.childElementCount === 1 && last.firstElementChild!.classList.contains('cal-day-head')))
-  ) {
-    last.remove();
-    last = list.lastElementChild;
-  }
 }
 
 function renderLegend(legend: HTMLElement, sources: SourceInfo[]): void {
@@ -149,7 +132,7 @@ export function createCalendar(ctx: TileContext): TileInstance {
     for (const day of days) renderDay(day, config.showLocation, fragment);
     list.replaceChildren(fragment);
     if (config.showLegend) renderLegend(legend, envelope.data.sources);
-    fitToHeight(list);
+    cutOverflow(list, '.cal-day-head, .cal-strip, .cal-row', '.cal-day-head');
   }
 
   function onResult(result: DataResult<CalendarData>): void {

@@ -68,3 +68,24 @@ export function updatedText(ctx: TileContext, envelope: DataEnvelope<unknown>, s
   });
   return t(ctx.locale, 'state.updatedAt', { time });
 }
+
+/**
+ * Removes the items (in document order, `itemSelector`) that do not fit below the bottom of `list`, then any
+ * group element left without content or with only its header (`headSelector`), so no header stays on its own.
+ */
+export function cutOverflow(list: HTMLElement, itemSelector: string, headSelector: string): void {
+  const limit = list.getBoundingClientRect().bottom + 1;
+  const items = Array.from(list.querySelectorAll<HTMLElement>(itemSelector));
+  const cutAt = items.findIndex((item) => item.getBoundingClientRect().bottom > limit);
+  if (cutAt < 0) return;
+  for (let i = items.length - 1; i >= cutAt; i--) items[i]!.remove();
+  let last = list.lastElementChild;
+  while (
+    last &&
+    (last.childElementCount === 0 ||
+      (last.childElementCount === 1 && last.firstElementChild!.matches(headSelector)))
+  ) {
+    last.remove();
+    last = list.lastElementChild;
+  }
+}

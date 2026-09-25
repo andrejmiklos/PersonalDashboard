@@ -8,6 +8,7 @@ import { createCountdown } from '../tiles/countdown';
 import { createCalendarCountdown } from '../tiles/countdown-calendar';
 import { createPlaceholder } from '../tiles/placeholder';
 import { createQuote } from '../tiles/quote';
+import { createTasks } from '../tiles/tasks';
 import type { TileFactory, TileInstance } from '../tiles/types';
 import { createWeather } from '../tiles/weather';
 import { tileRect } from './geometry';
@@ -21,6 +22,7 @@ const factories: Partial<Record<TileType, TileFactory>> = {
   countdown: (ctx) =>
     ctx.config['source'] === 'calendar' ? createCalendarCountdown(ctx) : createCountdown(ctx),
   quote: createQuote,
+  tasks: createTasks,
   weather: createWeather,
 };
 

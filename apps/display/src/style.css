@@ -955,3 +955,191 @@ body {
   font-size: 0.625rem;
   text-align: right;
 }
+
+/* Tasks tile (tiles/tasks.ts): sizes in em, the tile sets its font size; touch targets are fixed px. */
+.tile-content.tasks {
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 0.5em 0.75em;
+}
+
+.tile-content.tasks.is-stale .tasks-list {
+  opacity: 0.55;
+}
+
+.tasks-message {
+  margin: auto;
+  color: #888;
+  font-size: 0.875em;
+  text-align: center;
+}
+
+.tasks-body {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.tasks-list {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tasks-group-head {
+  display: flex;
+  align-items: center;
+  margin: 0.4em 0 0.1em;
+  color: #888;
+  font-size: 0.75em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tasks-dot {
+  flex: none;
+  width: 0.6em;
+  height: 0.6em;
+  margin-right: 0.4em;
+  border-radius: 50%;
+  background: #666;
+}
+
+.tasks-group-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task-row {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 2px 0;
+  border-bottom: 1px solid #1c1c1c;
+}
+
+.task-bar {
+  flex: none;
+  align-self: stretch;
+  width: 0.25em;
+  margin: 0.35em 0.25em 0.35em 0;
+  border-radius: 0.125em;
+  background: #444;
+}
+
+/* 44 × 44 px hit area around a 24 px box. */
+.task-check {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.task-box {
+  position: relative;
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #777;
+  border-radius: 6px;
+}
+
+.task-checked .task-box {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.task-checked .task-box::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 1px;
+  width: 6px;
+  height: 12px;
+  border: solid #000;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+.task-main {
+  flex: 1;
+  min-width: 0;
+  padding: 0 0.4em;
+}
+
+.task-title {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #eee;
+  line-height: 1.25;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.task-checked .task-title {
+  color: #888;
+  text-decoration: line-through;
+}
+
+.task-important {
+  color: #f28b82;
+  font-weight: bold;
+}
+
+.task-due {
+  color: #888;
+  font-size: 0.75em;
+}
+
+.task-due-today {
+  color: var(--accent);
+}
+
+.task-due-overdue {
+  color: #f28b82;
+}
+
+.task-busy {
+  opacity: 0.6;
+}
+
+.task-undo-chip {
+  flex: none;
+  min-width: 44px;
+  min-height: 44px;
+  margin: 0 0 0 0.3em;
+  padding: 0 1em;
+  border: 1px solid #555;
+  border-radius: 22px;
+  background: #222;
+  color: var(--accent);
+  font: inherit;
+  font-size: 0.875em;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tasks-note {
+  padding-top: 0.3em;
+  color: #f28b82;
+  font-size: 0.75em;
+  text-align: center;
+}
+
+.tasks-updated {
+  padding-top: 0.3em;
+  color: #666;
+  font-size: 0.625em;
+  text-align: right;
+}

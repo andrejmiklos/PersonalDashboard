@@ -21,11 +21,16 @@ const TRANSIENT_CODES = new Set<string | null>([
 export type DataResult<T> =
   { kind: 'ok'; envelope: DataEnvelope<T>; fromCache?: true } | { kind: 'error'; code: string | null };
 
+/** Outcome of a change made through the API; `code` as in {@link DataResult}. */
+export type ChangeResult = { kind: 'ok' } | { kind: 'error'; code: string | null };
+
 /** `GET /api/v1/data/<type>?<query>`, bound to the device token and the offline copy. */
 export interface DataClient {
   load<T>(type: string, query?: Record<string, string>): Promise<DataResult<T>>;
   /** The stored payload, without a request; null when there is none or it is too old. */
   peek<T>(type: string, query?: Record<string, string>): DataResult<T> | null;
+  /** Completes or reopens a task (`PATCH /api/v1/tasks/:sourceId/:taskId`), the tablet's only write. */
+  completeTask(sourceId: string, taskId: string, completed: boolean): Promise<ChangeResult>;
 }
 
 function errorCode(body: unknown): string | null {
@@ -33,13 +38,18 @@ function errorCode(body: unknown): string | null {
   return typeof code === 'string' ? code : null;
 }
 
-async function request<T>(token: string, path: string): Promise<DataResult<T>> {
+async function request<T>(
+  token: string,
+  path: string,
+  change?: { method: string; body: unknown },
+): Promise<DataResult<T>> {
   // AbortSignal.timeout is Chrome 103+.
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   try {
     const res = await fetch(path, {
-      headers: { Authorization: `Bearer ${token}` },
+      ...(change && { method: change.method, body: JSON.stringify(change.body) }),
+      headers: { Authorization: `Bearer ${token}`, ...(change && { 'Content-Type': 'application/json' }) },
       signal: controller.signal,
       cache: 'no-store',
       credentials: 'omit',
@@ -79,6 +89,13 @@ export function createDataClient(getToken: () => string | null, storage: Storage
     },
     peek<T>(type: string, query?: Record<string, string>): DataResult<T> | null {
       return cached<T>(key(type, searchOf(query)));
+    },
+    async completeTask(sourceId, taskId, completed) {
+      const token = getToken();
+      if (token === null) return { kind: 'error', code: 'unauthorized' };
+      const path = `/api/v1/tasks/${encodeURIComponent(sourceId)}/${encodeURIComponent(taskId)}`;
+      const result = await request<unknown>(token, path, { method: 'PATCH', body: { completed } });
+      return result.kind === 'ok' ? { kind: 'ok' } : result;
     },
   };
 }

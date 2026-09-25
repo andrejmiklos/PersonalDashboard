@@ -43,13 +43,13 @@ Common behaviour:
 |---|---|
 | Min / default size | 3×3 / 4×5 |
 | Data source | Microsoft Graph To Do (personal account), multiple lists |
-| Config | `sourceIds: string[]` (task lists), `maxItems: 3–40` (auto by height), `showDueDate: bool` (true), `sortBy: 'due'|'created'|'list'` ('due'), `groupByList: bool` (false), `showCompleted: bool` (false) |
-| Interaction | **Tap the checkbox to complete** (44×44 px touch target minimum). Optimistic update; after success the item fades out (if `showCompleted=false`). Long-press is *not* used. Undo: a 5-second inline "Undo" chip after completing |
-| Display | Title, list colour dot, due date ("today"/"overdue" emphasised) when `showDueDate` |
+| Config | `sourceIds: string[]` (task lists), `maxItems: 3–40` (null = as many as fit), `showDueDate: bool` (true), `sortBy: 'due'|'created'|'list'` ('due'), `groupByList: bool` (false), `showCompleted: bool` (false) |
+| Interaction | **Tap the checkbox to complete** (a 44×44 px hit area around a 24 px box; rows are at least 48 px high). The row changes at once (optimistic); when the Worker confirms, it shows "Completed" with an **Undo** chip for 5 seconds and then goes (unless `showCompleted`, which keeps completed tasks checked and reopens them on tap). If saving fails the row springs back and a note "Could not save the change." shows for 4 s; a lost account connection says "reconnect" instead. After a confirmed change the tile loads the fresh list. Long-press is *not* used |
+| Display | Colour bar of the list, checkbox, title (two lines at most, `!` for high importance), due date when `showDueDate`: "Today" in the accent colour, "Tomorrow", the short date, "Overdue · date" in red. `sortBy` orders by due date (tasks without one last), creation, or list; `groupByList` adds a header per list. What does not fit the height is cut off after the last complete row |
 | Refresh | Client 60 s, server cache 60 s; invalidated after a successful PATCH |
 | Payload | `TaskData` in `packages/shared/src/tasks.ts`: `sources: { id, label, color }[]` and `tasks: { id, sourceId, title, due?: 'YYYY-MM-DD', importance: 'low'|'normal'|'high', completed: bool, createdAt }[]` (`sourceId` is our `src_…` id of the list) |
 | Write API | `PATCH /api/v1/tasks/:sourceId/:taskId` — allowed for the `device` role, only for enabled task lists (see doc 06) |
-| Empty state | "All done" / "Všetko hotové" |
+| States | No `sourceIds`: "Choose task lists for this tile in the editor"; empty: "All done" / "Všetko hotové"; `409 reauth_required`: "Reconnect the account in the admin app"; failed refresh keeps the last list, dimmed with "Updated hh:mm" |
 
 The tile must never offer create/edit/delete — only complete/uncomplete.
 

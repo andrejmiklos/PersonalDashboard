@@ -116,6 +116,55 @@ describe('createDataClient', () => {
   });
 });
 
+describe('createDataClient completeTask', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('patches the task with the device token and sends only the completed flag', async () => {
+    const fetchMock = vi.fn(async () => Response.json({ id: 't=' }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const client = createDataClient(() => DEVICE_TOKEN, memoryStorage());
+    expect(await client.completeTask('src_abc', 'AAMk=/x', true)).toEqual({ kind: 'ok' });
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe('/api/v1/tasks/src_abc/AAMk%3D%2Fx');
+    expect(init.method).toBe('PATCH');
+    expect(init.body).toBe('{"completed":true}');
+    expect(init.headers).toEqual({
+      Authorization: `Bearer ${DEVICE_TOKEN}`,
+      'Content-Type': 'application/json',
+    });
+    expect(init.credentials).toBe('omit');
+  });
+
+  it('reports the error code of a refusal and network failures as null', async () => {
+    const client = createDataClient(() => DEVICE_TOKEN, memoryStorage());
+    vi.stubGlobal('fetch', async () =>
+      Response.json({ error: { code: 'reauth_required' } }, { status: 409 }),
+    );
+    expect(await client.completeTask('src_abc', 't1', false)).toEqual({
+      kind: 'error',
+      code: 'reauth_required',
+    });
+
+    vi.stubGlobal('fetch', async () => {
+      throw new TypeError('offline');
+    });
+    expect(await client.completeTask('src_abc', 't1', false)).toEqual({ kind: 'error', code: null });
+  });
+
+  it('does not call the server without a token', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    expect(await createDataClient(() => null, memoryStorage()).completeTask('s', 't', true)).toEqual({
+      kind: 'error',
+      code: 'unauthorized',
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
 describe('cache', () => {
   it('clears only its own keys', () => {
     const storage = memoryStorage();
