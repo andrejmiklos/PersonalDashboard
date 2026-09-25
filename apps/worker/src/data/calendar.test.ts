@@ -159,6 +159,36 @@ describe('GET /api/v1/data/calendar', () => {
     expect(updatedAt).toBe(T0.toISOString());
   });
 
+  it('shows an event that is in several calendars once, with the colour of the first calendar listed', async () => {
+    const original = EVENTS['cal-b'];
+    onTestFinished(() => {
+      EVENTS['cal-b'] = original ?? [];
+    });
+    EVENTS['cal-b'] = [
+      ...(original ?? []),
+      timed('dup', 'Lunch', '2026-01-15T12:00:00Z', '2026-01-15T13:00:00Z'),
+      timed('near', 'Lunch', '2026-01-15T12:00:00Z', '2026-01-15T13:30:00Z'),
+      allDay('dup-day', 'Holiday', '2026-01-15', '2026-01-16'),
+    ];
+    const ids = (query: string) =>
+      load(query).then(({ data }) => data.events.filter((e) => e.title === 'Lunch'));
+
+    const family = await ids(both());
+    expect(family.map((e) => [e.id, e.sourceId])).toEqual([
+      ['a2', sourceA.id],
+      ['near', sourceB.id],
+    ]);
+    const work = await ids(`?sources=${sourceB.id},${sourceA.id}`);
+    expect(work.map((e) => [e.id, e.sourceId])).toEqual([
+      ['dup', sourceB.id],
+      ['near', sourceB.id],
+    ]);
+    const holidays = (await load(both())).data.events.filter((e) => e.title === 'Holiday');
+    expect(holidays).toHaveLength(1);
+    // Alone, a calendar keeps all of its events.
+    expect((await ids(`?sources=${sourceB.id}`)).map((e) => e.id)).toEqual(['dup', 'near']);
+  });
+
   it('keeps the requested order of the sources', async () => {
     const { data } = await load(`?sources=${sourceB.id},${sourceA.id}`);
     expect(data.sources.map((s) => s.label)).toEqual(['Work', 'Family']);

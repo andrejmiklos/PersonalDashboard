@@ -53,6 +53,20 @@ function calendarProvider(
   };
 }
 
+/**
+ * An event that is in several of the chosen calendars (shared or invited) appears once, with the colour of
+ * the calendar listed first. Same title, start, end and all-day flag make two events the same.
+ */
+function withoutDuplicates(events: CalendarEvent[]): CalendarEvent[] {
+  const seen = new Set<string>();
+  return events.filter((e) => {
+    const key = JSON.stringify([e.title, e.start, e.end, e.allDay]);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 /** Chronological order; on the same day all-day events come first, then by title. */
 function sorter(timeZone: string): (a: CalendarEvent, b: CalendarEvent) => number {
   const startOf = (e: CalendarEvent) =>
@@ -102,7 +116,7 @@ export async function loadCalendarData(
     ),
   );
 
-  let events = results.flatMap((r) => r.data).sort(sorter(timeZone));
+  let events = withoutDuplicates(results.flatMap((r) => r.data)).sort(sorter(timeZone));
   if (query.limit !== null) {
     events = events.filter((e) => (e.allDay ? e.start >= today : Date.parse(e.start) > now.getTime()));
     events = events.slice(0, query.limit);

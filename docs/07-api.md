@@ -74,7 +74,8 @@ location in settings → `409` `location_not_set`.
 today) and an optional `limit` 1–250: with it only events that have not started yet are returned (all-day events of
 today count as not started), at most `limit` (the countdown tile, D-21). Unknown or disabled sources are skipped. The payload (`CalendarData`) lists the
 sources that were used, in the requested order, with label and colour, and the events sorted by start; all-day
-events (dates, exclusive end) come before the timed ones of their day. `ttl` is 180 s. If one calendar can be
+events (dates, exclusive end) come before the timed ones of their day. An event that is in several of the requested
+calendars (same title, start, end and all-day flag) is returned once, with the first calendar listed. `ttl` is 180 s. If one calendar can be
 served neither fresh nor from its cache, the request fails (`503`) instead of returning an incomplete agenda.
 
 ```json
