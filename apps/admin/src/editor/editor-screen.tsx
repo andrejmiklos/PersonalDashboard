@@ -89,6 +89,7 @@ function Editor({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<unknown>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [shown, setShown] = useState(false);
   const dirty = JSON.stringify(draft) !== saved.json;
   const selected = draft.tiles.find((tile) => tile.id === selectedId) ?? null;
   const problems = new Set(draft.tiles.filter((tile) => configProblem(tile) !== null).map((tile) => tile.id));
@@ -152,7 +153,8 @@ function Editor({
     );
   }
 
-  async function save(): Promise<void> {
+  /** True when the layout is saved (or was already saved). */
+  async function save(): Promise<boolean> {
     setBusy(true);
     setError(null);
     try {
@@ -165,6 +167,24 @@ function Editor({
       history.replace(toBody(stored));
       setSaved(savedOf(stored));
       setRestoredNotice(false);
+      return true;
+    } catch (failure) {
+      setError(failure);
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  /** Saves what is unsaved, then pins the layout on the tablet (`PUT /api/v1/override`). */
+  async function saveAndShow(): Promise<void> {
+    setNotice(null);
+    setShown(false);
+    if (dirty && !(await save())) return;
+    setBusy(true);
+    try {
+      await api.put('/api/v1/override', { layoutId: initial.id });
+      setShown(true);
     } catch (failure) {
       setError(failure);
     } finally {
@@ -264,8 +284,11 @@ function Editor({
         <span class="muted status">
           {dirty ? t('admin.editor.unsaved') : t('admin.editor.saved', { v: saved.version })}
         </span>
-        <button type="button" class="primary" disabled={busy || !dirty} onClick={() => void save()}>
+        <button type="button" disabled={busy || !dirty} onClick={() => void save()}>
           {t('admin.editor.save')}
+        </button>
+        <button type="button" class="primary" disabled={busy} onClick={() => void saveAndShow()}>
+          {t(dirty ? 'admin.editor.saveAndShow' : 'admin.editor.showNow')}
         </button>
       </div>
       {restoredNotice && dirty && (
@@ -284,6 +307,11 @@ function Editor({
         </div>
       )}
       {error !== null && <ErrorNote error={error} />}
+      {shown && !dirty && (
+        <div class="note ok" role="status">
+          {t('admin.editor.shown')}
+        </div>
+      )}
 
       <div class="preview-mode">
         <span class="muted">{t('admin.editor.previewMode')}</span>

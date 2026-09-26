@@ -7,7 +7,8 @@ export interface DisplayState {
   /** Build id of the deployed display bundle; the tablet reloads when it differs from its own. */
   appVersion: string;
   screen: 'on' | 'off';
-  layoutSpec: { kind: 'layout'; layoutId: string } | null;
+  /** `pinned`: the admin chose this layout for now (an override); `layout`: the default one. */
+  layoutSpec: { kind: 'layout' | 'pinned'; layoutId: string } | null;
   layouts: Record<string, LayoutDocument>;
   rotation: null;
   touch: { enabled: boolean; cycle: string[]; timeoutSec: number };

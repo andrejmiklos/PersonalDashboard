@@ -34,6 +34,13 @@ export interface LayoutDocument {
   tiles: Tile[];
 }
 
+/** `GET /api/v1/override` (null when nothing is pinned): the layout the admin chose to show for now. */
+export interface LayoutOverride {
+  layoutId: string;
+  /** ISO instant; null until released. */
+  expiresAt: string | null;
+}
+
 /** One row of `GET /api/v1/layouts`. */
 export interface LayoutSummary {
   id: string;

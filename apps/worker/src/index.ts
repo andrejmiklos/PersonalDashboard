@@ -7,6 +7,7 @@ import { rateLimit } from './http/rate-limit';
 import { layoutRoutes } from './layouts/routes';
 import { resolveOAuthProvider } from './oauth/registry';
 import { createOAuthRoutes } from './oauth/routes';
+import { overrideRoutes } from './override/routes';
 import { settingsRoutes } from './settings/routes';
 import { taskRoutes } from './tasks/routes';
 
@@ -27,6 +28,7 @@ app.route('/api/v1/settings', settingsRoutes);
 app.route('/api/v1/accounts', accountRoutes);
 app.route('/api/v1/sources', sourceRoutes);
 app.route('/api/v1/layouts', layoutRoutes);
+app.route('/api/v1/override', overrideRoutes);
 app.route('/api/v1/display/pair', pairRoutes);
 app.route('/api/v1/display', displayRoutes);
 app.route('/api/v1/data', dataRoutes);

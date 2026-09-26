@@ -5,6 +5,7 @@ import { sha256Hex } from '../auth/token';
 import type { AppEnv } from '../env';
 import { ApiError } from '../errors';
 import { getLayout } from '../layouts/repository';
+import { readOverride } from '../override/repository';
 import { readSettings } from '../settings/repository';
 
 let cachedVersion: string | undefined;
@@ -33,7 +34,7 @@ export function resetAppVersionCache(): void {
   cachedVersion = undefined;
 }
 
-async function loadDefaultLayout(db: D1Database, id: string | null): Promise<LayoutDocument | null> {
+async function loadLayout(db: D1Database, id: string | null): Promise<LayoutDocument | null> {
   if (id === null) return null;
   try {
     return await getLayout(db, id);
@@ -50,19 +51,21 @@ function matchesEtag(header: string | undefined, etag: string): boolean {
 }
 
 /**
- * Phase 2: the configured default layout only; schedule, overrides, rotation and power
- * resolution come in Phase 5 (docs/04-layouts-and-editor.md §3.3).
+ * The layout pinned by the admin (an override that has not expired), else the configured default. Schedule,
+ * rotation and power resolution come in Phase 5 (docs/04-layouts-and-editor.md §3.3).
  */
 export const displayRoutes = new Hono<AppEnv>();
 
 displayRoutes.get('/state', requireAuth('device', 'admin'), async (c) => {
   const settings = await readSettings(c.env.DB);
-  const layout = await loadDefaultLayout(c.env.DB, settings.defaultLayoutId);
+  const override = await readOverride(c.env.DB, new Date());
+  const pinned = await loadLayout(c.env.DB, override?.layoutId ?? null);
+  const layout = pinned ?? (await loadLayout(c.env.DB, settings.defaultLayoutId));
 
   const state: Omit<DisplayState, 'serverTime'> = {
     appVersion: await readAppVersion(c.env.ASSETS),
     screen: 'on',
-    layoutSpec: layout ? { kind: 'layout', layoutId: layout.id } : null,
+    layoutSpec: layout ? { kind: layout === pinned ? 'pinned' : 'layout', layoutId: layout.id } : null,
     layouts: layout ? { [layout.id]: layout } : {},
     rotation: null,
     touch: { enabled: false, cycle: [], timeoutSec: 0 },

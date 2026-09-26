@@ -1,4 +1,4 @@
-import type { AppSettings, LayoutDocument, LayoutSummary } from '@dashboard/shared';
+import type { AppSettings, LayoutDocument, LayoutOverride, LayoutSummary } from '@dashboard/shared';
 import { useRef, useState } from 'preact/hooks';
 import { ApiError, type Api } from './api';
 import { downloadJson } from './download';
@@ -12,6 +12,7 @@ export function LayoutsScreen({ api }: { api: Api }) {
   const { t, locale } = useI18n();
   const layouts = useLoad(() => api.get<LayoutSummary[]>('/api/v1/layouts'));
   const settings = useLoad(() => api.get<AppSettings>('/api/v1/settings'));
+  const override = useLoad(() => api.get<LayoutOverride | null>('/api/v1/override'));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<unknown>(null);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -28,6 +29,7 @@ export function LayoutsScreen({ api }: { api: Api }) {
       setBusy(false);
       layouts.reload();
       settings.reload();
+      override.reload();
     }
   }
 
@@ -37,6 +39,8 @@ export function LayoutsScreen({ api }: { api: Api }) {
       navigate(`/layouts/${created.id}`);
     });
   const duplicate = (id: string) => run(() => api.post(`/api/v1/layouts/${id}/duplicate`));
+  const showNow = (id: string) => run(() => api.put('/api/v1/override', { layoutId: id }));
+  const release = () => run(() => api.delete('/api/v1/override'));
   const makeDefault = (id: string) => run(() => api.put('/api/v1/settings', { defaultLayoutId: id }));
 
   function rename(layout: LayoutSummary): Promise<void> {
@@ -71,6 +75,8 @@ export function LayoutsScreen({ api }: { api: Api }) {
   const failed = layouts.error ?? settings.error;
   const list = layouts.data;
   const defaultId = settings.data?.defaultLayoutId ?? null;
+  const pinnedId = override.data?.layoutId ?? null;
+  const pinnedName = list?.find((layout) => layout.id === pinnedId)?.name ?? null;
 
   return (
     <section>
@@ -96,6 +102,14 @@ export function LayoutsScreen({ api }: { api: Api }) {
       </div>
 
       {error !== null && <ErrorNote error={error} />}
+      {pinnedName !== null && (
+        <div class="note" role="status">
+          <span>{t('admin.layouts.pinnedBanner', { name: pinnedName })}</span>
+          <button type="button" disabled={busy} onClick={() => void release()}>
+            {t('admin.layouts.release')}
+          </button>
+        </div>
+      )}
       {failed !== null && list === null && <ErrorNote error={failed} onRetry={layouts.reload} />}
       {list === null && failed === null && <Loading />}
       {list !== null && list.length === 0 && <p class="muted">{t('admin.layouts.empty')}</p>}
@@ -107,6 +121,7 @@ export function LayoutsScreen({ api }: { api: Api }) {
                 <div class="grow">
                   <strong>{layout.name}</strong>
                   {layout.id === defaultId && <span class="badge ok tag">{t('admin.layouts.default')}</span>}
+                  {layout.id === pinnedId && <span class="badge warn tag">{t('admin.layouts.pinned')}</span>}
                   <div class="muted">
                     {t('admin.layouts.tiles', { n: layout.tileCount })} · v{layout.version} ·{' '}
                     {formatUpdated(layout.updatedAt, locale)}
@@ -117,6 +132,11 @@ export function LayoutsScreen({ api }: { api: Api }) {
                 <a class="button primary" href={`#/layouts/${layout.id}`}>
                   {t('admin.layouts.edit')}
                 </a>
+                {layout.id !== pinnedId && (
+                  <button type="button" disabled={busy} onClick={() => void showNow(layout.id)}>
+                    {t('admin.layouts.showNow')}
+                  </button>
+                )}
                 {layout.id !== defaultId && (
                   <button type="button" disabled={busy} onClick={() => void makeDefault(layout.id)}>
                     {t('admin.layouts.setDefault')}
