@@ -1,4 +1,5 @@
 import { GRID_COLS, GRID_ROWS, type GridBox, type Tile } from '@dashboard/shared';
+import type { ComponentChildren } from 'preact';
 import { useRef, useState } from 'preact/hooks';
 import { useI18n } from '../i18n';
 import { place, snapToCells, type DragMode, type Placement } from './geometry';
@@ -36,6 +37,7 @@ export function Canvas({
   tiles,
   selectedId,
   problems,
+  underlay,
   onSelect,
   onChange,
 }: {
@@ -43,6 +45,8 @@ export function Canvas({
   selectedId: string | null;
   /** Ids of the tiles whose settings the server would refuse. */
   problems: ReadonlySet<string>;
+  /** Drawn under the tile frames: the live preview. */
+  underlay?: ComponentChildren;
   onSelect(id: string | null): void;
   onChange(id: string, box: GridBox): void;
 }) {
@@ -107,6 +111,7 @@ export function Canvas({
       onPointerUp={(event) => finish(event, true)}
       onPointerCancel={(event) => finish(event, false)}
     >
+      {underlay}
       {tiles.map((tile) => {
         const selected = tile.id === selectedId;
         const dragging = drag?.id === tile.id;
@@ -127,9 +132,8 @@ export function Canvas({
             }}
           >
             <div class="etile-body">
-              <strong>{t(`tile.${tile.type}`)}</strong>
-              <span class="muted">
-                {tile.w}×{tile.h}
+              <span class="etile-chip">
+                {t(`tile.${tile.type}`)} · {tile.w}×{tile.h}
               </span>
             </div>
             {selected && <div class="handle" onPointerDown={(event) => begin(event, tile, 'resize')} />}

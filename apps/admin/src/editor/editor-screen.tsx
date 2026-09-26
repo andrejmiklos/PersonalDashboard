@@ -1,17 +1,21 @@
 import {
   MAX_TILES,
   TILE_TYPES,
+  type AppSettings,
   type GridBox,
   type LayoutDocument,
   type SourceRecord,
   type Tile,
   type TileType,
 } from '@dashboard/shared';
-import { useState } from 'preact/hooks';
+import { useMemo, useState } from 'preact/hooks';
 import type { Api } from '../api';
 import { useI18n } from '../i18n';
 import { toBody, type LayoutBody } from '../layouts-model';
 import { useLoad } from '../load';
+import { createPreviewClient, type PreviewMode } from '../preview/data-client';
+import { PreviewLayer } from '../preview/preview-layer';
+import { readItem, safeLocalStorage, writeItem } from '../storage';
 import { ErrorNote, Loading } from '../ui';
 import { Canvas } from './canvas';
 import { firstFreeArea, uniqueTileId } from './geometry';
@@ -28,16 +32,32 @@ function savedOf(layout: LayoutDocument): Saved {
   return { version: layout.version, json: JSON.stringify(toBody(layout)) };
 }
 
+const PREVIEW_MODE_KEY = 'admin.previewMode';
+const storage = safeLocalStorage();
+
 function Editor({
   api,
   initial,
   sources,
+  settings,
 }: {
   api: Api;
   initial: LayoutDocument;
   sources: readonly SourceRecord[];
+  settings: AppSettings | null;
 }) {
-  const { t } = useI18n();
+  const { t, locale: adminLocale } = useI18n();
+  // The tiles are drawn as the tablet would: in its language and time zone.
+  const tabletLocale = settings?.locale ?? adminLocale;
+  const timezone = settings?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const [mode, setMode] = useState<PreviewMode>(() =>
+    readItem(storage, PREVIEW_MODE_KEY) === 'real' ? 'real' : 'sample',
+  );
+  const client = useMemo(
+    () =>
+      createPreviewClient(mode, api, () => ({ now: new Date(), timezone, locale: tabletLocale, sources })),
+    [mode, api, timezone, tabletLocale, sources],
+  );
   const [draft, setDraft] = useState<LayoutBody>(() => toBody(initial));
   const [saved, setSaved] = useState<Saved>(() => savedOf(initial));
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -47,6 +67,19 @@ function Editor({
   const dirty = JSON.stringify(draft) !== saved.json;
   const selected = draft.tiles.find((tile) => tile.id === selectedId) ?? null;
   const problems = new Set(draft.tiles.filter((tile) => configProblem(tile) !== null).map((tile) => tile.id));
+
+  // Tiles the server would refuse are left out of the picture; their frame on the canvas is outlined instead.
+  const previewLayout: LayoutDocument = {
+    ...draft,
+    id: initial.id,
+    version: saved.version,
+    tiles: draft.tiles.filter((tile) => !problems.has(tile.id)),
+  };
+
+  function chooseMode(next: PreviewMode): void {
+    writeItem(storage, PREVIEW_MODE_KEY, next);
+    setMode(next);
+  }
 
   const context = (): NewTileContext => ({
     sources,
@@ -125,6 +158,22 @@ function Editor({
       </div>
       {error !== null && <ErrorNote error={error} />}
 
+      <div class="preview-mode">
+        <span class="muted">{t('admin.editor.previewMode')}</span>
+        <div class="segmented" role="group" aria-label={t('admin.editor.previewMode')}>
+          {(['sample', 'real'] as const).map((choice) => (
+            <button
+              key={choice}
+              type="button"
+              aria-pressed={mode === choice}
+              onClick={() => chooseMode(choice)}
+            >
+              {t(choice === 'sample' ? 'admin.editor.previewSample' : 'admin.editor.previewReal')}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div class="palette" role="group" aria-label={t('admin.editor.palette')}>
         <span class="muted">{t('admin.editor.palette')}</span>
         {(Object.keys(TILE_TYPES) as TileType[]).map((type) => (
@@ -145,6 +194,14 @@ function Editor({
             tiles={draft.tiles}
             selectedId={selectedId}
             problems={problems}
+            underlay={
+              <PreviewLayer
+                layout={previewLayout}
+                locale={tabletLocale}
+                timezone={timezone}
+                client={client}
+              />
+            }
             onSelect={setSelectedId}
             onChange={(id: string, box: GridBox) => updateTile(id, (tile) => ({ ...tile, ...box }))}
           />
@@ -177,8 +234,10 @@ function Editor({
 export function EditorScreen({ api, layoutId }: { api: Api; layoutId: string }) {
   const layout = useLoad(() => api.get<LayoutDocument>(`/api/v1/layouts/${layoutId}`));
   const sources = useLoad(() => api.get<SourceRecord[]>('/api/v1/sources'));
-  if (layout.data !== null && sources.data !== null) {
-    return <Editor api={api} initial={layout.data} sources={sources.data} />;
+  const settings = useLoad(() => api.get<AppSettings>('/api/v1/settings'));
+  // The settings only decide language and time zone of the preview: without them the admin's own are used.
+  if (layout.data !== null && sources.data !== null && !settings.loading) {
+    return <Editor api={api} initial={layout.data} sources={sources.data} settings={settings.data} />;
   }
   const failed = layout.error ?? sources.error;
   if (failed !== null) {
