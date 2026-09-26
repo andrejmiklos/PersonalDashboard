@@ -17,8 +17,13 @@ export function LayoutsScreen({ api }: { api: Api }) {
   const [error, setError] = useState<unknown>(null);
   const fileInput = useRef<HTMLInputElement>(null);
 
+  // `busy` only reaches the buttons after the next render, so a quick double tap would start two actions.
+  const running = useRef(false);
+
   /** One action at a time; the list is loaded again afterwards, also after a failure. */
   async function run(action: () => Promise<void>): Promise<void> {
+    if (running.current) return;
+    running.current = true;
     setBusy(true);
     setError(null);
     try {
@@ -26,6 +31,7 @@ export function LayoutsScreen({ api }: { api: Api }) {
     } catch (failure) {
       setError(failure);
     } finally {
+      running.current = false;
       setBusy(false);
       layouts.reload();
       settings.reload();
