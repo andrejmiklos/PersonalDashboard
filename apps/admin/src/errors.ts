@@ -11,6 +11,7 @@ const ERROR_KEYS: Record<string, MessageKey> = {
   payload_too_large: 'admin.error.tooLarge',
   validation_error: 'admin.error.validation',
   invalid_file: 'admin.error.invalidFile',
+  not_found: 'admin.error.notFound',
 };
 
 /** The message for a failed call; the server's own text is English only, see {@link errorDetail}. */

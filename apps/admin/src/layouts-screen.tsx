@@ -5,6 +5,7 @@ import { downloadJson } from './download';
 import { useI18n } from './i18n';
 import { cleanName, emptyLayout, exportFileName, formatUpdated, parseImport, toBody } from './layouts-model';
 import { useLoad } from './load';
+import { navigate } from './router';
 import { ErrorNote, Loading } from './ui';
 
 export function LayoutsScreen({ api }: { api: Api }) {
@@ -30,7 +31,11 @@ export function LayoutsScreen({ api }: { api: Api }) {
     }
   }
 
-  const create = () => run(() => api.post('/api/v1/layouts', emptyLayout(t('admin.layouts.new'))));
+  const create = () =>
+    run(async () => {
+      const created = await api.post<LayoutDocument>('/api/v1/layouts', emptyLayout(t('admin.layouts.new')));
+      navigate(`/layouts/${created.id}`);
+    });
   const duplicate = (id: string) => run(() => api.post(`/api/v1/layouts/${id}/duplicate`));
   const makeDefault = (id: string) => run(() => api.put('/api/v1/settings', { defaultLayoutId: id }));
 
@@ -109,6 +114,9 @@ export function LayoutsScreen({ api }: { api: Api }) {
                 </div>
               </div>
               <div class="actions">
+                <a class="button primary" href={`#/layouts/${layout.id}`}>
+                  {t('admin.layouts.edit')}
+                </a>
                 {layout.id !== defaultId && (
                   <button type="button" disabled={busy} onClick={() => void makeDefault(layout.id)}>
                     {t('admin.layouts.setDefault')}

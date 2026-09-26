@@ -337,3 +337,124 @@ input[type='color'] {
   font-size: 0.85rem;
   word-break: break-word;
 }
+
+a.button {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch);
+  padding: 0 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--surface-2);
+  text-decoration: none;
+}
+
+a.button.primary {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+
+.editor-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.editor-bar input {
+  min-width: 10rem;
+}
+
+.status {
+  font-size: 0.85rem;
+}
+
+.stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background-color: #000;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size:
+    calc(100% / 12) calc(100% / 8),
+    calc(100% / 12) calc(100% / 8);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+}
+
+.etile {
+  position: absolute;
+  padding: 2px;
+  touch-action: pan-y;
+  cursor: grab;
+}
+
+.etile.selected {
+  z-index: 2;
+  touch-action: none;
+}
+
+.etile.dragging {
+  opacity: 0.4;
+}
+
+.etile-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  background: var(--surface-2);
+  font-size: clamp(0.6rem, 1.6vw, 1rem);
+  text-align: center;
+}
+
+.etile.selected .etile-body {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.handle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  cursor: nwse-resize;
+  touch-action: none;
+  background: linear-gradient(135deg, transparent 50%, var(--accent) 50%);
+  border-bottom-right-radius: 0.35rem;
+}
+
+/* A larger area around the corner for a finger. */
+.handle::after {
+  content: '';
+  position: absolute;
+  inset: -0.6rem;
+}
+
+.ghost {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  border: 2px dashed var(--accent);
+  border-radius: 0.35rem;
+  background: rgba(79, 195, 247, 0.18);
+}
+
+.ghost.invalid {
+  border-color: var(--danger);
+  background: rgba(242, 139, 130, 0.25);
+}

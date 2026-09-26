@@ -4,7 +4,8 @@ import { AccountsScreen } from './accounts-screen';
 import type { Api } from './api';
 import { useI18n } from './i18n';
 import { LayoutsScreen } from './layouts-screen';
-import { navigate, useRoute, type Route } from './router';
+import { EditorScreen } from './editor/editor-screen';
+import { editorLayoutId, navigate, useRoute, type Route } from './router';
 import { SettingsScreen } from './settings-screen';
 
 interface Section {
@@ -18,7 +19,18 @@ const SECTIONS: readonly Section[] = [
   { path: '/settings', label: 'admin.nav.settings' },
 ];
 
-function Screen({ section, api, route }: { section: Section; api: Api; route: Route }) {
+function Screen({
+  section,
+  api,
+  route,
+  editorId,
+}: {
+  section: Section;
+  api: Api;
+  route: Route;
+  editorId: string | null;
+}) {
+  if (editorId) return <EditorScreen key={editorId} api={api} layoutId={editorId} />;
   switch (section.path) {
     case '/accounts':
       return <AccountsScreen api={api} route={route} />;
@@ -32,7 +44,8 @@ function Screen({ section, api, route }: { section: Section; api: Api; route: Ro
 export function Shell({ api, onLogout }: { api: Api; onLogout: () => void }) {
   const { t, locale, setLocale } = useI18n();
   const route = useRoute();
-  const section = SECTIONS.find((s) => s.path === route.path);
+  const editorId = editorLayoutId(route.path);
+  const section = SECTIONS.find((s) => s.path === route.path) ?? (editorId ? SECTIONS[0] : undefined);
   useEffect(() => {
     if (!section) navigate('/layouts');
   }, [section]);
@@ -61,7 +74,7 @@ export function Shell({ api, onLogout }: { api: Api; onLogout: () => void }) {
           </button>
         </div>
       </header>
-      <main>{section && <Screen section={section} api={api} route={route} />}</main>
+      <main>{section && <Screen section={section} api={api} route={route} editorId={editorId} />}</main>
     </div>
   );
 }

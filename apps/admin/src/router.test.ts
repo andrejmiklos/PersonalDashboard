@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseHash } from './router';
+import { editorLayoutId, parseHash } from './router';
 
 describe('parseHash', () => {
   it('splits the path from the query', () => {
@@ -19,5 +19,22 @@ describe('parseHash', () => {
 
   it('keeps a question mark inside the query value', () => {
     expect(parseHash('#/accounts?error=a?b').params.get('error')).toBe('a?b');
+  });
+});
+
+describe('editorLayoutId', () => {
+  it('reads the layout id of an editor path', () => {
+    expect(editorLayoutId('/layouts/lay_abcdefghijklmnop')).toBe('lay_abcdefghijklmnop');
+  });
+
+  it.each([
+    '/layouts',
+    '/layouts/',
+    '/layouts/x',
+    '/layouts/lay_short',
+    '/layouts/lay_abcdefghijklmnop/x',
+    '/accounts',
+  ])('is null for %s', (path) => {
+    expect(editorLayoutId(path)).toBeNull();
   });
 });

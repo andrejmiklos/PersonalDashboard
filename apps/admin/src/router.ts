@@ -28,3 +28,10 @@ export function useRoute(): Route {
   }, []);
   return route;
 }
+
+const EDITOR_PATH = /^\/layouts\/(lay_[a-z2-7]{16})$/;
+
+/** The layout id of an editor address (`#/layouts/lay_…`), or null for any other path. */
+export function editorLayoutId(path: string): string | null {
+  return EDITOR_PATH.exec(path)?.[1] ?? null;
+}
