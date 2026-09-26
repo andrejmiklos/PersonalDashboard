@@ -105,7 +105,8 @@ export function LayoutProperties({
   onChange,
 }: {
   layout: LayoutBody;
-  onChange(layout: LayoutBody): void;
+  /** `key`: edits with the same key in a row are one step of the undo history. */
+  onChange(layout: LayoutBody, key?: string): void;
 }) {
   const { t } = useI18n();
   const accent = layout.theme.accent;
@@ -122,7 +123,7 @@ export function LayoutProperties({
             step={1}
             value={layout.grid.gap}
             onInput={(event) =>
-              onChange({ ...layout, grid: { ...layout.grid, gap: Number(event.currentTarget.value) } })
+              onChange({ ...layout, grid: { ...layout.grid, gap: Number(event.currentTarget.value) } }, 'gap')
             }
           />
           <output>{layout.grid.gap}</output>
@@ -134,7 +135,9 @@ export function LayoutProperties({
               type="color"
               aria-label={t('admin.editor.accent')}
               value={accent ?? '#4fc3f7'}
-              onChange={(event) => onChange({ ...layout, theme: { accent: event.currentTarget.value } })}
+              onChange={(event) =>
+                onChange({ ...layout, theme: { accent: event.currentTarget.value } }, 'accent')
+              }
             />
             <button
               type="button"

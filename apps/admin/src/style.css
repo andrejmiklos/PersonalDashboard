@@ -612,3 +612,7 @@ a.button.primary {
   text-overflow: ellipsis;
   pointer-events: none;
 }
+
+.keys {
+  font-size: 0.85rem;
+}

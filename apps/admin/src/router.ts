@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 
 export interface Route {
   path: string;
@@ -19,10 +19,28 @@ export function navigate(path: string): void {
   window.location.hash = `#${path}`;
 }
 
+/** Asked before the page changes: false keeps the current one. Set by a screen with unsaved work. */
+let leaveGuard: (() => boolean) | null = null;
+
+export function setLeaveGuard(guard: (() => boolean) | null): void {
+  leaveGuard = guard;
+}
+
 export function useRoute(): Route {
   const [route, setRoute] = useState(() => parseHash(window.location.hash));
+  const accepted = useRef(window.location.hash);
   useEffect(() => {
-    const onChange = () => setRoute(parseHash(window.location.hash));
+    const onChange = () => {
+      const next = window.location.hash;
+      if (next === accepted.current) return;
+      if (leaveGuard && !leaveGuard()) {
+        // Back to where we were; replaceState does not fire another hashchange.
+        window.history.replaceState(null, '', accepted.current === '' ? '#/' : accepted.current);
+        return;
+      }
+      accepted.current = next;
+      setRoute(parseHash(next));
+    };
     window.addEventListener('hashchange', onChange);
     return () => window.removeEventListener('hashchange', onChange);
   }, []);

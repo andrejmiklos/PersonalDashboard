@@ -1,4 +1,5 @@
 import {
+  fieldsFor,
   MAX_TILES,
   TILE_TYPES,
   type AppSettings,
@@ -8,19 +9,23 @@ import {
   type Tile,
   type TileType,
 } from '@dashboard/shared';
-import { useMemo, useState } from 'preact/hooks';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { Api } from '../api';
 import { useI18n } from '../i18n';
 import { toBody, type LayoutBody } from '../layouts-model';
 import { useLoad } from '../load';
 import { createPreviewClient, type PreviewMode } from '../preview/data-client';
 import { PreviewLayer } from '../preview/preview-layer';
+import { setLeaveGuard } from '../router';
 import { readItem, safeLocalStorage, writeItem } from '../storage';
 import { ErrorNote, Loading } from '../ui';
 import { Canvas } from './canvas';
-import { firstFreeArea, uniqueTileId } from './geometry';
+import { draftKey, parseDraft, restorable, serializeDraft } from './draft';
+import { firstFreeArea, stepBox, uniqueTileId } from './geometry';
+import { interpretKey } from './keys';
 import { LayoutProperties, TileProperties } from './properties';
 import { configProblem, newTileConfig, withSetting, type NewTileContext } from './tile-model';
+import { useHistory } from './use-history';
 
 /** The saved state the draft is compared with: the server's version and its body as JSON. */
 interface Saved {
@@ -33,7 +38,16 @@ function savedOf(layout: LayoutDocument): Saved {
 }
 
 const PREVIEW_MODE_KEY = 'admin.previewMode';
+/** A draft is written to the browser this long after the last edit. */
+const DRAFT_DELAY_MS = 500;
 const storage = safeLocalStorage();
+
+function isField(target: EventTarget | null): boolean {
+  return (
+    target instanceof HTMLElement &&
+    target.matches('input, select, textarea, [contenteditable=""], [contenteditable="true"]')
+  );
+}
 
 function Editor({
   api,
@@ -58,8 +72,19 @@ function Editor({
       createPreviewClient(mode, api, () => ({ now: new Date(), timezone, locale: tabletLocale, sources })),
     [mode, api, timezone, tabletLocale, sources],
   );
-  const [draft, setDraft] = useState<LayoutBody>(() => toBody(initial));
+
   const [saved, setSaved] = useState<Saved>(() => savedOf(initial));
+  // What the server holds, for "discard": the draft of an earlier visit may differ from it.
+  const serverBody = useRef<LayoutBody>(toBody(initial));
+  const [start] = useState(() => {
+    const stored = restorable(parseDraft(readItem(storage, draftKey(initial.id))), savedOf(initial));
+    return { body: stored ?? toBody(initial), restored: stored !== null };
+  });
+  const history = useHistory<LayoutBody>(() => start.body);
+  const draft = history.value;
+  const setDraft = history.set;
+  const [restoredNotice, setRestoredNotice] = useState(start.restored);
+
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<unknown>(null);
@@ -87,8 +112,8 @@ function Editor({
     now: new Date(),
   });
 
-  function updateTile(id: string, change: (tile: Tile) => Tile): void {
-    setDraft({ ...draft, tiles: draft.tiles.map((tile) => (tile.id === id ? change(tile) : tile)) });
+  function updateTile(id: string, change: (tile: Tile) => Tile, key?: string): void {
+    setDraft({ ...draft, tiles: draft.tiles.map((tile) => (tile.id === id ? change(tile) : tile)) }, key);
   }
 
   function addTile(type: TileType): void {
@@ -117,6 +142,16 @@ function Editor({
     setSelectedId(null);
   }
 
+  /** Typing in a text field is one step of the history, not one per key. */
+  function changeSetting(tile: Tile, key: string, value: unknown): void {
+    const typing = fieldsFor(tile.type, tile.config).find((field) => field.key === key)?.kind === 'text';
+    updateTile(
+      tile.id,
+      (current) => ({ ...current, config: withSetting(current, key, value, context()) }),
+      typing ? `setting:${tile.id}:${key}` : undefined,
+    );
+  }
+
   async function save(): Promise<void> {
     setBusy(true);
     setError(null);
@@ -126,14 +161,85 @@ function Editor({
         ifVersion: saved.version,
       });
       // The server fills in the config defaults, so the draft continues from what it stored.
-      setDraft(toBody(stored));
+      serverBody.current = toBody(stored);
+      history.replace(toBody(stored));
       setSaved(savedOf(stored));
+      setRestoredNotice(false);
     } catch (failure) {
       setError(failure);
     } finally {
       setBusy(false);
     }
   }
+
+  // The draft is kept in the browser while it differs from what is saved.
+  useEffect(() => {
+    const key = draftKey(initial.id);
+    if (!dirty) {
+      writeItem(storage, key, null);
+      return;
+    }
+    const timer = window.setTimeout(
+      () => writeItem(storage, key, serializeDraft({ baseVersion: saved.version, body: draft })),
+      DRAFT_DELAY_MS,
+    );
+    return () => window.clearTimeout(timer);
+  }, [draft, dirty, saved.version, initial.id]);
+
+  // Leaving with unsaved changes asks first, whether by a link, the back button or closing the tab.
+  useEffect(() => {
+    if (!dirty) return;
+    setLeaveGuard(() => window.confirm(t('admin.editor.leaveConfirm')));
+    const onUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+    window.addEventListener('beforeunload', onUnload);
+    return () => {
+      setLeaveGuard(null);
+      window.removeEventListener('beforeunload', onUnload);
+    };
+  }, [dirty, t]);
+
+  // Keyboard: arrows move, Shift+arrows resize, Delete removes, Ctrl+Z / Ctrl+Y undo and redo, Ctrl+S saves.
+  useEffect(() => {
+    function onKey(event: KeyboardEvent): void {
+      const command = interpretKey({
+        key: event.key,
+        primary: event.ctrlKey || event.metaKey,
+        shift: event.shiftKey,
+        alt: event.altKey,
+        inField: isField(event.target),
+        hasSelection: selected !== null,
+      });
+      if (command === null) return;
+      event.preventDefault();
+      switch (command.type) {
+        case 'undo':
+          history.undo();
+          break;
+        case 'redo':
+          history.redo();
+          break;
+        case 'save':
+          if (dirty && !busy) void save();
+          break;
+        case 'deselect':
+          setSelectedId(null);
+          break;
+        case 'remove':
+          if (selected) removeTile(selected.id);
+          break;
+        case 'step': {
+          const box = selected ? stepBox(draft.tiles, selected, command.field, command.delta) : null;
+          if (selected && box) updateTile(selected.id, (tile) => ({ ...tile, ...box }));
+          break;
+        }
+      }
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
 
   return (
     <section class="editor">
@@ -147,8 +253,14 @@ function Editor({
           maxLength={64}
           aria-label={t('admin.editor.name')}
           value={draft.name}
-          onInput={(event) => setDraft({ ...draft, name: event.currentTarget.value })}
+          onInput={(event) => setDraft({ ...draft, name: event.currentTarget.value }, 'name')}
         />
+        <button type="button" disabled={!history.canUndo} onClick={history.undo}>
+          {t('admin.editor.undo')}
+        </button>
+        <button type="button" disabled={!history.canRedo} onClick={history.redo}>
+          {t('admin.editor.redo')}
+        </button>
         <span class="muted status">
           {dirty ? t('admin.editor.unsaved') : t('admin.editor.saved', { v: saved.version })}
         </span>
@@ -156,6 +268,21 @@ function Editor({
           {t('admin.editor.save')}
         </button>
       </div>
+      {restoredNotice && dirty && (
+        <div class="note" role="status">
+          <span>{t('admin.editor.draftRestored')}</span>
+          <button
+            type="button"
+            onClick={() => {
+              setDraft(serverBody.current);
+              setRestoredNotice(false);
+              setSelectedId(null);
+            }}
+          >
+            {t('admin.editor.draftDiscard')}
+          </button>
+        </div>
+      )}
       {error !== null && <ErrorNote error={error} />}
 
       <div class="preview-mode">
@@ -206,6 +333,7 @@ function Editor({
             onChange={(id: string, box: GridBox) => updateTile(id, (tile) => ({ ...tile, ...box }))}
           />
           <p class="muted">{t('admin.editor.hint')}</p>
+          <p class="muted keys">{t('admin.editor.shortcuts')}</p>
         </div>
         {selected ? (
           <TileProperties
@@ -214,16 +342,11 @@ function Editor({
             tiles={draft.tiles}
             sources={sources}
             onBox={(box) => updateTile(selected.id, (tile) => ({ ...tile, ...box }))}
-            onSetting={(key, value) =>
-              updateTile(selected.id, (tile) => ({
-                ...tile,
-                config: withSetting(tile, key, value, context()),
-              }))
-            }
+            onSetting={(key, value) => changeSetting(selected, key, value)}
             onRemove={() => removeTile(selected.id)}
           />
         ) : (
-          <LayoutProperties layout={draft} onChange={setDraft} />
+          <LayoutProperties layout={draft} onChange={(next, key) => setDraft(next, key)} />
         )}
       </div>
     </section>
