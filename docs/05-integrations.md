@@ -152,7 +152,7 @@ Confirmed on the owner's setup (Google):
 - The calendar and countdown tiles worked on the real tablet with two calendars; an event that is in two chosen
   calendars was shown twice until the server de-duplicated it.
 
-What the providers document, not yet confirmed on the owner's own accounts (Microsoft To Do not yet connected):
+What the providers document, not confirmed on the owner's own accounts (Microsoft To Do is not connected, see the backlog in doc 09):
 
 - Google shows "Google hasn't verified this app" once per account for an unverified production app: *Advanced →
   Go to <app> (unsafe)*.

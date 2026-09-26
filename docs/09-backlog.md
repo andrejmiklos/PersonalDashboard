@@ -20,4 +20,5 @@ Ideas raised during requirements gathering but **not selected** by the owner; ke
 | Light theme / automatic day-night theme | Theme tokens exist; switch would be a schedule input |
 | Cloudflare Access in front of `/admin` | Optional extra layer, see doc 06 |
 | Pollen in the air tile | Dropped in Phase 2. Open-Meteo returns `0` (not `null`) out of season in Europe and `null` only outside coverage; values swing strongly within a day, so show today's maximum with per-type thresholds |
+| Connect Microsoft To Do (optional) | Implemented and tested with fixtures (Phase 3 steps 7–9); not connected to a real account. Setup: doc 05 §2.1 and doc 10 §4.2; then check that completing and undoing a task on the tablet shows in To Do |
 | Custom domain | Removes the `workers.dev` host from configuration; also helps with TLS troubleshooting; enables a WAF rate-limiting rule that stops floods before they count as Worker invocations (doc 06 §1) |

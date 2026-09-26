@@ -66,6 +66,10 @@ with clock, weather, astro, air, quote, countdown; pulling Wi-Fi shows stale sta
 Acceptance: real calendars and lists appear on the tablet; a calendar countdown shows the nearest real events; completing a task on the tablet reflects in
 Microsoft To Do; killing a refresh token produces a "reconnect" state, not a crash.
 
+Closed 2026-09-26 with Google verified on the real tablet. Connecting Microsoft To Do (the task-completion part of the
+acceptance) is optional and moved to the backlog (doc 09); its code and fixture tests are done. The "reconnect" state
+is covered by tests; on the real Google account it shows once the 7-day refresh token of the *Testing* consent screen expires.
+
 ## Phase 4 — Admin app and layout editor
 
 1. `feat(admin): shell, login (token), router, i18n, dark theme`.

@@ -5,9 +5,9 @@ Vyberieš si dlaždice, rozložíš ich vo webovom editore, uložíš layouty a 
 
 > English version: [README.md](README.md)
 
-**Stav:** fázy 0–2 hotové (jadro backendu, runtime displeja, prvé dlaždice, správanie offline); fáza 3 (Google
-Kalendár a Microsoft To Do) je implementovaná; Google kalendár a odpočet sú overené na reálnom tablete, zostáva pripojiť
-Microsoft To Do a overiť odškrtávanie úloh. Pozri [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
+**Stav:** fázy 0–3 hotové (jadro backendu, runtime displeja, prvé dlaždice, správanie offline, Google Kalendár); Google
+kalendár a odpočet sú overené na reálnom tablete. Microsoft To Do je implementovaný, ale nepripojený, ide o voliteľnú
+položku v [backlogu](docs/09-backlog.md). Pozri [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
 
 ## Čo už funguje
 
@@ -17,7 +17,7 @@ Microsoft To Do a overiť odškrtávanie úloh. Pozri [docs/08-implementation-pl
 - Dlaždice: hodiny a dátum, počasie (Open-Meteo, s názvom tvojho miesta, hodinový pás s vetrom, cache na Workeri, záložné staršie dáta), slnko a mesiac (suncalc), kvalita ovzdušia, citát dňa (70 voľných citátov, SK + EN), odpočet
 - Google Kalendár (viac účtov) pripojený cez OAuth a overený na tablete: dlaždica kalendára (farba podľa kalendára, pásik celodenných udalostí, udalosť v dvoch kalendároch sa ukáže raz) a odpočet do najbližších udalostí z kalendára
 - Tokeny a cache udalostí/úloh sú v D1 zašifrované (AES-GCM); účty, kalendáre a zoznamy sa vyberajú príkazom `npm run accounts`
-- Pripojenie Microsoft To Do a dlaždica úloh (odškrtnutie dotykom, Späť) sú implementované a otestované, na skutočnom účte ešte neoverené
+- Pripojenie Microsoft To Do a dlaždica úloh (odškrtnutie dotykom, Späť) sú implementované a otestované, so skutočným účtom nepripojené (voliteľné, pozri backlog)
 - Slovenské a anglické rozhranie, tmavá téma, kiosk na celú obrazovku v orientácii na šírku
 - Odolnosť voči výpadkom: posledný layout a dáta dlaždíc z `localStorage`, označenie starých dát, odznak
   offline, nočný reload len keď server odpovedá

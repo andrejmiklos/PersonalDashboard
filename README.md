@@ -5,9 +5,9 @@ Pick tiles, arrange them in a web editor, save layouts, and let the tablet show 
 
 > Slovak version: [README.sk.md](README.sk.md)
 
-**Status:** Phases 0–2 done (backend core, display runtime, first tiles, offline handling); Phase 3 (Google
-Calendar and Microsoft To Do) is implemented; the Google calendar and the countdown are verified on the real tablet,
-connecting Microsoft To Do and checking task completion is the remaining acceptance step. See [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
+**Status:** Phases 0–3 done (backend core, display runtime, first tiles, offline handling, Google Calendar); the Google
+calendar and the countdown are verified on the real tablet. Microsoft To Do is implemented but not connected yet, an
+optional item in the [backlog](docs/09-backlog.md). See [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
 
 ## Working now
 
@@ -16,7 +16,7 @@ connecting Microsoft To Do and checking task completion is the remaining accepta
 - Tiles: clock & date, weather (Open-Meteo, with the name of your place, hourly strip with wind, cached on the Worker, stale fallback), sun & moon (suncalc), air quality, quote of the day (70 public-domain quotes, SK + EN), countdown
 - Google Calendar (several accounts) connected by OAuth and verified on the tablet: calendar tile (colour per calendar, all-day strip, an event in two calendars shown once) and a countdown to the nearest calendar events
 - Tokens and cached events/tasks are sealed in D1 with AES-GCM; accounts, calendars and lists are chosen with `npm run accounts`
-- Microsoft To Do connection and the tasks tile (tap to complete, undo) are implemented and tested, but not yet checked against a real account
+- Microsoft To Do connection and the tasks tile (tap to complete, undo) are implemented and tested, but not connected to a real account (optional, see the backlog)
 - Slovak and English UI, dark theme, landscape fullscreen kiosk
 - Offline resilience: last layout and tile data from `localStorage`, stale indicators, offline badge, nightly
   reload only when the server answers
