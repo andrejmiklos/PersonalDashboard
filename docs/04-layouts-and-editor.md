@@ -82,6 +82,28 @@ bars), never stretched.
 - **Keyboard** (desktop): arrows move selected tile, shift+arrows resize, Delete removes, Ctrl+Z/Y.
 - **Send to tablet**: *Save & show now* = save + set manual override to this layout.
 
+### 2.2.1 As built (Phase 4)
+
+- **Resize** is by the corner handle of the selected tile only (top-left changes with move + resize). Beside the
+  drag, the properties panel has **steppers** for column, row, width and height (± one cell): the precise way on a
+  phone, where one cell is about 30 px. A stepper is disabled when the step would leave the grid, go below the
+  minimum size or run into another tile.
+- On a **touch screen the first tap only selects** a tile, the next drag moves it; so the tiles do not block
+  scrolling the page.
+- **Live preview:** the real tiles (`packages/tiles`) with fictional sample data, or real data from the Worker
+  (toggle, remembered in the browser; answers are kept for a minute). The tiles use the language and time zone of
+  the tablet settings. Ticking a task in the preview changes nothing. A tile the server would refuse (no source
+  chosen, countdown without a name or date) is outlined in the editor and left out of the picture.
+- **Drafts:** the unsaved layout is kept in the browser (`localStorage`, half a second after the last edit) and
+  offered again on the next visit, unless the layout was saved elsewhere in the meantime (its version differs).
+  Leaving the editor with unsaved changes asks first, also for the back button and closing the tab.
+- **Undo/redo:** 100 steps, buttons and Ctrl+Z / Ctrl+Y; typing in one text field is one step.
+- **Keys:** arrows move the selected tile, Shift+arrows resize it, Delete removes it, Esc deselects, Ctrl+S saves.
+- **Save and show now** saves, then pins the layout on the tablet (`PUT /api/v1/override`, doc 07 §5); the tablet
+  changes within its poll interval of 15 seconds. The layout list can show a layout now and release the pin.
+- **Settings screen (minimal):** tablet language, time zone and the location of the weather and sun tiles.
+  Power mode, schedule and rotation come with Phase 5.
+
 ### 2.3 Accessibility & i18n
 
 SK/EN, sufficient contrast, touch targets ≥ 44 px, all actions keyboard-reachable on desktop.

@@ -7,8 +7,8 @@ All `/api/*` responses carry `Cache-Control: no-store`.
 Roles: **A** = admin, **D** = device (admin may call everything the device can).
 
 **Implemented:** `/healthz`, `/display/`, `GET /display/state`, `POST /display/pair`,
-`GET /data/weather|air|astro|quote|calendar`, all of §4 (layouts), `GET/PUT /settings` and, for Google and Microsoft, all of §6 (accounts,
-sources, connect flow; Phase 3). Tokens are managed with the CLI (§7). Everything else below is planned; the phase
+`GET /data/weather|air|astro|quote|calendar|tasks`, all of §4 (layouts), `GET/PUT /settings`, `GET/PUT/DELETE /override` (pinning
+a layout; no `screen` yet) and, for Google and Microsoft, all of §6 (accounts, sources, connect flow; Phase 3). Tokens are managed with the CLI (§7). Everything else below is planned; the phase
 is in doc 08.
 
 ## 1. Static
@@ -43,7 +43,8 @@ minute).
 
 `layoutSpec.kind`: `layout` | `pinned` | `rotation` (`{ layoutIds, secondsEach, anchor }`); `null` when no layout
 is configured. Supports `If-None-Match` with ETag → `304`; the ETag covers everything except `serverTime`.
-Phase 2 serves `settings.defaultLayoutId` only; schedule, overrides, rotation and power follow in Phase 5.
+The layout is the one pinned by an override that has not expired (`kind: pinned`), else `settings.defaultLayoutId`
+(`kind: layout`). Schedule rules, rotation and power follow in Phase 5.
 
 ### `POST /api/v1/display/pair` — no token
 Body `{ "code": "K7QM-2XPA" }` (case, spaces and dashes ignored). Exchanges a one-time pairing code
@@ -144,9 +145,9 @@ Responses: `POST` and `duplicate` → `201` with the full document, `DELETE` →
 |---|---|
 | `GET/PUT /api/v1/settings` | `{ locale, timezone, location: { label, lat, lon } \| null, powerMode, defaultMode, defaultLayoutId, rotation, touch }`. PUT changes only the fields it contains (unknown fields → `400`); coordinates are rounded to 2 decimals (~1 km). Implemented: `locale`, `timezone`, `location`, `powerMode`, `defaultLayoutId` |
 | `GET/PUT /api/v1/schedule` | Full list of rules (replace semantics, validated) |
-| `GET /api/v1/override` | Current override or `null` |
-| `PUT /api/v1/override` | `{ layoutId?, screen?, expiresAt? \| durationSec? }` |
-| `DELETE /api/v1/override` | Clear |
+| `GET /api/v1/override` | The active override `{ layoutId, expiresAt }`, or `null` when there is none or it has expired |
+| `PUT /api/v1/override` | Pins a layout: `{ layoutId, durationSec? \| expiresAt? }`. Without an end it lasts until cleared; `durationSec` is 60 s to 30 days, `expiresAt` an ISO date in the future, not both. Unknown layout, unknown fields (`screen` comes with Phase 5) → `400`. Replaces the previous override |
+| `DELETE /api/v1/override` | Clear (`204`) |
 | `GET /api/v1/devices` | `[{ id, label, lastSeen, appVersion, info }]` |
 
 Until the admin app exists, the CLI reads and changes settings (admin token asked for without echo):

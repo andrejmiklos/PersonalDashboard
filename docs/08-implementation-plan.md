@@ -88,6 +88,10 @@ is covered by tests; on the real Google account it shows once the 7-day refresh 
 Acceptance: build a layout on the phone, save, and the tablet shows exactly it within ≤ 15 s; the layout
 list persists several layouts.
 
+Implemented 2026-09-26 and checked against a local Worker in Chrome (a second browser as the "tablet" switched
+to the pinned layout after 8 s; drag, resize, preview, drafts, keys, import and export worked). Still to do by the
+owner: deploy, sign in on the real phone and see the change on the real tablet.
+
 ## Phase 5 — Scheduling, modes, control, power
 
 1. `feat(worker): overrides API`.

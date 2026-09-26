@@ -130,6 +130,7 @@ interface TileTypeMeta {
   minW: number; minH: number;
   defaultW: number; defaultH: number;
   configDefaults: Record<string, unknown>;
+  fields: FieldDef[];               // one per setting: boolean, enum, integer (nullable = automatic), text, datetime, sources
   needsSources?: 'calendar' | 'task_list';
 }
 ```
@@ -141,5 +142,7 @@ server-side layout validation.
 
 1. Add metadata to the shared registry and i18n keys (SK+EN).
 2. Add server provider + `GET /api/v1/data/<type>` (if it needs data) with TTL.
-3. Add the tile module to `packages/tiles` (Chrome 95-safe) and the admin config form.
+3. Add the tile module to `packages/tiles` (Chrome 95-safe). The admin form is generated from `fields`; add the
+   labels `field.<type>.<key>` (and `option.<key>.<value>` for enums) to the i18n dictionaries (a test checks
+   that none is missing) and the same limits to the zod schema (a test in the Worker compares the two).
 4. Add doc section here, a sample in `examples/`, and tests (validator + provider mapper).

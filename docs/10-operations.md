@@ -32,7 +32,22 @@ Keep the `ratelimits` block from the template in `wrangler.jsonc` (doc 06 §6).
 3. Type the printed code on the tablet within 10 minutes. The display stores its own device token.
 4. Chrome menu → *Add to Home screen*; start the dashboard from that shortcut (fullscreen).
 
-## 4. Configuration (until the admin app, Phase 4)
+## 3.1 The admin app
+
+Open `https://<worker-host>/admin/` on the phone or the PC and type an admin token (create it with
+`npm run token:create -- --role admin --label "owner phone" --remote`; it is shown once). The browser keeps it in
+its `localStorage`; *Sign out* removes it, and a token the server no longer accepts ends the session by itself.
+
+- **Accounts:** connect Google (or Microsoft), then *Add calendars and lists*, give them a name and a colour;
+  a switch hides one from the tiles. An account that needs a new consent shows *Reconnect*.
+- **Layouts:** *New layout* opens the editor. *Show now* pins a layout on the tablet (a banner offers *Release*);
+  *Set as default* is what the tablet shows when nothing is pinned. Export writes a JSON file without the ids, so
+  it imports into any Worker.
+- **Editor:** doc 04 §2.2.1. *Save and show now* saves and pins; the tablet follows within about 15 seconds.
+- **Settings:** the tablet language, the time zone and the location of the weather tile. This replaces
+  `npm run settings` below, which still works.
+
+## 4. Configuration (the CLI way; the admin app does the same)
 
 ```sh
 npm run settings -- https://<worker-host>                                    # show
@@ -120,6 +135,10 @@ npm run db:migrate:local
 npm run token:create -- --role admin --label dev     # local database
 npm run dev                                          # build + wrangler dev on http://localhost:8787
 ```
+
+The admin app is at `http://localhost:8787/admin/`. After a change in `apps/admin`, `npm run build` and reload the
+page. `wrangler dev` may keep serving an older asset list after a rebuild: restart it when a script or stylesheet
+answers `404`.
 
 Local tokens and data live in `.wrangler/` (git-ignored). Secrets for later phases go into `.dev.vars` (template:
 `.dev.vars.example`).

@@ -60,12 +60,17 @@ is the app around it (pairing, state polling, offline handling, kiosk behaviour)
 
 ### 2.3 `apps/admin` — editor & control panel (TypeScript, modern browsers)
 
-- Layout editor (drag/resize), layout list, schedule editor, live control (screen on/off,
-  pin layout), account/source management, device status.
-- Runs on current phone/PC browsers, so it may use modern APIs. Separate bundle from `display`.
-- Framework: Preact (small; JSX ergonomics for an editor). Not used in `display`.
+- Built (Phase 4): sign-in with the admin token, accounts and sources, layout list (create, duplicate, rename,
+  delete, default, show now, import/export), the layout editor with a live preview, and a minimal settings screen.
+  Planned (Phase 5): schedule editor, live control (screen on/off), device status.
+- Runs on current phone/PC browsers, so it may use modern APIs. Separate bundle from `display`, served from
+  `/admin/`; hash routing (`#/layouts/<id>`), because the OAuth callback returns to `/admin/#/accounts`.
+- Framework: Preact, built by Vite without a plugin (JSX is handled by Vite itself). Not used in `display`.
+- The preview draws the real tiles of `packages/tiles` at 1280×800, scaled with a CSS transform, inside a shadow
+  root that holds the tile styles as a constructable stylesheet (the strict CSP allows it; the admin styles cannot
+  leak into the tiles). Data is fictional or, on request, real from the Worker.
 
-### 2.4 `packages/shared`
+### 2.4 `packages/shared` and `packages/tiles`
 
 Dependency-free TypeScript: layout types + JSON schema constants, tile type registry (min/max size,
 defaults), SK/EN i18n dictionaries, date-format helpers. Imported by all three apps.

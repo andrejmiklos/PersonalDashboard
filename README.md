@@ -7,7 +7,9 @@ Pick tiles, arrange them in a web editor, save layouts, and let the tablet show 
 
 **Status:** Phases 0–3 done (backend core, display runtime, first tiles, offline handling, Google Calendar); the Google
 calendar and the countdown are verified on the real tablet. Microsoft To Do is implemented but not connected yet, an
-optional item in the [backlog](docs/09-backlog.md). See [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
+optional item in the [backlog](docs/09-backlog.md). Phase 4 (admin app and layout editor) is implemented and tested against
+a local Worker; deploying it and trying it on the real phone and tablet is the remaining step. See
+[docs/08-implementation-plan.md](docs/08-implementation-plan.md).
 
 ## Working now
 
@@ -23,11 +25,11 @@ optional item in the [backlog](docs/09-backlog.md). See [docs/08-implementation-
 - Hardening: per-IP rate limits, strict Content-Security-Policy, gitleaks (pre-commit + CI), `npm audit` in CI,
   Dependabot, GitHub Actions pinned to commit SHAs
 - CLI scripts: tokens, pairing codes, layout import, settings (location, locale, time zone), smoke test
+- Admin app at `/admin/` (implemented, tested locally, not yet checked on the real devices): sign in with the admin token, connect accounts and choose calendars and lists, manage layouts (create, duplicate, rename, default, import/export), edit a layout on a 12×8 grid with a live preview of the real tiles (drag, resize, steppers for the phone, undo/redo, drafts, keyboard), *Save and show now* pins a layout on the tablet, minimal settings (language, time zone, location)
 - Runs on the Cloudflare Workers + D1 free tier; no server at home
 
 ## Planned
 
-- Drag & drop layout editor (phone/PC) and management of saved layouts (Phase 4)
 - Layout switching: manual, scheduled, rotation, touch on the tablet (Phase 5)
 - Display power: always on, scheduled, manual on/off (Phase 5)
 

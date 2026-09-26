@@ -7,7 +7,9 @@ Vyberieš si dlaždice, rozložíš ich vo webovom editore, uložíš layouty a 
 
 **Stav:** fázy 0–3 hotové (jadro backendu, runtime displeja, prvé dlaždice, správanie offline, Google Kalendár); Google
 kalendár a odpočet sú overené na reálnom tablete. Microsoft To Do je implementovaný, ale nepripojený, ide o voliteľnú
-položku v [backlogu](docs/09-backlog.md). Pozri [docs/08-implementation-plan.md](docs/08-implementation-plan.md).
+položku v [backlogu](docs/09-backlog.md). Fáza 4 (admin aplikácia a editor layoutov) je implementovaná a otestovaná proti
+lokálnemu Workeru; zostáva ju nasadiť a vyskúšať na skutočnom telefóne a tablete. Pozri
+[docs/08-implementation-plan.md](docs/08-implementation-plan.md).
 
 ## Čo už funguje
 
@@ -24,11 +26,11 @@ položku v [backlogu](docs/09-backlog.md). Pozri [docs/08-implementation-plan.md
 - Zabezpečenie: limity požiadaviek na IP adresu, prísna Content-Security-Policy, gitleaks (pre-commit + CI),
   `npm audit` v CI, Dependabot, GitHub Actions pripnuté na SHA commitu
 - CLI skripty: tokeny, párovacie kódy, import layoutu, nastavenia (poloha, jazyk, časové pásmo), smoke test
+- Admin aplikácia na `/admin/` (implementovaná, otestovaná lokálne, na skutočných zariadeniach zatiaľ neoverená): prihlásenie admin tokenom, pripojenie účtov a výber kalendárov a zoznamov, správa layoutov (vytvoriť, duplikovať, premenovať, predvolený, import/export), úprava layoutu na mriežke 12×8 so živým náhľadom skutočných dlaždíc (ťahanie, zmena veľkosti, krokovače pre telefón, späť/znova, drafty, klávesy), *Uložiť a zobraziť teraz* pripne layout na tablet, minimálne nastavenia (jazyk, časové pásmo, poloha)
 - Beží na bezplatnej vrstve Cloudflare Workers + D1; doma netreba server
 
 ## Plánované
 
-- Editor layoutov ťahaním myšou/prstom (telefón/PC) a správa uložených layoutov (fáza 4)
 - Prepínanie layoutov: manuálne, podľa plánu, rotácia, dotykom na tablete (fáza 5)
 - Napájanie displeja: stále zapnutý, podľa plánu, manuálne zap/vyp (fáza 5)
 
