@@ -52,7 +52,8 @@ a {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
   color: inherit;
 }
@@ -78,7 +79,8 @@ button.primary {
   font-weight: 600;
 }
 
-input {
+input,
+select {
   min-height: var(--touch);
   padding: 0 0.75rem;
   border: 1px solid var(--border);

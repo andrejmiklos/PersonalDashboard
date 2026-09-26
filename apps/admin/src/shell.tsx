@@ -5,6 +5,7 @@ import type { Api } from './api';
 import { useI18n } from './i18n';
 import { LayoutsScreen } from './layouts-screen';
 import { navigate, useRoute, type Route } from './router';
+import { SettingsScreen } from './settings-screen';
 
 interface Section {
   path: string;
@@ -14,14 +15,18 @@ interface Section {
 const SECTIONS: readonly Section[] = [
   { path: '/layouts', label: 'admin.nav.layouts' },
   { path: '/accounts', label: 'admin.nav.accounts' },
+  { path: '/settings', label: 'admin.nav.settings' },
 ];
 
 function Screen({ section, api, route }: { section: Section; api: Api; route: Route }) {
-  return section.path === '/accounts' ? (
-    <AccountsScreen api={api} route={route} />
-  ) : (
-    <LayoutsScreen api={api} />
-  );
+  switch (section.path) {
+    case '/accounts':
+      return <AccountsScreen api={api} route={route} />;
+    case '/settings':
+      return <SettingsScreen api={api} />;
+    default:
+      return <LayoutsScreen api={api} />;
+  }
 }
 
 export function Shell({ api, onLogout }: { api: Api; onLogout: () => void }) {
