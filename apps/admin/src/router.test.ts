@@ -27,6 +27,10 @@ describe('editorLayoutId', () => {
     expect(editorLayoutId('/layouts/lay_abcdefghijklmnop')).toBe('lay_abcdefghijklmnop');
   });
 
+  it('reads a layout that is not saved yet as `new`', () => {
+    expect(editorLayoutId('/layouts/new')).toBe('new');
+  });
+
   it.each([
     '/layouts',
     '/layouts/',

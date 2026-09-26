@@ -12,7 +12,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { Api } from '../api';
 import { useI18n } from '../i18n';
-import { toBody, type LayoutBody } from '../layouts-model';
+import { emptyLayout, toBody, type LayoutBody } from '../layouts-model';
 import { useLoad } from '../load';
 import { createPreviewClient, type PreviewMode } from '../preview/data-client';
 import { PreviewLayer } from '../preview/preview-layer';
@@ -37,6 +37,13 @@ function savedOf(layout: LayoutDocument): Saved {
   return { version: layout.version, json: JSON.stringify(toBody(layout)) };
 }
 
+/** The address of the editor of a layout that has been saved for the first time. */
+function openSaved(id: string): void {
+  setLeaveGuard(null);
+  // Replaces `#/layouts/new`, so that the back button does not lead to an editor of nothing.
+  window.location.replace(`#/layouts/${id}`);
+}
+
 const PREVIEW_MODE_KEY = 'admin.previewMode';
 /** A draft is written to the browser this long after the last edit. */
 const DRAFT_DELAY_MS = 500;
@@ -49,14 +56,20 @@ function isField(target: EventTarget | null): boolean {
   );
 }
 
+/**
+ * `initial` is null for a new layout: nothing exists on the server until the first save, so leaving without
+ * saving leaves no empty layout behind. `layoutId` is `new` then.
+ */
 function Editor({
   api,
+  layoutId,
   initial,
   sources,
   settings,
 }: {
   api: Api;
-  initial: LayoutDocument;
+  layoutId: string;
+  initial: LayoutDocument | null;
   sources: readonly SourceRecord[];
   settings: AppSettings | null;
 }) {
@@ -73,12 +86,18 @@ function Editor({
     [mode, api, timezone, tabletLocale, sources],
   );
 
-  const [saved, setSaved] = useState<Saved>(() => savedOf(initial));
+  const isNew = initial === null;
+  const [base] = useState<{ body: LayoutBody; saved: Saved }>(() => {
+    if (initial) return { body: toBody(initial), saved: savedOf(initial) };
+    const body = emptyLayout(t('admin.layouts.new'));
+    return { body, saved: { version: 0, json: JSON.stringify(body) } };
+  });
+  const [saved, setSaved] = useState<Saved>(base.saved);
   // What the server holds, for "discard": the draft of an earlier visit may differ from it.
-  const serverBody = useRef<LayoutBody>(toBody(initial));
+  const serverBody = useRef<LayoutBody>(base.body);
   const [start] = useState(() => {
-    const stored = restorable(parseDraft(readItem(storage, draftKey(initial.id))), savedOf(initial));
-    return { body: stored ?? toBody(initial), restored: stored !== null };
+    const stored = restorable(parseDraft(readItem(storage, draftKey(layoutId))), base.saved);
+    return { body: stored ?? base.body, restored: stored !== null };
   });
   const history = useHistory<LayoutBody>(() => start.body);
   const draft = history.value;
@@ -97,7 +116,7 @@ function Editor({
   // Tiles the server would refuse are left out of the picture; their frame on the canvas is outlined instead.
   const previewLayout: LayoutDocument = {
     ...draft,
-    id: initial.id,
+    id: layoutId,
     version: saved.version,
     tiles: draft.tiles.filter((tile) => !problems.has(tile.id)),
   };
@@ -153,48 +172,61 @@ function Editor({
     );
   }
 
-  /** True when the layout is saved (or was already saved). */
-  async function save(): Promise<boolean> {
+  /** The saved layout (created the first time), or null when the server refused it. */
+  async function save(): Promise<LayoutDocument | null> {
     setBusy(true);
     setError(null);
     try {
-      const stored = await api.put<LayoutDocument>(`/api/v1/layouts/${initial.id}`, {
-        ...draft,
-        ifVersion: saved.version,
-      });
+      const stored = isNew
+        ? await api.post<LayoutDocument>('/api/v1/layouts', draft)
+        : await api.put<LayoutDocument>(`/api/v1/layouts/${layoutId}`, {
+            ...draft,
+            ifVersion: saved.version,
+          });
       // The server fills in the config defaults, so the draft continues from what it stored.
       serverBody.current = toBody(stored);
       history.replace(toBody(stored));
       setSaved(savedOf(stored));
       setRestoredNotice(false);
-      return true;
+      return stored;
     } catch (failure) {
       setError(failure);
-      return false;
+      return null;
     } finally {
       setBusy(false);
     }
+  }
+
+  async function saveOnly(): Promise<void> {
+    const stored = await save();
+    if (stored && isNew) openSaved(stored.id);
   }
 
   /** Saves what is unsaved, then pins the layout on the tablet (`PUT /api/v1/override`). */
   async function saveAndShow(): Promise<void> {
     setNotice(null);
     setShown(false);
-    if (dirty && !(await save())) return;
+    let id = layoutId;
+    if (dirty || isNew) {
+      const stored = await save();
+      if (!stored) return;
+      id = stored.id;
+    }
     setBusy(true);
     try {
-      await api.put('/api/v1/override', { layoutId: initial.id });
+      await api.put('/api/v1/override', { layoutId: id });
       setShown(true);
     } catch (failure) {
       setError(failure);
     } finally {
       setBusy(false);
     }
+    if (isNew) openSaved(id);
   }
 
   // The draft is kept in the browser while it differs from what is saved.
   useEffect(() => {
-    const key = draftKey(initial.id);
+    const key = draftKey(layoutId);
     if (!dirty) {
       writeItem(storage, key, null);
       return;
@@ -204,7 +236,7 @@ function Editor({
       DRAFT_DELAY_MS,
     );
     return () => window.clearTimeout(timer);
-  }, [draft, dirty, saved.version, initial.id]);
+  }, [draft, dirty, saved.version, layoutId]);
 
   // Leaving with unsaved changes asks first, whether by a link, the back button or closing the tab.
   useEffect(() => {
@@ -242,7 +274,7 @@ function Editor({
           history.redo();
           break;
         case 'save':
-          if (dirty && !busy) void save();
+          if ((dirty || isNew) && !busy) void saveOnly();
           break;
         case 'deselect':
           setSelectedId(null);
@@ -282,13 +314,13 @@ function Editor({
           {t('admin.editor.redo')}
         </button>
         <span class="muted status">
-          {dirty ? t('admin.editor.unsaved') : t('admin.editor.saved', { v: saved.version })}
+          {dirty ? t('admin.editor.unsaved') : isNew ? '' : t('admin.editor.saved', { v: saved.version })}
         </span>
-        <button type="button" disabled={busy || !dirty} onClick={() => void save()}>
+        <button type="button" disabled={busy || (!dirty && !isNew)} onClick={() => void saveOnly()}>
           {t('admin.editor.save')}
         </button>
         <button type="button" class="primary" disabled={busy} onClick={() => void saveAndShow()}>
-          {t(dirty ? 'admin.editor.saveAndShow' : 'admin.editor.showNow')}
+          {t(dirty || isNew ? 'admin.editor.saveAndShow' : 'admin.editor.showNow')}
         </button>
       </div>
       {restoredNotice && dirty && (
@@ -383,12 +415,23 @@ function Editor({
 
 /** Loads the layout and the sources tiles may use, then hands them to the editor, which keeps the draft. */
 export function EditorScreen({ api, layoutId }: { api: Api; layoutId: string }) {
-  const layout = useLoad(() => api.get<LayoutDocument>(`/api/v1/layouts/${layoutId}`));
+  // `new`: nothing to load, the layout is created by the first save.
+  const layout = useLoad<LayoutDocument | 'new'>(() =>
+    layoutId === 'new' ? Promise.resolve('new') : api.get<LayoutDocument>(`/api/v1/layouts/${layoutId}`),
+  );
   const sources = useLoad(() => api.get<SourceRecord[]>('/api/v1/sources'));
   const settings = useLoad(() => api.get<AppSettings>('/api/v1/settings'));
   // The settings only decide language and time zone of the preview: without them the admin's own are used.
   if (layout.data !== null && sources.data !== null && !settings.loading) {
-    return <Editor api={api} initial={layout.data} sources={sources.data} settings={settings.data} />;
+    return (
+      <Editor
+        api={api}
+        layoutId={layoutId}
+        initial={layout.data === 'new' ? null : layout.data}
+        sources={sources.data}
+        settings={settings.data}
+      />
+    );
   }
   const failed = layout.error ?? sources.error;
   if (failed !== null) {

@@ -94,6 +94,8 @@ bars), never stretched.
   (toggle, remembered in the browser; answers are kept for a minute). The tiles use the language and time zone of
   the tablet settings. Ticking a task in the preview changes nothing. A tile the server would refuse (no source
   chosen, countdown without a name or date) is outlined in the editor and left out of the picture.
+- **A new layout** (`#/layouts/new`) exists only in the editor until the first save, which creates it and opens
+  its address; an untouched one can be left without a question and leaves nothing behind.
 - **Drafts:** the unsaved layout is kept in the browser (`localStorage`, half a second after the last edit) and
   offered again on the next visit, unless the layout was saved elsewhere in the meantime (its version differs).
   Leaving the editor with unsaved changes asks first, also for the back button and closing the tab.

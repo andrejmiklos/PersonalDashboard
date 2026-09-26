@@ -3,9 +3,8 @@ import { useRef, useState } from 'preact/hooks';
 import { ApiError, type Api } from './api';
 import { downloadJson } from './download';
 import { useI18n } from './i18n';
-import { cleanName, emptyLayout, exportFileName, formatUpdated, parseImport, toBody } from './layouts-model';
+import { cleanName, exportFileName, formatUpdated, parseImport, toBody } from './layouts-model';
 import { useLoad } from './load';
-import { navigate } from './router';
 import { ErrorNote, Loading } from './ui';
 
 export function LayoutsScreen({ api }: { api: Api }) {
@@ -39,11 +38,6 @@ export function LayoutsScreen({ api }: { api: Api }) {
     }
   }
 
-  const create = () =>
-    run(async () => {
-      const created = await api.post<LayoutDocument>('/api/v1/layouts', emptyLayout(t('admin.layouts.new')));
-      navigate(`/layouts/${created.id}`);
-    });
   const duplicate = (id: string) => run(() => api.post(`/api/v1/layouts/${id}/duplicate`));
   const showNow = (id: string) => run(() => api.put('/api/v1/override', { layoutId: id }));
   const release = () => run(() => api.delete('/api/v1/override'));
@@ -88,9 +82,9 @@ export function LayoutsScreen({ api }: { api: Api }) {
     <section>
       <h1>{t('admin.nav.layouts')}</h1>
       <div class="actions">
-        <button type="button" class="primary" disabled={busy} onClick={() => void create()}>
+        <a class="button primary" href="#/layouts/new">
           {t('admin.layouts.new')}
-        </button>
+        </a>
         <button type="button" disabled={busy} onClick={() => fileInput.current?.click()}>
           {t('admin.layouts.import')}
         </button>

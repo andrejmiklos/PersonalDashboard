@@ -40,7 +40,8 @@ its `localStorage`; *Sign out* removes it, and a token the server no longer acce
 
 - **Accounts:** connect Google (or Microsoft), then *Add calendars and lists*, give them a name and a colour;
   a switch hides one from the tiles. An account that needs a new consent shows *Reconnect*.
-- **Layouts:** *New layout* opens the editor. *Show now* pins a layout on the tablet (a banner offers *Release*);
+- **Layouts:** *New layout* opens an empty editor; nothing is stored until the first *Save*, so leaving without
+  saving leaves no empty layout behind. *Show now* pins a layout on the tablet (a banner offers *Release*);
   *Set as default* is what the tablet shows when nothing is pinned. Export writes a JSON file without the ids, so
   it imports into any Worker.
 - **Editor:** doc 04 §2.2.1. *Save and show now* saves and pins; the tablet follows within about 15 seconds.
@@ -106,9 +107,10 @@ npm run layout:import -- layouts-export/my-layout.json https://<worker-host> --d
 ```
 
 Never put your own layout into `examples/`: labels such as countdowns are personal data (doc 06 §4).
-The display switches within 15 s. The server fills in the defaults of every tile config when a layout is saved, so
-after an update that changes a default (e.g. `showWind` is on since the new weather tile) import the layout again to
-pick it up.
+The display switches within 15 s. A layout is matched by its name: importing the same file again **updates** the
+layout of that name (at its current version) instead of adding a copy, which is also how an update that changes a
+default (e.g. `showWind` is on since the new weather tile) is picked up. If several layouts have the name, the
+script stops and lists their ids: delete the copies in the admin app. `--new` adds a separate layout anyway.
 
 ## 5. Shipping a change
 
