@@ -34,6 +34,15 @@ export interface LayoutDocument {
   tiles: Tile[];
 }
 
+/** One row of `GET /api/v1/layouts`. */
+export interface LayoutSummary {
+  id: string;
+  name: string;
+  version: number;
+  updatedAt: string;
+  tileCount: number;
+}
+
 export function isInsideGrid(box: GridBox): boolean {
   return (
     [box.x, box.y, box.w, box.h].every(Number.isInteger) &&

@@ -1,4 +1,4 @@
-import type { LayoutDocument } from '@dashboard/shared';
+import type { LayoutDocument, LayoutSummary } from '@dashboard/shared';
 import { ApiError } from '../errors';
 import { generateId } from '../ids';
 import type { LayoutBody } from './validate';
@@ -9,14 +9,6 @@ interface LayoutRow {
   json: string;
   version: number;
   updated_at: string;
-}
-
-export interface LayoutSummary {
-  id: string;
-  name: string;
-  version: number;
-  updatedAt: string;
-  tileCount: number;
 }
 
 function toDocument(row: LayoutRow): LayoutDocument {

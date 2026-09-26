@@ -1,3 +1,4 @@
+import type { AppSettings } from '@dashboard/shared';
 import { z } from 'zod';
 import { LAYOUT_ID_PATTERN } from '../ids';
 
@@ -28,7 +29,8 @@ export const settingsSchemas = {
   powerMode: z.enum(['always_on', 'scheduled', 'manual']),
   /** Layout shown when nothing else applies; must exist (checked on PUT). */
   defaultLayoutId: z.string().regex(LAYOUT_ID_PATTERN, 'Invalid layout id').nullable(),
-};
+  // The admin app reads the same shape from packages/shared; a drift is a type error here.
+} satisfies { [K in keyof AppSettings]: z.ZodType<AppSettings[K]> };
 
 export const settingsPatchSchema = z
   .strictObject({

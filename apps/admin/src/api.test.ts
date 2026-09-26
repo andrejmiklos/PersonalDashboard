@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { ApiError, createApi } from './api';
-import { errorKey } from './errors';
+import { errorDetail, errorKey } from './errors';
 
 // Fictional token used only in tests.
 const TOKEN = `dsh_admin_${'A'.repeat(43)}`;
@@ -75,7 +75,25 @@ describe('errorKey', () => {
     expect(errorKey(new ApiError(409, 'reauth_required', ''))).toBe('admin.error.reauth');
     expect(errorKey(new ApiError(503, 'provider_unavailable', ''))).toBe('admin.error.unavailable');
     expect(errorKey(new ApiError(500, 'not_configured', ''))).toBe('admin.error.notConfigured');
-    expect(errorKey(new ApiError(400, 'validation_error', ''))).toBe('admin.error.generic');
+    expect(errorKey(new ApiError(400, 'bad_request', ''))).toBe('admin.error.generic');
     expect(errorKey(new Error('x'))).toBe('admin.error.generic');
+  });
+});
+
+describe('errorDetail', () => {
+  it('shows the server message only for refused input', () => {
+    expect(errorDetail(new ApiError(400, 'validation_error', 'tiles.2: c1 overlaps c3'))).toBe(
+      'tiles.2: c1 overlaps c3',
+    );
+    expect(errorDetail(new ApiError(409, 'layout_in_use', 'Layout is used by the override'))).toBeNull();
+    expect(errorDetail(new Error('x'))).toBeNull();
+  });
+
+  it('has messages for the layout errors', () => {
+    expect(errorKey(new ApiError(409, 'layout_in_use', ''))).toBe('admin.error.layoutInUse');
+    expect(errorKey(new ApiError(409, 'version_conflict', ''))).toBe('admin.error.conflict');
+    expect(errorKey(new ApiError(413, 'payload_too_large', ''))).toBe('admin.error.tooLarge');
+    expect(errorKey(new ApiError(400, 'validation_error', ''))).toBe('admin.error.validation');
+    expect(errorKey(new ApiError(0, 'invalid_file', ''))).toBe('admin.error.invalidFile');
   });
 });

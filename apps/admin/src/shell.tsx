@@ -3,6 +3,7 @@ import { useEffect } from 'preact/hooks';
 import { AccountsScreen } from './accounts-screen';
 import type { Api } from './api';
 import { useI18n } from './i18n';
+import { LayoutsScreen } from './layouts-screen';
 import { navigate, useRoute, type Route } from './router';
 
 interface Section {
@@ -15,19 +16,12 @@ const SECTIONS: readonly Section[] = [
   { path: '/accounts', label: 'admin.nav.accounts' },
 ];
 
-function ComingSoon({ section }: { section: Section }) {
-  const { t } = useI18n();
-  return (
-    <section>
-      <h1>{t(section.label)}</h1>
-      <p class="muted">{t('admin.soon')}</p>
-    </section>
-  );
-}
-
 function Screen({ section, api, route }: { section: Section; api: Api; route: Route }) {
-  if (section.path === '/accounts') return <AccountsScreen api={api} route={route} />;
-  return <ComingSoon section={section} />;
+  return section.path === '/accounts' ? (
+    <AccountsScreen api={api} route={route} />
+  ) : (
+    <LayoutsScreen api={api} />
+  );
 }
 
 export function Shell({ api, onLogout }: { api: Api; onLogout: () => void }) {
