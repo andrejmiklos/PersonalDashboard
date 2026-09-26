@@ -1,4 +1,5 @@
-import { useState } from 'preact/hooks';
+import { useMemo, useState } from 'preact/hooks';
+import { createApi } from './api';
 import { readToken, storeToken } from './auth';
 import { I18nProvider } from './i18n';
 import { Login } from './login';
@@ -19,5 +20,10 @@ export function App() {
     setToken(null);
   }
 
-  return <I18nProvider>{token ? <Shell onLogout={logout} /> : <Login onLogin={login} />}</I18nProvider>;
+  // A token the server no longer accepts (revoked) ends the session.
+  const api = useMemo(() => (token === null ? null : createApi(token, logout)), [token]);
+
+  return (
+    <I18nProvider>{api ? <Shell api={api} onLogout={logout} /> : <Login onLogin={login} />}</I18nProvider>
+  );
 }

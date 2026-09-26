@@ -9,6 +9,8 @@
   --accent: #4fc3f7;
   --on-accent: #04202c;
   --danger: #f28b82;
+  --ok: #81c995;
+  --warn: #f2c94c;
   --touch: 2.75rem;
 }
 
@@ -177,4 +179,149 @@ input {
   .brand {
     flex: 0 0 auto;
   }
+}
+
+h2 {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.grow {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.plain {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0.75rem 0;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--surface);
+}
+
+.note.ok {
+  border-color: var(--ok);
+}
+
+.note.error {
+  border-color: var(--danger);
+}
+
+.card {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface);
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.badge {
+  padding: 0.15rem 0.6rem;
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.badge.ok {
+  color: var(--ok);
+  border-color: var(--ok);
+}
+
+.badge.warn {
+  color: var(--warn);
+  border-color: var(--warn);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+button.danger {
+  color: var(--danger);
+}
+
+.source {
+  padding: 0.6rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.source-fields {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: 0.85rem;
+}
+
+.field input[type='text'] {
+  width: 14rem;
+  max-width: 100%;
+}
+
+input[type='color'] {
+  width: var(--touch);
+  padding: 0.15rem;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: var(--touch);
+}
+
+.check input {
+  width: 1.4rem;
+  height: 1.4rem;
+  min-height: 0;
+}
+
+.kind {
+  font-size: 0.85rem;
+}
+
+.discover {
+  margin-top: 0.75rem;
+}
+
+.discover-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.swatch {
+  flex: none;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
 }

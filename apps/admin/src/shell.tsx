@@ -1,7 +1,9 @@
 import { LOCALES, type MessageKey } from '@dashboard/shared';
 import { useEffect } from 'preact/hooks';
+import { AccountsScreen } from './accounts-screen';
+import type { Api } from './api';
 import { useI18n } from './i18n';
-import { navigate, useRoute } from './router';
+import { navigate, useRoute, type Route } from './router';
 
 interface Section {
   path: string;
@@ -13,7 +15,7 @@ const SECTIONS: readonly Section[] = [
   { path: '/accounts', label: 'admin.nav.accounts' },
 ];
 
-function Screen({ section }: { section: Section }) {
+function ComingSoon({ section }: { section: Section }) {
   const { t } = useI18n();
   return (
     <section>
@@ -23,7 +25,12 @@ function Screen({ section }: { section: Section }) {
   );
 }
 
-export function Shell({ onLogout }: { onLogout: () => void }) {
+function Screen({ section, api, route }: { section: Section; api: Api; route: Route }) {
+  if (section.path === '/accounts') return <AccountsScreen api={api} route={route} />;
+  return <ComingSoon section={section} />;
+}
+
+export function Shell({ api, onLogout }: { api: Api; onLogout: () => void }) {
   const { t, locale, setLocale } = useI18n();
   const route = useRoute();
   const section = SECTIONS.find((s) => s.path === route.path);
@@ -55,7 +62,7 @@ export function Shell({ onLogout }: { onLogout: () => void }) {
           </button>
         </div>
       </header>
-      <main>{section && <Screen section={section} />}</main>
+      <main>{section && <Screen section={section} api={api} route={route} />}</main>
     </div>
   );
 }
