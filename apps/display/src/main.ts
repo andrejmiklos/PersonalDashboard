@@ -1,13 +1,13 @@
+import '@dashboard/tiles/tiles.css';
 import './style.css';
 import { DEFAULT_LOCALE, t, type DisplayState, type MessageKey } from '@dashboard/shared';
+import { applyStage, createLayoutRenderer, fitStage } from '@dashboard/tiles';
 import { fetchState } from './api';
 import { clearCache, readCache, writeCache } from './cache';
 import { createDataClient } from './data';
-import { clearLayout, renderLayout } from './layout/engine';
 import { scheduleNightlyReload } from './nightly';
 import { createOfflineBadge } from './offline';
 import { shouldReload } from './reload';
-import { applyStage, fitStage } from './stage';
 import { createPairingForm } from './pairing';
 import { currentToken, pairFromLocation, storeToken } from './token';
 import { keepScreenAwake } from './wake-lock';
@@ -33,6 +33,7 @@ const STATE_CACHE_KEY = 'state';
 
 const stage = document.getElementById('stage') as HTMLElement;
 const status = document.getElementById('status') as HTMLElement;
+const layoutRenderer = createLayoutRenderer(stage);
 
 let state: DisplayState | null = null;
 let etag: string | null = null;
@@ -67,7 +68,7 @@ function askForPairing(key: MessageKey): void {
 
 /** Full-stage message instead of a layout (not paired, no layout, offline before first state). */
 function showMessage(key: MessageKey): void {
-  clearLayout();
+  layoutRenderer.clear();
   status.textContent = t(state?.locale ?? DEFAULT_LOCALE, key);
   status.hidden = false;
 }
@@ -80,7 +81,7 @@ function render(current: DisplayState): void {
   }
   status.hidden = true;
   pairingForm.hide();
-  renderLayout(stage, layout, current.locale, current.timezone, dataClient);
+  layoutRenderer.render(layout, current.locale, current.timezone, dataClient);
   if (!nightlyPlanned) {
     nightlyPlanned = true;
     scheduleNightlyReload(() => state?.timezone ?? current.timezone);

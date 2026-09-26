@@ -1,4 +1,4 @@
-import { msUntilLocalTime } from './data';
+import { msUntilLocalTime } from '@dashboard/tiles';
 
 // Nightly soft reload (docs/01-architecture.md §5): a long-running page in the old browser leaks
 // memory, so it starts fresh every night.

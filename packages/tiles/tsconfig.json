@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // The tiles run on the Chrome 95 tablet: ES2022 built-ins only.
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "moduleDetection": "force"
+  },
+  "include": ["src"]
+}

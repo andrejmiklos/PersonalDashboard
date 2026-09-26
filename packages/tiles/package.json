@@ -1,0 +1,16 @@
+{
+  "name": "@dashboard/tiles",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./tiles.css": "./src/tiles.css"
+  },
+  "scripts": {
+    "typecheck": "tsc -p ."
+  },
+  "dependencies": {
+    "@dashboard/shared": "*"
+  }
+}

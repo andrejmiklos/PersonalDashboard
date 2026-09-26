@@ -42,14 +42,20 @@ Key properties:
 - Validation of all request bodies (zod) — layouts validated with the shared schema.
 - Cron Trigger (optional, Phase 7): warm caches, prune expired OAuth states.
 
-### 2.2 `apps/display` — tablet runtime (TypeScript → Chrome 95 bundle)
+### 2.2 `apps/display` and `packages/tiles` — tablet runtime (TypeScript → Chrome 95 bundle)
+
+`packages/tiles` holds what the tablet and the admin preview share; it must run in Chrome 95. `apps/display`
+is the app around it (pairing, state polling, offline handling, kiosk behaviour).
 
 - No framework; small render helpers. Every tile is a factory `(ctx) => { resize(box), destroy() }`
-  (`src/tiles/types.ts`): it builds its own DOM in `ctx.el`, loads its data through `ctx.data` with its own
-  poller and updates only the text that changed.
-- Layout engine: absolute positioning from grid coordinates (see doc 04).
-- Data layer (`src/data.ts`): `fetch`-based client with timeouts, bound to the device token and passed to
-  tiles as `ctx.data`; a poller per tile with failure backoff; stale tracking (`isStale`).
+  (`packages/tiles/src/tiles/types.ts`): it builds its own DOM in `ctx.el`, loads its data through `ctx.data` with
+  its own poller and updates only the text that changed. The tile styles are `@dashboard/tiles/tiles.css`.
+- Layout engine (`createLayoutRenderer(stage)`, one instance per stage): absolute positioning from grid
+  coordinates (see doc 04).
+- Data contract and pollers (`packages/tiles/src/data.ts`): the `DataClient` interface passed to tiles as
+  `ctx.data`, a poller per tile with failure backoff, stale tracking (`isStale`). The client itself
+  (`apps/display/src/data.ts`) is `fetch`-based with timeouts, bound to the device token and the offline copy; the
+  admin preview passes its own client.
 - Built with Vite, `build.target: 'chrome95'` (Phase 0 measurement); no legacy plugin, no polyfills.
 
 ### 2.3 `apps/admin` — editor & control panel (TypeScript, modern browsers)
@@ -256,7 +262,8 @@ ALTER TABLE accounts ADD COLUMN refresh_lock_until TEXT; -- serialises refreshes
 │  ├─ display/         Tablet runtime (Chrome 95 bundle)
 │  └─ admin/           Editor + control panel (modern bundle, Phase 4)
 ├─ packages/
-│  └─ shared/          Types, tile registry, i18n, date helpers
+│  ├─ shared/          Types, tile registry, i18n, date helpers
+│  └─ tiles/           Tile runtime: tiles, layout renderer, stage, tile CSS (Chrome 95; display + admin preview)
 ├─ content/
 │  └─ quotes.json      Curated quotes (SK + EN)
 ├─ migrations/         D1 SQL migrations

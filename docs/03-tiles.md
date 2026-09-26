@@ -75,7 +75,7 @@ The tile must never offer create/edit/delete — only complete/uncomplete.
 | Config | `showHourly: bool` (true, next 8 hours), `dailyDays: 0–5` (3), `showFeelsLike: bool` (true), `showPrecipitation: bool` (true), `showWind: bool` (true: wind in line 2 and a wind row in the hourly strip), `showLocation: bool` (true, the name of the place beside the temperature) |
 | Display | Top row: weather icon and temperature, large and side by side, the name of the place (`settings.location.label`) larger and right-aligned beside them. Line 1: condition · feels like · minimum / maximum of today. Line 2: precipitation probability · wind (left out when both are switched off). Then the hourly strip (hour, icon, temperature, precipitation probability and a row with the wind in km/h, numbers only), then the daily rows from tomorrow: one block centred in the tile with columns of fixed width (weekday, icon, precipitation, min, max) |
 | Sizing | Text scales with the box (0.9×–1.75×); what does not fit is dropped instead of shrinking further, from the bottom: the daily rows first, then the wind row of the hourly strip, then the strip itself (daily rows never take the place of a strip that did not fit), then hours from the right. In the default 4×4 tile: 6 hours with wind and 2 days. `compact`: icon + temperature only |
-| Icons | Own line SVGs (`apps/display/src/tiles/weather-icons.ts`) mapped from WMO codes; clear and partly cloudy have night variants; colours from CSS |
+| Icons | Own line SVGs (`packages/tiles/src/tiles/weather-icons.ts`) mapped from WMO codes; clear and partly cloudy have night variants; colours from CSS |
 | States | Loading text; missing location → "set a location in admin"; provider down without data → error; failed refresh keeps the last payload and marks it stale (dimmed + "Updated hh:mm") when the server says `stale` or it is older than 2 × TTL |
 | Refresh | 15 min; after a failure retry after 1 min, doubling up to 15 min |
 | Attribution | Small "Weather data by Open-Meteo.com" text (CC BY 4.0). Shown in the tile footer at `regular`+ size, or once in the admin About page if the tile is `compact` |
@@ -141,5 +141,5 @@ server-side layout validation.
 
 1. Add metadata to the shared registry and i18n keys (SK+EN).
 2. Add server provider + `GET /api/v1/data/<type>` (if it needs data) with TTL.
-3. Add display module (Chrome 95-safe) and admin config form.
+3. Add the tile module to `packages/tiles` (Chrome 95-safe) and the admin config form.
 4. Add doc section here, a sample in `examples/`, and tests (validator + provider mapper).

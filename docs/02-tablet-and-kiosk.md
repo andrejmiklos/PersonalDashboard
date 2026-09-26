@@ -27,7 +27,7 @@ The engine of the tablet decides the frontend toolchain. Measure first.
 Outcome (recorded in [tablet-compat-results.md](tablet-compat-results.md)): Chrome 95, build target
 `chrome95`, no polyfills.
 
-## 2. Compatibility rules for `apps/display`
+## 2. Compatibility rules for `apps/display` and `packages/tiles`
 
 Target: **Chrome 95** (last release for Android 5, measured in Phase 0). Anything Chrome 95 supports
 natively may be used; check newer APIs against Chrome 95 before using them.

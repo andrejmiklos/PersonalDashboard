@@ -8,7 +8,8 @@
     "typecheck": "tsc -p ."
   },
   "dependencies": {
-    "@dashboard/shared": "*"
+    "@dashboard/shared": "*",
+    "@dashboard/tiles": "*"
   },
   "devDependencies": {
     "vite": "^8.3.0"

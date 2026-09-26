@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { shouldReload } from './reload';
-import { fitStage } from './stage';
+import { fitStage } from '@dashboard/tiles';
 import { currentToken, isDeviceToken, pairFromLocation, tokenFromHash } from './token';
 
 // Fictional tokens used only in tests.

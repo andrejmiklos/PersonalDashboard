@@ -12,13 +12,13 @@ export default tseslint.config(
     languageOptions: { globals: globals.node },
   },
   {
-    files: ['apps/display/src/**/*.ts'],
+    files: ['apps/display/src/**/*.ts', 'packages/tiles/src/**/*.ts'],
     languageOptions: { globals: globals.browser },
   },
   {
     // The tablet runs Chrome 95 (docs/tablet-compat-results.md). Newer JS built-ins are already type errors
     // (lib ES2022); these are the web APIs the DOM typings know but Chrome 95 lacks. Tests run in Node.
-    files: ['apps/display/src/**/*.ts'],
+    files: ['apps/display/src/**/*.ts', 'packages/tiles/src/**/*.ts'],
     ignores: ['**/*.test.ts'],
     rules: {
       'no-restricted-globals': [
