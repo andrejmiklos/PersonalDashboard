@@ -35,11 +35,14 @@ function percentBox(box: GridBox) {
 export function Canvas({
   tiles,
   selectedId,
+  problems,
   onSelect,
   onChange,
 }: {
   tiles: readonly Tile[];
   selectedId: string | null;
+  /** Ids of the tiles whose settings the server would refuse. */
+  problems: ReadonlySet<string>;
   onSelect(id: string | null): void;
   onChange(id: string, box: GridBox): void;
 }) {
@@ -63,7 +66,13 @@ export function Canvas({
       cellWidth: rect.width / GRID_COLS,
       cellHeight: rect.height / GRID_ROWS,
     };
-    (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+    try {
+      (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+    } catch {
+      // The pointer is gone already (a synthetic event); the drag simply does not start.
+      gesture.current = null;
+      return;
+    }
     event.preventDefault();
   }
 
@@ -104,7 +113,7 @@ export function Canvas({
         return (
           <div
             key={tile.id}
-            class={`etile${selected ? ' selected' : ''}${dragging ? ' dragging' : ''}`}
+            class={`etile${selected ? ' selected' : ''}${dragging ? ' dragging' : ''}${problems.has(tile.id) ? ' warn' : ''}`}
             style={percentBox(tile)}
             role="button"
             tabIndex={0}

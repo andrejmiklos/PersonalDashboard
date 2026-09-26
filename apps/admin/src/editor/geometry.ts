@@ -102,3 +102,23 @@ export function uniqueTileId(tiles: readonly Tile[], type: TileType): string {
     if (!taken.has(id) && TILE_ID_PATTERN.test(id)) return id;
   }
 }
+
+export type BoxField = 'x' | 'y' | 'w' | 'h';
+
+/**
+ * The box after changing one of x, y, w, h by `delta` cells (the steppers of the properties panel), or null
+ * when that would leave the grid, go below the minimum size or run into another tile.
+ */
+export function stepBox(tiles: readonly Tile[], tile: Tile, field: BoxField, delta: number): GridBox | null {
+  const { minW, minH } = TILE_TYPES[tile.type];
+  const box = { x: tile.x, y: tile.y, w: tile.w, h: tile.h };
+  box[field] += delta;
+  const inside =
+    box.x >= 0 &&
+    box.y >= 0 &&
+    box.w >= minW &&
+    box.h >= minH &&
+    box.x + box.w <= GRID_COLS &&
+    box.y + box.h <= GRID_ROWS;
+  return inside && !overlapsOthers(tiles, tile.id, box) ? box : null;
+}

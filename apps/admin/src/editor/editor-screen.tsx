@@ -1,4 +1,12 @@
-import type { GridBox, LayoutDocument } from '@dashboard/shared';
+import {
+  MAX_TILES,
+  TILE_TYPES,
+  type GridBox,
+  type LayoutDocument,
+  type SourceRecord,
+  type Tile,
+  type TileType,
+} from '@dashboard/shared';
 import { useState } from 'preact/hooks';
 import type { Api } from '../api';
 import { useI18n } from '../i18n';
@@ -6,6 +14,9 @@ import { toBody, type LayoutBody } from '../layouts-model';
 import { useLoad } from '../load';
 import { ErrorNote, Loading } from '../ui';
 import { Canvas } from './canvas';
+import { firstFreeArea, uniqueTileId } from './geometry';
+import { LayoutProperties, TileProperties } from './properties';
+import { configProblem, newTileConfig, withSetting, type NewTileContext } from './tile-model';
 
 /** The saved state the draft is compared with: the server's version and its body as JSON. */
 interface Saved {
@@ -17,17 +28,60 @@ function savedOf(layout: LayoutDocument): Saved {
   return { version: layout.version, json: JSON.stringify(toBody(layout)) };
 }
 
-function Editor({ api, initial }: { api: Api; initial: LayoutDocument }) {
+function Editor({
+  api,
+  initial,
+  sources,
+}: {
+  api: Api;
+  initial: LayoutDocument;
+  sources: readonly SourceRecord[];
+}) {
   const { t } = useI18n();
   const [draft, setDraft] = useState<LayoutBody>(() => toBody(initial));
   const [saved, setSaved] = useState<Saved>(() => savedOf(initial));
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<unknown>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const dirty = JSON.stringify(draft) !== saved.json;
+  const selected = draft.tiles.find((tile) => tile.id === selectedId) ?? null;
+  const problems = new Set(draft.tiles.filter((tile) => configProblem(tile) !== null).map((tile) => tile.id));
 
-  function moveTile(id: string, box: GridBox): void {
-    setDraft({ ...draft, tiles: draft.tiles.map((tile) => (tile.id === id ? { ...tile, ...box } : tile)) });
+  const context = (): NewTileContext => ({
+    sources,
+    countdownLabel: t('tile.countdown'),
+    now: new Date(),
+  });
+
+  function updateTile(id: string, change: (tile: Tile) => Tile): void {
+    setDraft({ ...draft, tiles: draft.tiles.map((tile) => (tile.id === id ? change(tile) : tile)) });
+  }
+
+  function addTile(type: TileType): void {
+    setNotice(null);
+    if (draft.tiles.length >= MAX_TILES) {
+      setNotice(t('admin.editor.tooMany', { n: MAX_TILES }));
+      return;
+    }
+    const box = firstFreeArea(draft.tiles, type);
+    if (box === null) {
+      setNotice(t('admin.editor.noRoom'));
+      return;
+    }
+    const tile: Tile = {
+      id: uniqueTileId(draft.tiles, type),
+      type,
+      ...box,
+      config: newTileConfig(type, context()),
+    };
+    setDraft({ ...draft, tiles: [...draft.tiles, tile] });
+    setSelectedId(tile.id);
+  }
+
+  function removeTile(id: string): void {
+    setDraft({ ...draft, tiles: draft.tiles.filter((tile) => tile.id !== id) });
+    setSelectedId(null);
   }
 
   async function save(): Promise<void> {
@@ -70,16 +124,73 @@ function Editor({ api, initial }: { api: Api; initial: LayoutDocument }) {
         </button>
       </div>
       {error !== null && <ErrorNote error={error} />}
-      <Canvas tiles={draft.tiles} selectedId={selectedId} onSelect={setSelectedId} onChange={moveTile} />
-      <p class="muted">{t('admin.editor.hint')}</p>
+
+      <div class="palette" role="group" aria-label={t('admin.editor.palette')}>
+        <span class="muted">{t('admin.editor.palette')}</span>
+        {(Object.keys(TILE_TYPES) as TileType[]).map((type) => (
+          <button key={type} type="button" onClick={() => addTile(type)}>
+            + {t(`tile.${type}`)}
+          </button>
+        ))}
+      </div>
+      {notice !== null && (
+        <div class="note warn" role="status">
+          {notice}
+        </div>
+      )}
+
+      <div class="editor-body">
+        <div>
+          <Canvas
+            tiles={draft.tiles}
+            selectedId={selectedId}
+            problems={problems}
+            onSelect={setSelectedId}
+            onChange={(id: string, box: GridBox) => updateTile(id, (tile) => ({ ...tile, ...box }))}
+          />
+          <p class="muted">{t('admin.editor.hint')}</p>
+        </div>
+        {selected ? (
+          <TileProperties
+            key={selected.id}
+            tile={selected}
+            tiles={draft.tiles}
+            sources={sources}
+            onBox={(box) => updateTile(selected.id, (tile) => ({ ...tile, ...box }))}
+            onSetting={(key, value) =>
+              updateTile(selected.id, (tile) => ({
+                ...tile,
+                config: withSetting(tile, key, value, context()),
+              }))
+            }
+            onRemove={() => removeTile(selected.id)}
+          />
+        ) : (
+          <LayoutProperties layout={draft} onChange={setDraft} />
+        )}
+      </div>
     </section>
   );
 }
 
-/** Loads the layout, then hands it to the editor, which keeps the draft. */
+/** Loads the layout and the sources tiles may use, then hands them to the editor, which keeps the draft. */
 export function EditorScreen({ api, layoutId }: { api: Api; layoutId: string }) {
   const layout = useLoad(() => api.get<LayoutDocument>(`/api/v1/layouts/${layoutId}`));
-  if (layout.data !== null) return <Editor api={api} initial={layout.data} />;
-  if (layout.error !== null) return <ErrorNote error={layout.error} onRetry={layout.reload} />;
+  const sources = useLoad(() => api.get<SourceRecord[]>('/api/v1/sources'));
+  if (layout.data !== null && sources.data !== null) {
+    return <Editor api={api} initial={layout.data} sources={sources.data} />;
+  }
+  const failed = layout.error ?? sources.error;
+  if (failed !== null) {
+    return (
+      <ErrorNote
+        error={failed}
+        onRetry={() => {
+          layout.reload();
+          sources.reload();
+        }}
+      />
+    );
+  }
   return <Loading />;
 }

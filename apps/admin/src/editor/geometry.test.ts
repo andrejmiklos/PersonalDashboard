@@ -7,6 +7,7 @@ import {
   overlapsOthers,
   place,
   snapToCells,
+  stepBox,
   uniqueTileId,
 } from './geometry';
 
@@ -176,5 +177,36 @@ describe('uniqueTileId', () => {
     for (const type of Object.keys(TILE_TYPES) as Tile['type'][]) {
       expect(uniqueTileId([], type)).toMatch(/^[A-Za-z0-9_-]{1,32}$/);
     }
+  });
+});
+
+describe('stepBox', () => {
+  const a = tile('a', 'clock', 0, 0, 4, 2);
+  const b = tile('b', 'weather', 4, 0, 4, 4);
+
+  it('changes one field by one cell', () => {
+    expect(stepBox([a, b], a, 'y', 1)).toEqual({ x: 0, y: 1, w: 4, h: 2 });
+    expect(stepBox([a, b], a, 'h', 1)).toEqual({ x: 0, y: 0, w: 4, h: 3 });
+    expect(stepBox([a, b], b, 'x', 1)).toEqual({ x: 5, y: 0, w: 4, h: 4 });
+  });
+
+  it('refuses to leave the grid', () => {
+    expect(stepBox([a, b], a, 'x', -1)).toBeNull();
+    expect(stepBox([a, b], a, 'y', -1)).toBeNull();
+    const right = tile('c', 'clock', 8, 6, 4, 2);
+    expect(stepBox([right], right, 'x', 1)).toBeNull();
+    expect(stepBox([right], right, 'h', 1)).toBeNull();
+  });
+
+  it('refuses to go below the minimum size', () => {
+    const { minW, minH } = TILE_TYPES.clock;
+    const small = tile('s', 'clock', 0, 0, minW, minH);
+    expect(stepBox([small], small, 'w', -1)).toBeNull();
+    expect(stepBox([small], small, 'h', -1)).toBeNull();
+  });
+
+  it('refuses to run into another tile', () => {
+    expect(stepBox([a, b], a, 'w', 1)).toBeNull();
+    expect(stepBox([a, b], a, 'x', 1)).toBeNull();
   });
 });
