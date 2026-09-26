@@ -72,15 +72,18 @@ is covered by tests; on the real Google account it shows once the 7-day refresh 
 
 ## Phase 4 — Admin app and layout editor
 
-1. `feat(admin): shell, login (token), router, i18n, dark theme`.
+0. `refactor: extract the tile runtime into packages/tiles` (shared by the display and the editor preview; the layout engine becomes an instance).
+1. `feat(admin): shell, login (token), router, i18n, dark theme` (Preact + Vite, hash router, strict CSP).
 2. `feat(admin): accounts & sources screen` (connect flows, pick calendars/lists, colours).
-3. `feat(admin): layouts list` (CRUD, duplicate, import/export).
-4. `feat(admin): editor canvas (grid, drag, resize, snapping, validation ghost)`.
-5. `feat(admin): palette + properties forms generated from registry`.
-6. `feat(admin): live preview with sample data / real data toggle`.
-7. `feat(admin): undo/redo, drafts, unsaved guard, keyboard shortcuts`.
-8. `feat(admin): "save & show now"` (needs override API from Phase 5 step 1; implement minimal override first if needed).
-9. `test(admin): editor geometry unit tests` (collision, clamping, min sizes).
+3. `feat(admin): layouts list` (CRUD, duplicate, import/export, set as default).
+4. `feat(admin): minimal settings screen` (locale, time zone, location).
+5. `feat(admin): editor geometry` (collision, clamping, min sizes, snapping, first free area) with unit tests.
+6. `feat(admin): editor canvas (grid, drag, resize, snapping, validation ghost)`.
+7. `feat(admin): palette + properties forms generated from registry` (field descriptors in the registry, source pickers, numeric position steppers for the phone).
+8. `feat(admin): live preview with sample data / real data toggle` (the real tiles from `packages/tiles`).
+9. `feat(admin): undo/redo, drafts, unsaved guard, keyboard shortcuts`.
+10. `feat(worker,admin): override API + "save & show now"` (Phase 5 step 1 pulled forward: `GET/PUT/DELETE /override`, `pinned` in the display state).
+11. `docs: admin app` (operations, API, README).
 
 Acceptance: build a layout on the phone, save, and the tablet shows exactly it within ≤ 15 s; the layout
 list persists several layouts.
