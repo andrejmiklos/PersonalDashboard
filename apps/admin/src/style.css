@@ -1,0 +1,180 @@
+:root {
+  color-scheme: dark;
+  --bg: #0d1013;
+  --surface: #161b20;
+  --surface-2: #1f262d;
+  --border: #2c353e;
+  --text: #e6eaee;
+  --muted: #98a3ae;
+  --accent: #4fc3f7;
+  --on-accent: #04202c;
+  --danger: #f28b82;
+  --touch: 2.75rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.4rem;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.error {
+  margin: 0;
+  color: var(--danger);
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  min-height: var(--touch);
+  padding: 0 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--surface-2);
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+button.primary {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+
+input {
+  min-height: var(--touch);
+  padding: 0 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--surface);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.login {
+  max-width: 24rem;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+}
+
+.login form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.shell > header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.brand {
+  flex: 1 0 auto;
+}
+
+.shell nav {
+  display: flex;
+  gap: 0.25rem;
+  order: 3;
+  width: 100%;
+}
+
+.shell nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch);
+  padding: 0 1rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+}
+
+.shell nav a[aria-current='page'] {
+  background: var(--surface-2);
+  color: var(--accent);
+}
+
+.tools {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.segmented {
+  display: flex;
+}
+
+.segmented button {
+  border-radius: 0;
+}
+
+.segmented button:first-child {
+  border-radius: 0.5rem 0 0 0.5rem;
+}
+
+.segmented button:last-child {
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.segmented button[aria-pressed='true'] {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: transparent;
+}
+
+.shell main {
+  padding: 1rem;
+}
+
+@media (min-width: 40rem) {
+  .shell nav {
+    order: 0;
+    width: auto;
+    flex: 1 0 auto;
+  }
+
+  .brand {
+    flex: 0 0 auto;
+  }
+}
