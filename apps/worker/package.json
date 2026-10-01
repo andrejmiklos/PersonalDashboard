@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@dashboard/shared": "*",
-    "hono": "^4.13.9",
+    "hono": "^4.13.10",
     "suncalc": "^2.0.2",
     "zod": "^4.6.5"
   },
