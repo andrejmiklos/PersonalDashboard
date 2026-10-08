@@ -9,12 +9,12 @@
   },
   "dependencies": {
     "@dashboard/shared": "*",
-    "hono": "^4.13.9",
-    "suncalc": "^2.0.2",
+    "hono": "^4.13.13",
+    "suncalc": "^2.1.1",
     "zod": "^4.6.5"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260923.1",
-    "@types/node": "^22.20.4"
+    "@types/node": "^22.20.5"
   }
 }
